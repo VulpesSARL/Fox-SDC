@@ -1,0 +1,90 @@
+.NET Program crashes
+Book: Application
+Source: .NET Runtime
+Category: 1026
+Type: Error
+
+General Application crashes
+Book: Application
+Source: Application Error
+Category: 1000
+Type: Error
+
+System Uptime status
+Book: System
+Source: EventLog
+Category: 6013
+Type: Info
+
+Event Log stopped
+Book: System
+Source: EventLog
+Category: 6006
+Type: Info
+
+Event Log started
+Book: System
+Source: EventLog
+Category: 6005
+Type: Info
+
+Windows Version "greeting" on startup
+Book: System
+Source: EventLog
+Category: 6009
+Type: Info
+
+Unexpected shutdown
+Book: System
+Source: EventLog
+Category: 6008
+Type: Error
+
+CHKDSK Logs
+Book: Application
+Source: Wininit
+Category: 1001
+Type: Info
+
+Disk, bad blocks
+Book: System
+Source: Disk
+Category: 7
+Type: Error
+
+Disk, block issues
+Book: System
+Source: Disk
+Category: 153
+Type: Warning
+
+Disk, surprise removal
+Book: System
+Source: Disk
+Category: 157
+Type: Warning
+
+Service crash
+Book: System
+Source: Service Control Manager
+Category: 7031,7034
+Type: Error
+
+Service cannot start
+Book: System
+Source: Service Control Manager
+Category: 7000
+Type: Error
+
+Shutdown Event Tracker
+Book: System
+Source: User32
+Category: 1074
+Type: Information
+
+Windows Update status
+Book: System
+Source: WindowsUpdateClient
+Category: (any)
+Type: (any)
+

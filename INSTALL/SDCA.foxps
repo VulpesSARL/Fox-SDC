@@ -1,0 +1,144 @@
+﻿{
+    "HeaderID": "FoxPackageScriptV1",
+    "Title": "Vulpes SDC Agent Update Package",
+    "Description": "",
+    "PackageID": "Vulpes-SDCA1-Update",
+    "Script": "using FoxSDC_Common;\r\nusing System;\r\nusing System.Collections.Generic;\r\nusing System.Text;\r\nusing System.Reflection;\r\nusing System.IO;\r\n\r\nnamespace FoxSDC_Package\r\n{\r\n    public class PackageScriptTemplate : PKGScript\r\n    {\r\n        PKGInstallState State = PKGInstallState.NotSet;\r\n\r\n        public PKGStatus CheckInstallationStatus(PKGRunningPackageData Package, PKGInstallState state)\r\n        {\r\n            State = state;\r\n            Package.ErrorText = \"\";\r\n\r\n            Package.SetInstallPath(Package.ApplicationPath);\r\n\r\n            return (PKGStatus.Success);\r\n        }\r\n\r\n        public PKGStatus PreInstall(PKGRunningPackageData Package)\r\n        {\r\n            Package.ErrorText = \"\";\r\n            return (PKGStatus.Success);\r\n        }\r\n\r\n        public PKGStatus PostInstall(PKGRunningPackageData Package)\r\n        {\r\n            Package.ErrorText = \"\";\r\n            return (PKGStatus.Success);\r\n        }\r\n\r\n        public PKGStatus Rollback(PKGRunningPackageData Package)\r\n        {\r\n            Package.ErrorText = \"\";\r\n            return (PKGStatus.Success);            \r\n        }\r\n\r\n        public List<string> GetDependencies(PKGRunningPackageData Package)\r\n        {\r\n            return (new List<string>());\r\n        }\r\n\r\n        public PKGStatus ApplyUserSettings(PKGRunningPackageData Package)\r\n        {\r\n            Package.ErrorText = \"\";\r\n            return (PKGStatus.Success);\r\n        }\r\n    }\r\n}\r\n",
+    "Outputfile": "SDCA.foxpkg",
+    "NoReceipt": true,
+    "VersionID": 19040610,
+    "Files": [
+        {
+            "ID": "",
+            "FolderName": "%INSTALLPATH%\\",
+            "FileName": "FoxSDC_Agent.exe",
+            "SrcFile": "CD\\SDC Agent\\FoxSDC_Agent.exe",
+            "InstallThisFile": true,
+            "KeepInMeta": false
+        },
+        {
+            "ID": "",
+            "FolderName": "%INSTALLPATH%\\",
+            "FileName": "FoxSDC_Agent_UI.exe",
+            "SrcFile": "CD\\SDC Agent\\FoxSDC_Agent_UI.exe",
+            "InstallThisFile": true,
+            "KeepInMeta": false
+        },
+        {
+            "ID": "",
+            "FolderName": "%INSTALLPATH%\\",
+            "FileName": "FoxSDC_AgentDLL32.dll",
+            "SrcFile": "CD\\SDC Agent\\FoxSDC_AgentDLL32.dll",
+            "InstallThisFile": true,
+            "KeepInMeta": false
+        },
+        {
+            "ID": "",
+            "FolderName": "%INSTALLPATH%\\",
+            "FileName": "FoxSDC_AgentDLL64.dll",
+            "SrcFile": "CD\\SDC Agent\\FoxSDC_AgentDLL64.dll",
+            "InstallThisFile": true,
+            "KeepInMeta": false
+        },
+        {
+            "ID": "",
+            "FolderName": "%INSTALLPATH%\\",
+            "FileName": "FoxSDC_ApplyUserSettings.exe",
+            "SrcFile": "CD\\SDC Agent\\FoxSDC_ApplyUserSettings.exe",
+            "InstallThisFile": true,
+            "KeepInMeta": false
+        },
+        {
+            "ID": "",
+            "FolderName": "%INSTALLPATH%\\",
+            "FileName": "FoxSDC_Selfupdate.exe",
+            "SrcFile": "CD\\SDC Agent\\FoxSDC_Selfupdate.exe",
+            "InstallThisFile": true,
+            "KeepInMeta": false
+        },
+        {
+            "ID": "",
+            "FolderName": "%INSTALLPATH%\\",
+            "FileName": "FoxSDC_Common.dll",
+            "SrcFile": "CD\\SDC Agent\\FoxSDC_Common.dll",
+            "InstallThisFile": true,
+            "KeepInMeta": false
+        },
+        {
+            "ID": "",
+            "FolderName": "%INSTALLPATH%\\",
+            "FileName": "FoxSDC_UninstallData.exe",
+            "SrcFile": "CD\\SDC Agent\\FoxSDC_UninstallData.exe",
+            "InstallThisFile": true,
+            "KeepInMeta": false
+        },
+        {
+            "ID": "",
+            "FolderName": "%INSTALLPATH%\\",
+            "FileName": "FoxSDC_Configure.exe",
+            "SrcFile": "CD\\SDC Agent\\FoxSDC_Configure.exe",
+            "InstallThisFile": true,
+            "KeepInMeta": false
+        },
+        {
+            "ID": "",
+            "FolderName": "%INSTALLPATH%\\",
+            "FileName": "FoxSDC_SAS32.dll",
+            "SrcFile": "CD\\SDC Agent\\FoxSDC_SAS32.dll",
+            "InstallThisFile": true,
+            "KeepInMeta": false
+        },
+        {
+            "ID": "",
+            "FolderName": "%INSTALLPATH%\\",
+            "FileName": "FoxSDC_SAS64.dll",
+            "SrcFile": "CD\\SDC Agent\\FoxSDC_SAS64.dll",
+            "InstallThisFile": true,
+            "KeepInMeta": false
+        },
+        {
+            "ID": "",
+            "FolderName": "%INSTALLPATH%\\",
+            "FileName": "MyUCID.exe",
+            "SrcFile": "CD\\MyUCID.exe",
+            "InstallThisFile": true,
+            "KeepInMeta": false
+        }
+    ],
+    "Folders": [
+        {
+            "FolderName": "%SYSTEMROOT%\\"
+        },
+        {
+            "FolderName": "%SYSTEMROOT%\\SYSTEM32\\"
+        },
+        {
+            "FolderName": "%USERPROFILE%\\"
+        },
+        {
+            "FolderName": "%TEMP%\\"
+        },
+        {
+            "FolderName": "%PUBLIC%\\"
+        },
+        {
+            "FolderName": "%PROGRAMFILES%\\"
+        },
+        {
+            "FolderName": "%PROGRAMDATA%\\"
+        },
+        {
+            "FolderName": "%LOCALAPPDATA%\\"
+        },
+        {
+            "FolderName": "%APPDATA%\\"
+        },
+        {
+            "FolderName": "%COMMONPROGRAMFILES%\\"
+        },
+        {
+            "FolderName": "%INSTALLPATH%\\"
+        }
+    ],
+    "Signatures": {}
+}

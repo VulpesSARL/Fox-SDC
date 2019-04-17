@@ -1,0 +1,73 @@
+<policyDefinitions revision="1.0" schemaVersion="1.0">
+  <policyNamespaces>
+    <target prefix="fullarmor" namespace="FullArmor.Policies.5D011937_E029_46CF_9F10_EC936F7DD37F" />
+    <using prefix="windows" namespace="Microsoft.Policies.Windows" />
+  </policyNamespaces>
+  <supersededAdm fileName="" />
+  <resources minRequiredRevision="1.0" />
+  <categories>
+    <category name="CAT_1BB14941_235A_46AB_B15B_AF3774E17715" displayName="$(string.CAT_1BB14941_235A_46AB_B15B_AF3774E17715)" />
+    <category name="CAT_1B826D87_EECF_487B_902A_B7D64E3A792A" displayName="$(string.CAT_1B826D87_EECF_487B_902A_B7D64E3A792A)">
+      <parentCategory ref="CAT_1BB14941_235A_46AB_B15B_AF3774E17715" />
+    </category>
+  </categories>
+  <policies>
+    <policy name="POL_F8BB9CCA_DB25_4854_AFBF_31E7D0C3E75F" class="Machine" displayName="$(string.POL_F8BB9CCA_DB25_4854_AFBF_31E7D0C3E75F)" explainText="$(string.POL_F8BB9CCA_DB25_4854_AFBF_31E7D0C3E75F_Help)" presentation="$(presentation.POL_F8BB9CCA_DB25_4854_AFBF_31E7D0C3E75F)" key="Software\Policies\Fox\SDC">
+      <parentCategory ref="CAT_1B826D87_EECF_487B_902A_B7D64E3A792A" />
+      <supportedOn ref="windows:SUPPORTED_WindowsVista" />
+      <elements>
+        <text id="TXT_319FB5A6_14E4_4069_A0B9_ABFC4C9CC49E" key="Software\Policies\Fox\SDC" valueName="Server" required="true" />
+      </elements>
+    </policy>
+    <policy name="POL_48D47765_98DC_42A1_8CA6_F880A21CBBAD" class="Machine" displayName="$(string.POL_48D47765_98DC_42A1_8CA6_F880A21CBBAD)" explainText="$(string.POL_48D47765_98DC_42A1_8CA6_F880A21CBBAD_Help)" key="Software\Policies\Fox\SDC">
+      <parentCategory ref="CAT_1B826D87_EECF_487B_902A_B7D64E3A792A" />
+      <supportedOn ref="windows:SUPPORTED_WindowsVista" />
+      <enabledList>
+        <item key="Software\Policies\Fox\SDC" valueName="UseOnPremServer">
+          <value>
+            <decimal value="1" />
+          </value>
+        </item>
+      </enabledList>
+      <disabledList>
+        <item key="Software\Policies\Fox\SDC" valueName="UseOnPremServer">
+          <value>
+            <decimal value="0" />
+          </value>
+        </item>
+      </disabledList>
+    </policy>
+    <policy name="POL_CF0C3178_A667_4D5F_A4FA_983606FE08F3" class="Machine" displayName="$(string.POL_CF0C3178_A667_4D5F_A4FA_983606FE08F3)" explainText="$(string.POL_CF0C3178_A667_4D5F_A4FA_983606FE08F3_Help)" presentation="$(presentation.POL_CF0C3178_A667_4D5F_A4FA_983606FE08F3)" key="Software\Policies\Fox\SDC">
+      <parentCategory ref="CAT_1B826D87_EECF_487B_902A_B7D64E3A792A" />
+      <supportedOn ref="windows:SUPPORTED_WindowsVista" />
+      <elements>
+        <text id="TXT_BD225122_AE5A_4F39_AB55_1C8EB5F9E1ED" key="Software\Policies\Fox\SDC" valueName="ContractID" required="true" />
+      </elements>
+    </policy>
+    <policy name="POL_FD751D30_D461_4B3A_A69E_30D7A1A0014D" class="Machine" displayName="$(string.POL_FD751D30_D461_4B3A_A69E_30D7A1A0014D)" explainText="$(string.POL_FD751D30_D461_4B3A_A69E_30D7A1A0014D_Help)" presentation="$(presentation.POL_FD751D30_D461_4B3A_A69E_30D7A1A0014D)" key="Software\Policies\Fox\SDC">
+      <parentCategory ref="CAT_1B826D87_EECF_487B_902A_B7D64E3A792A" />
+      <supportedOn ref="windows:SUPPORTED_WindowsVista" />
+      <elements>
+        <text id="TXT_898F5E1C_E118_4B72_B51F_94D2834AD647" key="Software\Policies\Fox\SDC" valueName="ContractPassword" required="true" />
+      </elements>
+    </policy>
+    <policy name="POL_59557049_71D5_4F72_AC37_B0832318DD41" class="Machine" displayName="$(string.POL_59557049_71D5_4F72_AC37_B0832318DD41)" explainText="$(string.POL_59557049_71D5_4F72_AC37_B0832318DD41_Help)" key="Software\Policies\Fox\SDC">
+      <parentCategory ref="CAT_1B826D87_EECF_487B_902A_B7D64E3A792A" />
+      <supportedOn ref="windows:SUPPORTED_WindowsVista" />
+      <enabledList>
+        <item key="Software\Policies\Fox\SDC" valueName="DisableConfigTool">
+          <value>
+            <decimal value="1" />
+          </value>
+        </item>
+      </enabledList>
+      <disabledList>
+        <item key="Software\Policies\Fox\SDC" valueName="DisableConfigTool">
+          <value>
+            <decimal value="0" />
+          </value>
+        </item>
+      </disabledList>
+    </policy>
+  </policies>
+</policyDefinitions>

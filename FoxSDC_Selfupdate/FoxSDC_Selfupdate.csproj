@@ -1,0 +1,627 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{59D1D9AE-3994-4224-A53E-22B292C3064B}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>FoxSDC_Common</RootNamespace>
+    <AssemblyName>FoxSDC_Selfupdate</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;NET40</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <NoWarn>3021</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\Release\</OutputPath>
+    <DefineConstants>TRACE;NET40</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <NoWarn>3021</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Fox.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\FoxSDC_Agent\FoxEventLog.cs">
+      <Link>FoxEventLog.cs</Link>
+    </Compile>
+    <Compile Include="..\FoxSDC_Agent\RegistryData.cs">
+      <Link>RegistryData.cs</Link>
+    </Compile>
+    <Compile Include="..\FoxSDC_Common\Certificates.cs">
+      <Link>Certificates.cs</Link>
+    </Compile>
+    <Compile Include="..\FoxSDC_Common\CommonUtilities.cs">
+      <Link>CommonUtilities.cs</Link>
+    </Compile>
+    <Compile Include="..\FoxSDC_Common\Enums.cs">
+      <Link>Enums.cs</Link>
+    </Compile>
+    <Compile Include="..\FoxSDC_Common\MD5.cs">
+      <Link>MD5.cs</Link>
+    </Compile>
+    <Compile Include="..\FoxSDC_Common\Models.cs">
+      <Link>Models.cs</Link>
+    </Compile>
+    <Compile Include="..\FoxSDC_Common\PackageCompiler.cs">
+      <Link>PackageCompiler.cs</Link>
+    </Compile>
+    <Compile Include="..\FoxSDC_Common\PackageInstaller.cs">
+      <Link>PackageInstaller.cs</Link>
+    </Compile>
+    <Compile Include="..\FoxSDC_Common\PolicyModels.cs">
+      <Link>PolicyModels.cs</Link>
+    </Compile>
+    <Compile Include="..\FoxSDC_Common\PolicySignedObjects.cs">
+      <Link>PolicySignedObjects.cs</Link>
+    </Compile>
+    <Compile Include="..\FoxSDC_Common\PushData.cs">
+      <Link>PushData.cs</Link>
+    </Compile>
+    <Compile Include="..\FoxSDC_Common\Scheduler.cs">
+      <Link>Scheduler.cs</Link>
+    </Compile>
+    <Compile Include="..\FoxSDC_Common\SmartCards.cs">
+      <Link>SmartCards.cs</Link>
+    </Compile>
+    <Compile Include="AlphaFS\Filesystem\AlternateDataStreamInfo.cs" />
+    <Compile Include="AlphaFS\Filesystem\BackupFileStream.cs" />
+    <Compile Include="AlphaFS\Filesystem\BackupStreamInfo.cs" />
+    <Compile Include="AlphaFS\Filesystem\ByHandleFileInfo.cs" />
+    <Compile Include="AlphaFS\Filesystem\ChangeErrorMode.cs" />
+    <Compile Include="AlphaFS\Filesystem\CopyMoveProgressRoutine.cs" />
+    <Compile Include="AlphaFS\Filesystem\CopyMoveResult.cs" />
+    <Compile Include="AlphaFS\Filesystem\Device.cs" />
+    <Compile Include="AlphaFS\Filesystem\DeviceInfo.cs" />
+    <Compile Include="AlphaFS\Filesystem\Directory Class\Directory.Compression.cs" />
+    <Compile Include="AlphaFS\Filesystem\Directory Class\Directory.CopyMove.cs" />
+    <Compile Include="AlphaFS\Filesystem\Directory Class\Directory.CountFileSystemObjects.cs" />
+    <Compile Include="AlphaFS\Filesystem\Directory Class\Directory.CreateDirectory.cs" />
+    <Compile Include="AlphaFS\Filesystem\Directory Class\Directory.cs" />
+    <Compile Include="AlphaFS\Filesystem\Directory Class\Directory.CurrentDirectory.cs" />
+    <Compile Include="AlphaFS\Filesystem\Directory Class\Directory.Delete.cs" />
+    <Compile Include="AlphaFS\Filesystem\Directory Class\Directory.DeleteEmptySubdirectories.cs" />
+    <Compile Include="AlphaFS\Filesystem\Directory Class\Directory.EncryptedDirectoryRaw.cs" />
+    <Compile Include="AlphaFS\Filesystem\Directory Class\Directory.Encryption.cs" />
+    <Compile Include="AlphaFS\Filesystem\Directory Class\Directory.EnumerateAlternateDataStreams.cs" />
+    <Compile Include="AlphaFS\Filesystem\Directory Class\Directory.EnumerateDirectories.cs" />
+    <Compile Include="AlphaFS\Filesystem\Directory Class\Directory.EnumerateFileIdBothDirectoryInfo.cs" />
+    <Compile Include="AlphaFS\Filesystem\Directory Class\Directory.EnumerateFiles.cs" />
+    <Compile Include="AlphaFS\Filesystem\Directory Class\Directory.EnumerateFileSystemEntries.cs" />
+    <Compile Include="AlphaFS\Filesystem\Directory Class\Directory.EnumerateFileSystemEntryInfos.cs" />
+    <Compile Include="AlphaFS\Filesystem\Directory Class\Directory.Exists.cs" />
+    <Compile Include="AlphaFS\Filesystem\Directory Class\Directory.GetAccessControl.cs" />
+    <Compile Include="AlphaFS\Filesystem\Directory Class\Directory.GetChangeTime.cs" />
+    <Compile Include="AlphaFS\Filesystem\Directory Class\Directory.GetCreationTime.cs" />
+    <Compile Include="AlphaFS\Filesystem\Directory Class\Directory.GetDirectories.cs" />
+    <Compile Include="AlphaFS\Filesystem\Directory Class\Directory.GetDirectoryRoot.cs" />
+    <Compile Include="AlphaFS\Filesystem\Directory Class\Directory.GetFiles.cs" />
+    <Compile Include="AlphaFS\Filesystem\Directory Class\Directory.GetFileSystemEntries.cs" />
+    <Compile Include="AlphaFS\Filesystem\Directory Class\Directory.GetLastAccessTime.cs" />
+    <Compile Include="AlphaFS\Filesystem\Directory Class\Directory.GetLastWriteTime.cs" />
+    <Compile Include="AlphaFS\Filesystem\Directory Class\Directory.GetLogicalDrives.cs" />
+    <Compile Include="AlphaFS\Filesystem\Directory Class\Directory.GetParent.cs" />
+    <Compile Include="AlphaFS\Filesystem\Directory Class\Directory.GetProperties.cs" />
+    <Compile Include="AlphaFS\Filesystem\Directory Class\Directory.HasInheritedPermissions.cs" />
+    <Compile Include="AlphaFS\Filesystem\Directory Class\Directory.SetAccessControl.cs" />
+    <Compile Include="AlphaFS\Filesystem\Directory Class\Directory.SetCreationTime.cs" />
+    <Compile Include="AlphaFS\Filesystem\Directory Class\Directory.SetLastAccessTime.cs" />
+    <Compile Include="AlphaFS\Filesystem\Directory Class\Directory.SetLastWriteTime.cs" />
+    <Compile Include="AlphaFS\Filesystem\Directory Class\Directory.SetTimestamps.cs" />
+    <Compile Include="AlphaFS\Filesystem\Directory Class\Directory.TransferTimestamps.cs" />
+    <Compile Include="AlphaFS\Filesystem\DirectoryInfo Class\DirectoryInfo.Compression.cs" />
+    <Compile Include="AlphaFS\Filesystem\DirectoryInfo Class\DirectoryInfo.CopyToMoveTo.cs" />
+    <Compile Include="AlphaFS\Filesystem\DirectoryInfo Class\DirectoryInfo.CountFileSystemObjects.cs" />
+    <Compile Include="AlphaFS\Filesystem\DirectoryInfo Class\DirectoryInfo.Create.cs" />
+    <Compile Include="AlphaFS\Filesystem\DirectoryInfo Class\DirectoryInfo.CreateSubdirectory.cs" />
+    <Compile Include="AlphaFS\Filesystem\DirectoryInfo Class\DirectoryInfo.cs" />
+    <Compile Include="AlphaFS\Filesystem\DirectoryInfo Class\DirectoryInfo.Decrypt.cs" />
+    <Compile Include="AlphaFS\Filesystem\DirectoryInfo Class\DirectoryInfo.Delete.cs" />
+    <Compile Include="AlphaFS\Filesystem\DirectoryInfo Class\DirectoryInfo.DeleteEmptySubdirectories.cs" />
+    <Compile Include="AlphaFS\Filesystem\DirectoryInfo Class\DirectoryInfo.Encryption.cs" />
+    <Compile Include="AlphaFS\Filesystem\DirectoryInfo Class\DirectoryInfo.EnumerateAlternateDataStreams.cs" />
+    <Compile Include="AlphaFS\Filesystem\DirectoryInfo Class\DirectoryInfo.EnumerateDirectories.cs" />
+    <Compile Include="AlphaFS\Filesystem\DirectoryInfo Class\DirectoryInfo.EnumerateFiles.cs" />
+    <Compile Include="AlphaFS\Filesystem\DirectoryInfo Class\DirectoryInfo.EnumerateFileSystemInfos.cs" />
+    <Compile Include="AlphaFS\Filesystem\DirectoryInfo Class\DirectoryInfo.GetAccessControl.cs" />
+    <Compile Include="AlphaFS\Filesystem\DirectoryInfo Class\DirectoryInfo.GetDirectories.cs" />
+    <Compile Include="AlphaFS\Filesystem\DirectoryInfo Class\DirectoryInfo.GetFiles.cs" />
+    <Compile Include="AlphaFS\Filesystem\DirectoryInfo Class\DirectoryInfo.GetFileSystemInfos.cs" />
+    <Compile Include="AlphaFS\Filesystem\DirectoryInfo Class\DirectoryInfo.Refresh.cs" />
+    <Compile Include="AlphaFS\Filesystem\DirectoryInfo Class\DirectoryInfo.RefreshEntryInfo.cs" />
+    <Compile Include="AlphaFS\Filesystem\DirectoryInfo Class\DirectoryInfo.SetAccessControl.cs" />
+    <Compile Include="AlphaFS\Filesystem\DirectoryInfo Class\DirectoryInfo.ToString.cs" />
+    <Compile Include="AlphaFS\Filesystem\DiskSpaceInfo.cs" />
+    <Compile Include="AlphaFS\Filesystem\DriveInfo.cs" />
+    <Compile Include="AlphaFS\Filesystem\Enumerations\BackupStreamType.cs" />
+    <Compile Include="AlphaFS\Filesystem\Enumerations\CopyMoveProgressCallbackReason.cs" />
+    <Compile Include="AlphaFS\Filesystem\Enumerations\CopyMoveProgressResult.cs" />
+    <Compile Include="AlphaFS\Filesystem\Enumerations\CopyOptions.cs" />
+    <Compile Include="AlphaFS\Filesystem\Enumerations\DeviceGuid.cs" />
+    <Compile Include="AlphaFS\Filesystem\Enumerations\DiGetClassFlags.cs" />
+    <Compile Include="AlphaFS\Filesystem\Enumerations\DirectoryEnumerationOptions.cs" />
+    <Compile Include="AlphaFS\Filesystem\Enumerations\DosDeviceAttributes.cs" />
+    <Compile Include="AlphaFS\Filesystem\Enumerations\EncryptedFileRawMode.cs" />
+    <Compile Include="AlphaFS\Filesystem\Enumerations\ErrorMode.cs" />
+    <Compile Include="AlphaFS\Filesystem\Enumerations\ExtendedFileAttributes.cs" />
+    <Compile Include="AlphaFS\Filesystem\Enumerations\FileEncryptionStatus.cs" />
+    <Compile Include="AlphaFS\Filesystem\Enumerations\FileInfoByHandleClass.cs" />
+    <Compile Include="AlphaFS\Filesystem\Enumerations\FinalPathFormats.cs" />
+    <Compile Include="AlphaFS\Filesystem\Enumerations\FindExAdditionalFlags.cs" />
+    <Compile Include="AlphaFS\Filesystem\Enumerations\FindExSearchOps.cs" />
+    <Compile Include="AlphaFS\Filesystem\Enumerations\FINDEX_INFO_LEVELS.cs" />
+    <Compile Include="AlphaFS\Filesystem\Enumerations\GetFileExInfoLevels.cs" />
+    <Compile Include="AlphaFS\Filesystem\Enumerations\GetFullPathOptions.cs" />
+    <Compile Include="AlphaFS\Filesystem\Enumerations\MoveOptions.cs" />
+    <Compile Include="AlphaFS\Filesystem\Enumerations\PathFormat.cs" />
+    <Compile Include="AlphaFS\Filesystem\Enumerations\ReparsePointTag.cs" />
+    <Compile Include="AlphaFS\Filesystem\Enumerations\SetupDiGetDeviceRegistryPropertyEnum.cs" />
+    <Compile Include="AlphaFS\Filesystem\Enumerations\StreamAttributes.cs" />
+    <Compile Include="AlphaFS\Filesystem\Enumerations\STREAM_INFO_LEVELS.cs" />
+    <Compile Include="AlphaFS\Filesystem\Enumerations\SymbolicLinkTarget.cs" />
+    <Compile Include="AlphaFS\Filesystem\Enumerations\SymbolicLinkType.cs" />
+    <Compile Include="AlphaFS\Filesystem\Enumerations\VolumeInfoAttributes.cs" />
+    <Compile Include="AlphaFS\Filesystem\Exceptions\AlreadyExistsException.cs" />
+    <Compile Include="AlphaFS\Filesystem\Exceptions\DeviceNotReadyException.cs" />
+    <Compile Include="AlphaFS\Filesystem\Exceptions\DirectoryNotEmptyException.cs" />
+    <Compile Include="AlphaFS\Filesystem\Exceptions\DirectoryReadOnlyException.cs" />
+    <Compile Include="AlphaFS\Filesystem\Exceptions\FileReadOnlyException.cs" />
+    <Compile Include="AlphaFS\Filesystem\Exceptions\InvalidTransactionException.cs" />
+    <Compile Include="AlphaFS\Filesystem\Exceptions\NotAReparsePointException.cs" />
+    <Compile Include="AlphaFS\Filesystem\Exceptions\TransactionalConflictException.cs" />
+    <Compile Include="AlphaFS\Filesystem\Exceptions\TransactionAlreadyAbortedException.cs" />
+    <Compile Include="AlphaFS\Filesystem\Exceptions\TransactionAlreadyCommittedException.cs" />
+    <Compile Include="AlphaFS\Filesystem\Exceptions\TransactionException.cs" />
+    <Compile Include="AlphaFS\Filesystem\Exceptions\UnrecognizedReparsePointException.cs" />
+    <Compile Include="AlphaFS\Filesystem\Exceptions\UnsupportedRemoteTransactionException.cs" />
+    <Compile Include="AlphaFS\Filesystem\File Class\File.AppendText.cs" />
+    <Compile Include="AlphaFS\Filesystem\File Class\File.Compress.cs" />
+    <Compile Include="AlphaFS\Filesystem\File Class\File.CopyMove.cs" />
+    <Compile Include="AlphaFS\Filesystem\File Class\File.Create.cs" />
+    <Compile Include="AlphaFS\Filesystem\File Class\File.CreateHardlink.cs" />
+    <Compile Include="AlphaFS\Filesystem\File Class\File.CreateSymbolicLink.cs" />
+    <Compile Include="AlphaFS\Filesystem\File Class\File.CreateText.cs" />
+    <Compile Include="AlphaFS\Filesystem\File Class\File.cs" />
+    <Compile Include="AlphaFS\Filesystem\File Class\File.Delete.cs" />
+    <Compile Include="AlphaFS\Filesystem\File Class\File.EncryptDecrypt.cs" />
+    <Compile Include="AlphaFS\Filesystem\File Class\File.EncryptedFileRaw.cs" />
+    <Compile Include="AlphaFS\Filesystem\File Class\File.EnumerateAlternateDataStreams.cs" />
+    <Compile Include="AlphaFS\Filesystem\File Class\File.EnumerateHardlinks.cs" />
+    <Compile Include="AlphaFS\Filesystem\File Class\File.Exists.cs" />
+    <Compile Include="AlphaFS\Filesystem\File Class\File.GetAccessControl.cs" />
+    <Compile Include="AlphaFS\Filesystem\File Class\File.GetAttributes.cs" />
+    <Compile Include="AlphaFS\Filesystem\File Class\File.GetChangeTime.cs" />
+    <Compile Include="AlphaFS\Filesystem\File Class\File.GetCompressedSize.cs" />
+    <Compile Include="AlphaFS\Filesystem\File Class\File.GetCreationTime.cs" />
+    <Compile Include="AlphaFS\Filesystem\File Class\File.GetEncryptionStatus.cs" />
+    <Compile Include="AlphaFS\Filesystem\File Class\File.GetFileInfoByHandleC.cs" />
+    <Compile Include="AlphaFS\Filesystem\File Class\File.GetFileSystemEntryInfo.cs" />
+    <Compile Include="AlphaFS\Filesystem\File Class\File.GetHash.cs" />
+    <Compile Include="AlphaFS\Filesystem\File Class\File.GetLastAccessTime.cs" />
+    <Compile Include="AlphaFS\Filesystem\File Class\File.GetLastWriteTime.cs" />
+    <Compile Include="AlphaFS\Filesystem\File Class\File.GetLinkTargetInfo.cs" />
+    <Compile Include="AlphaFS\Filesystem\File Class\File.GetSize.cs" />
+    <Compile Include="AlphaFS\Filesystem\File Class\File.IsLocked.cs" />
+    <Compile Include="AlphaFS\Filesystem\File Class\File.Open.cs" />
+    <Compile Include="AlphaFS\Filesystem\File Class\File.OpenBackupRead.cs" />
+    <Compile Include="AlphaFS\Filesystem\File Class\File.OpenRead.cs" />
+    <Compile Include="AlphaFS\Filesystem\File Class\File.OpenText.cs" />
+    <Compile Include="AlphaFS\Filesystem\File Class\File.OpenWrite.cs" />
+    <Compile Include="AlphaFS\Filesystem\File Class\File.ReadAllBytes.cs" />
+    <Compile Include="AlphaFS\Filesystem\File Class\File.ReadAllLines.cs" />
+    <Compile Include="AlphaFS\Filesystem\File Class\File.ReadAllText.cs" />
+    <Compile Include="AlphaFS\Filesystem\File Class\File.ReadLines.cs" />
+    <Compile Include="AlphaFS\Filesystem\File Class\File.Replace.cs" />
+    <Compile Include="AlphaFS\Filesystem\File Class\File.SetAccessControl.cs" />
+    <Compile Include="AlphaFS\Filesystem\File Class\File.SetAttributes.cs" />
+    <Compile Include="AlphaFS\Filesystem\File Class\File.SetFileTime.cs" />
+    <Compile Include="AlphaFS\Filesystem\File Class\File.TransferTimestamps.cs" />
+    <Compile Include="AlphaFS\Filesystem\File Class\File.WriteAllBytes.cs" />
+    <Compile Include="AlphaFS\Filesystem\File Class\File.WriteText.cs" />
+    <Compile Include="AlphaFS\Filesystem\FileIdBothDirectoryInfo.cs" />
+    <Compile Include="AlphaFS\Filesystem\FileInfo Class\FileInfo.AppendText.cs" />
+    <Compile Include="AlphaFS\Filesystem\FileInfo Class\FileInfo.Compress.cs" />
+    <Compile Include="AlphaFS\Filesystem\FileInfo Class\FileInfo.CopyToMoveTo.cs" />
+    <Compile Include="AlphaFS\Filesystem\FileInfo Class\FileInfo.Create.cs" />
+    <Compile Include="AlphaFS\Filesystem\FileInfo Class\FileInfo.CreateText.cs" />
+    <Compile Include="AlphaFS\Filesystem\FileInfo Class\FileInfo.cs" />
+    <Compile Include="AlphaFS\Filesystem\FileInfo Class\FileInfo.Decompress.cs" />
+    <Compile Include="AlphaFS\Filesystem\FileInfo Class\FileInfo.Decrypt.cs" />
+    <Compile Include="AlphaFS\Filesystem\FileInfo Class\FileInfo.Delete.cs" />
+    <Compile Include="AlphaFS\Filesystem\FileInfo Class\FileInfo.Encrypt.cs" />
+    <Compile Include="AlphaFS\Filesystem\FileInfo Class\FileInfo.EnumerateAlternateDataStreams.cs" />
+    <Compile Include="AlphaFS\Filesystem\FileInfo Class\FileInfo.GetAccessControl.cs" />
+    <Compile Include="AlphaFS\Filesystem\FileInfo Class\FileInfo.GetHash.cs" />
+    <Compile Include="AlphaFS\Filesystem\FileInfo Class\FileInfo.Open.cs" />
+    <Compile Include="AlphaFS\Filesystem\FileInfo Class\FileInfo.OpenRead.cs" />
+    <Compile Include="AlphaFS\Filesystem\FileInfo Class\FileInfo.OpenText.cs" />
+    <Compile Include="AlphaFS\Filesystem\FileInfo Class\FileInfo.OpenWrite.cs" />
+    <Compile Include="AlphaFS\Filesystem\FileInfo Class\FileInfo.Refresh.cs" />
+    <Compile Include="AlphaFS\Filesystem\FileInfo Class\FileInfo.RefreshEntryInfo.cs" />
+    <Compile Include="AlphaFS\Filesystem\FileInfo Class\FileInfo.Replace.cs" />
+    <Compile Include="AlphaFS\Filesystem\FileInfo Class\FileInfo.SetAccessControl.cs" />
+    <Compile Include="AlphaFS\Filesystem\FileInfo Class\FileInfo.ToString.cs" />
+    <Compile Include="AlphaFS\Filesystem\FileSystemEntryInfo.cs" />
+    <Compile Include="AlphaFS\Filesystem\FileSystemInfo.cs" />
+    <Compile Include="AlphaFS\Filesystem\FindFileSystemEntryInfo.cs" />
+    <Compile Include="AlphaFS\Filesystem\KernelTransaction.cs" />
+    <Compile Include="AlphaFS\Filesystem\LinkTargetInfo.cs" />
+    <Compile Include="AlphaFS\Filesystem\Native Methods\NativeMethods.BackupStreams.cs" />
+    <Compile Include="AlphaFS\Filesystem\Native Methods\NativeMethods.Constants.cs" />
+    <Compile Include="AlphaFS\Filesystem\Native Methods\NativeMethods.DeviceManagement.cs" />
+    <Compile Include="AlphaFS\Filesystem\Native Methods\NativeMethods.DirectoryManagement.cs" />
+    <Compile Include="AlphaFS\Filesystem\Native Methods\NativeMethods.DiskManagement.cs" />
+    <Compile Include="AlphaFS\Filesystem\Native Methods\NativeMethods.EncryptedFileRaw.cs" />
+    <Compile Include="AlphaFS\Filesystem\Native Methods\NativeMethods.FileManagement.cs" />
+    <Compile Include="AlphaFS\Filesystem\Native Methods\NativeMethods.Handles.cs" />
+    <Compile Include="AlphaFS\Filesystem\Native Methods\NativeMethods.KernelTransactions.cs" />
+    <Compile Include="AlphaFS\Filesystem\Native Methods\NativeMethods.PathManagement.cs" />
+    <Compile Include="AlphaFS\Filesystem\Native Methods\NativeMethods.Shell32.cs" />
+    <Compile Include="AlphaFS\Filesystem\Native Methods\NativeMethods.Utilities.cs" />
+    <Compile Include="AlphaFS\Filesystem\Native Methods\NativeMethods.VolumeManagement.cs" />
+    <Compile Include="AlphaFS\Filesystem\Native Structures\BY_HANDLE_FILE_INFORMATION.cs" />
+    <Compile Include="AlphaFS\Filesystem\Native Structures\FILETIME.cs" />
+    <Compile Include="AlphaFS\Filesystem\Native Structures\FILE_BASIC_INFO.cs" />
+    <Compile Include="AlphaFS\Filesystem\Native Structures\FILE_ID_BOTH_DIR_INFO.cs" />
+    <Compile Include="AlphaFS\Filesystem\Native Structures\MountPointReparseBuffer.cs" />
+    <Compile Include="AlphaFS\Filesystem\Native Structures\ReparseDataBufferHeader.cs" />
+    <Compile Include="AlphaFS\Filesystem\Native Structures\SP_DEVICE_INTERFACE_DATA.cs" />
+    <Compile Include="AlphaFS\Filesystem\Native Structures\SP_DEVICE_INTERFACE_DETAIL_DATA.cs" />
+    <Compile Include="AlphaFS\Filesystem\Native Structures\SP_DEVINFO_DATA.cs" />
+    <Compile Include="AlphaFS\Filesystem\Native Structures\SymbolicLinkReparseBuffer.cs" />
+    <Compile Include="AlphaFS\Filesystem\Native Structures\WIN32_FILE_ATTRIBUTE_DATA.cs" />
+    <Compile Include="AlphaFS\Filesystem\Native Structures\WIN32_FIND_DATA.cs" />
+    <Compile Include="AlphaFS\Filesystem\Native Structures\WIN32_FIND_STREAM_DATA.cs" />
+    <Compile Include="AlphaFS\Filesystem\Native Structures\WIN32_STREAM_ID.cs" />
+    <Compile Include="AlphaFS\Filesystem\Path Class\Path.Combine.cs" />
+    <Compile Include="AlphaFS\Filesystem\Path Class\Path.Constants.cs" />
+    <Compile Include="AlphaFS\Filesystem\Path Class\Path.cs" />
+    <Compile Include="AlphaFS\Filesystem\Path Class\Path.GetComponents.cs" />
+    <Compile Include="AlphaFS\Filesystem\Path Class\Path.GetFinalPathNameByHandle.cs" />
+    <Compile Include="AlphaFS\Filesystem\Path Class\Path.GetFullPath.cs" />
+    <Compile Include="AlphaFS\Filesystem\Path Class\Path.SeparatorManipulation.cs" />
+    <Compile Include="AlphaFS\Filesystem\Path Class\Path.ShortLongConversions.cs" />
+    <Compile Include="AlphaFS\Filesystem\Path Class\Path.Temporary.cs" />
+    <Compile Include="AlphaFS\Filesystem\Path Class\Path.UncPaths.cs" />
+    <Compile Include="AlphaFS\Filesystem\Path Class\Path.ValidationAndChecks.cs" />
+    <Compile Include="AlphaFS\Filesystem\Safe Handles\SafeCmConnectMachineHandle.cs" />
+    <Compile Include="AlphaFS\Filesystem\Safe Handles\SafeEncryptedFileRawHandle.cs" />
+    <Compile Include="AlphaFS\Filesystem\Safe Handles\SafeFindFileHandle.cs" />
+    <Compile Include="AlphaFS\Filesystem\Safe Handles\SafeFindVolumeHandle.cs" />
+    <Compile Include="AlphaFS\Filesystem\Safe Handles\SafeFindVolumeMountPointHandle.cs" />
+    <Compile Include="AlphaFS\Filesystem\Safe Handles\SafeKernelTransactionHandle.cs" />
+    <Compile Include="AlphaFS\Filesystem\Safe Handles\SafeLocalMemoryBufferHandle.cs" />
+    <Compile Include="AlphaFS\Filesystem\Safe Handles\SafeSetupDiClassDevsExHandle.cs" />
+    <Compile Include="AlphaFS\Filesystem\Shell32.cs" />
+    <Compile Include="AlphaFS\Filesystem\Shell32Info.cs" />
+    <Compile Include="AlphaFS\Filesystem\SymbolicLinkTargetInfo.cs" />
+    <Compile Include="AlphaFS\Filesystem\Volume.cs" />
+    <Compile Include="AlphaFS\Filesystem\VolumeInfo.cs" />
+    <Compile Include="AlphaFS\GlobalSuppressions.cs" />
+    <Compile Include="AlphaFS\NativeError.cs" />
+    <Compile Include="AlphaFS\Network\DfsInfo.cs" />
+    <Compile Include="AlphaFS\Network\DfsStorageInfo.cs" />
+    <Compile Include="AlphaFS\Network\Enumerations\AccessPermissions.cs" />
+    <Compile Include="AlphaFS\Network\Enumerations\Connect.cs" />
+    <Compile Include="AlphaFS\Network\Enumerations\DfsNamespaceFlavors.cs" />
+    <Compile Include="AlphaFS\Network\Enumerations\DfsPropertyFlags.cs" />
+    <Compile Include="AlphaFS\Network\Enumerations\DfsStorageStates.cs" />
+    <Compile Include="AlphaFS\Network\Enumerations\DfsTargetPriorityClass.cs" />
+    <Compile Include="AlphaFS\Network\Enumerations\DfsVolumeStates.cs" />
+    <Compile Include="AlphaFS\Network\Enumerations\ResourceDisplayType.cs" />
+    <Compile Include="AlphaFS\Network\Enumerations\ResourceScope.cs" />
+    <Compile Include="AlphaFS\Network\Enumerations\ResourceType.cs" />
+    <Compile Include="AlphaFS\Network\Enumerations\ResourceUsage.cs" />
+    <Compile Include="AlphaFS\Network\Enumerations\ShareInfoLevel.cs" />
+    <Compile Include="AlphaFS\Network\Enumerations\ShareResourceTypes.cs" />
+    <Compile Include="AlphaFS\Network\Enumerations\ShareType.cs" />
+    <Compile Include="AlphaFS\Network\Host Class\Connect.cs" />
+    <Compile Include="AlphaFS\Network\Host Class\DistributedFileSystem.cs" />
+    <Compile Include="AlphaFS\Network\Host Class\DriveConnection.cs" />
+    <Compile Include="AlphaFS\Network\Host Class\EnumerateDrives.cs" />
+    <Compile Include="AlphaFS\Network\Host Class\EnumerateOpenResources.cs" />
+    <Compile Include="AlphaFS\Network\Host Class\Host.cs" />
+    <Compile Include="AlphaFS\Network\Host Class\ServerMessageBlock.cs" />
+    <Compile Include="AlphaFS\Network\Native Methods\NativeMethods.cs" />
+    <Compile Include="AlphaFS\Network\Native Methods\NativeMethods.DistributedFileSystem.cs" />
+    <Compile Include="AlphaFS\Network\Native Methods\NativeMethods.NetworkManagement.cs" />
+    <Compile Include="AlphaFS\Network\Native Methods\NativeMethods.NetworkShareManagement.cs" />
+    <Compile Include="AlphaFS\Network\Native Methods\NativeMethods.WindowsNetworking.cs" />
+    <Compile Include="AlphaFS\Network\Native Structures\CONNECTION_INFO_1.cs" />
+    <Compile Include="AlphaFS\Network\Native Structures\DFS_INFO_200.cs" />
+    <Compile Include="AlphaFS\Network\Native Structures\DFS_INFO_300.cs" />
+    <Compile Include="AlphaFS\Network\Native Structures\DFS_INFO_9.cs" />
+    <Compile Include="AlphaFS\Network\Native Structures\DFS_STORAGE_INFO_1.cs" />
+    <Compile Include="AlphaFS\Network\Native Structures\DFS_TARGET_PRIORITY.cs" />
+    <Compile Include="AlphaFS\Network\Native Structures\FILE_INFO_3.cs" />
+    <Compile Include="AlphaFS\Network\Native Structures\NETRESOURCE.cs" />
+    <Compile Include="AlphaFS\Network\Native Structures\REMOTE_NAME_INFO.cs" />
+    <Compile Include="AlphaFS\Network\Native Structures\SHARE_INFO_1.cs" />
+    <Compile Include="AlphaFS\Network\Native Structures\SHARE_INFO_1005.cs" />
+    <Compile Include="AlphaFS\Network\Native Structures\SHARE_INFO_2.cs" />
+    <Compile Include="AlphaFS\Network\Native Structures\SHARE_INFO_503.cs" />
+    <Compile Include="AlphaFS\Network\OpenConnectionInfo.cs" />
+    <Compile Include="AlphaFS\Network\OpenResourceInfo.cs" />
+    <Compile Include="AlphaFS\Network\ShareInfo.cs" />
+    <Compile Include="AlphaFS\OperatingSystem.cs" />
+    <Compile Include="AlphaFS\Resources.Designer.cs" />
+    <Compile Include="AlphaFS\SafeGlobalMemoryBufferHandle.cs" />
+    <Compile Include="AlphaFS\SafeNativeMemoryBufferHandle.cs" />
+    <Compile Include="AlphaFS\Security\Crc32.cs" />
+    <Compile Include="AlphaFS\Security\Crc64.cs" />
+    <Compile Include="AlphaFS\Security\Enumerations\HashType.cs" />
+    <Compile Include="AlphaFS\Security\Enumerations\ObjectType.cs" />
+    <Compile Include="AlphaFS\Security\Enumerations\SecurityDescriptorControl.cs" />
+    <Compile Include="AlphaFS\Security\Enumerations\SecurityInformation.cs" />
+    <Compile Include="AlphaFS\Security\InternalPrivilegeEnabler.cs" />
+    <Compile Include="AlphaFS\Security\NativeMethods.cs" />
+    <Compile Include="AlphaFS\Security\Privilege.cs" />
+    <Compile Include="AlphaFS\Security\PrivilegeEnabler.cs" />
+    <Compile Include="AlphaFS\Security\SecurityAttributes.cs" />
+    <Compile Include="AlphaFS\Security\Structures\Luid.cs" />
+    <Compile Include="AlphaFS\Security\Structures\TokenPrivileges.cs" />
+    <Compile Include="AlphaFS\Utils.cs" />
+    <Compile Include="AlphaFS\Win32Errors.cs" />
+    <Compile Include="JSON\Bson\BsonBinaryType.cs" />
+    <Compile Include="JSON\Bson\BsonBinaryWriter.cs" />
+    <Compile Include="JSON\Bson\BsonObjectId.cs" />
+    <Compile Include="JSON\Bson\BsonReader.cs" />
+    <Compile Include="JSON\Bson\BsonToken.cs" />
+    <Compile Include="JSON\Bson\BsonType.cs" />
+    <Compile Include="JSON\Bson\BsonWriter.cs" />
+    <Compile Include="JSON\ConstructorHandling.cs" />
+    <Compile Include="JSON\Converters\BinaryConverter.cs" />
+    <Compile Include="JSON\Converters\BsonObjectIdConverter.cs" />
+    <Compile Include="JSON\Converters\CustomCreationConverter.cs" />
+    <Compile Include="JSON\Converters\DataSetConverter.cs" />
+    <Compile Include="JSON\Converters\DataTableConverter.cs" />
+    <Compile Include="JSON\Converters\DateTimeConverterBase.cs" />
+    <Compile Include="JSON\Converters\DiscriminatedUnionConverter.cs" />
+    <Compile Include="JSON\Converters\EntityKeyMemberConverter.cs" />
+    <Compile Include="JSON\Converters\ExpandoObjectConverter.cs" />
+    <Compile Include="JSON\Converters\IsoDateTimeConverter.cs" />
+    <Compile Include="JSON\Converters\JavaScriptDateTimeConverter.cs" />
+    <Compile Include="JSON\Converters\JsonValueConverter.cs" />
+    <Compile Include="JSON\Converters\KeyValuePairConverter.cs" />
+    <Compile Include="JSON\Converters\RegexConverter.cs" />
+    <Compile Include="JSON\Converters\StringEnumConverter.cs" />
+    <Compile Include="JSON\Converters\VersionConverter.cs" />
+    <Compile Include="JSON\Converters\XmlNodeConverter.cs" />
+    <Compile Include="JSON\DateFormatHandling.cs" />
+    <Compile Include="JSON\DateParseHandling.cs" />
+    <Compile Include="JSON\DateTimeZoneHandling.cs" />
+    <Compile Include="JSON\DefaultValueHandling.cs" />
+    <Compile Include="JSON\FloatFormatHandling.cs" />
+    <Compile Include="JSON\FloatParseHandling.cs" />
+    <Compile Include="JSON\FormatterAssemblyStyle.cs" />
+    <Compile Include="JSON\Formatting.cs" />
+    <Compile Include="JSON\IJsonLineInfo.cs" />
+    <Compile Include="JSON\JsonArrayAttribute.cs" />
+    <Compile Include="JSON\JsonConstructorAttribute.cs" />
+    <Compile Include="JSON\JsonContainerAttribute.cs" />
+    <Compile Include="JSON\JsonConvert.cs" />
+    <Compile Include="JSON\JsonConverter.cs" />
+    <Compile Include="JSON\JsonConverterAttribute.cs" />
+    <Compile Include="JSON\JsonConverterCollection.cs" />
+    <Compile Include="JSON\JsonDictionaryAttribute.cs" />
+    <Compile Include="JSON\JsonException.cs" />
+    <Compile Include="JSON\JsonExtensionDataAttribute.cs" />
+    <Compile Include="JSON\JsonIgnoreAttribute.cs" />
+    <Compile Include="JSON\JsonObjectAttribute.cs" />
+    <Compile Include="JSON\JsonPosition.cs" />
+    <Compile Include="JSON\JsonPropertyAttribute.cs" />
+    <Compile Include="JSON\JsonReader.cs" />
+    <Compile Include="JSON\JsonReaderException.cs" />
+    <Compile Include="JSON\JsonSerializationException.cs" />
+    <Compile Include="JSON\JsonSerializer.cs" />
+    <Compile Include="JSON\JsonSerializerSettings.cs" />
+    <Compile Include="JSON\JsonTextReader.cs" />
+    <Compile Include="JSON\JsonTextWriter.cs" />
+    <Compile Include="JSON\JsonToken.cs" />
+    <Compile Include="JSON\JsonValidatingReader.cs" />
+    <Compile Include="JSON\JsonWriter.cs" />
+    <Compile Include="JSON\JsonWriterException.cs" />
+    <Compile Include="JSON\Linq\Extensions.cs" />
+    <Compile Include="JSON\Linq\IJEnumerable.cs" />
+    <Compile Include="JSON\Linq\JArray.cs" />
+    <Compile Include="JSON\Linq\JConstructor.cs" />
+    <Compile Include="JSON\Linq\JContainer.cs" />
+    <Compile Include="JSON\Linq\JEnumerable.cs" />
+    <Compile Include="JSON\Linq\JObject.cs" />
+    <Compile Include="JSON\Linq\JProperty.cs" />
+    <Compile Include="JSON\Linq\JPropertyDescriptor.cs" />
+    <Compile Include="JSON\Linq\JPropertyKeyedCollection.cs" />
+    <Compile Include="JSON\Linq\JRaw.cs" />
+    <Compile Include="JSON\Linq\JsonPath\ArrayIndexFilter.cs" />
+    <Compile Include="JSON\Linq\JsonPath\ArrayMultipleIndexFilter.cs" />
+    <Compile Include="JSON\Linq\JsonPath\ArraySliceFilter.cs" />
+    <Compile Include="JSON\Linq\JsonPath\FieldFilter.cs" />
+    <Compile Include="JSON\Linq\JsonPath\FieldMultipleFilter.cs" />
+    <Compile Include="JSON\Linq\JsonPath\JPath.cs" />
+    <Compile Include="JSON\Linq\JsonPath\PathFilter.cs" />
+    <Compile Include="JSON\Linq\JsonPath\QueryExpression.cs" />
+    <Compile Include="JSON\Linq\JsonPath\QueryFilter.cs" />
+    <Compile Include="JSON\Linq\JsonPath\ScanFilter.cs" />
+    <Compile Include="JSON\Linq\JToken.cs" />
+    <Compile Include="JSON\Linq\JTokenEqualityComparer.cs" />
+    <Compile Include="JSON\Linq\JTokenReader.cs" />
+    <Compile Include="JSON\Linq\JTokenType.cs" />
+    <Compile Include="JSON\Linq\JTokenWriter.cs" />
+    <Compile Include="JSON\Linq\JValue.cs" />
+    <Compile Include="JSON\MemberSerialization.cs" />
+    <Compile Include="JSON\MissingMemberHandling.cs" />
+    <Compile Include="JSON\NullValueHandling.cs" />
+    <Compile Include="JSON\ObjectCreationHandling.cs" />
+    <Compile Include="JSON\PreserveReferencesHandling.cs" />
+    <Compile Include="JSON\ReferenceLoopHandling.cs" />
+    <Compile Include="JSON\Required.cs" />
+    <Compile Include="JSON\Schema\Extensions.cs" />
+    <Compile Include="JSON\Schema\JsonSchema.cs" />
+    <Compile Include="JSON\Schema\JsonSchemaBuilder.cs" />
+    <Compile Include="JSON\Schema\JsonSchemaConstants.cs" />
+    <Compile Include="JSON\Schema\JsonSchemaException.cs" />
+    <Compile Include="JSON\Schema\JsonSchemaGenerator.cs" />
+    <Compile Include="JSON\Schema\JsonSchemaModel.cs" />
+    <Compile Include="JSON\Schema\JsonSchemaModelBuilder.cs" />
+    <Compile Include="JSON\Schema\JsonSchemaNode.cs" />
+    <Compile Include="JSON\Schema\JsonSchemaNodeCollection.cs" />
+    <Compile Include="JSON\Schema\JsonSchemaResolver.cs" />
+    <Compile Include="JSON\Schema\JsonSchemaType.cs" />
+    <Compile Include="JSON\Schema\JsonSchemaWriter.cs" />
+    <Compile Include="JSON\Schema\UndefinedSchemaIdHandling.cs" />
+    <Compile Include="JSON\Schema\ValidationEventArgs.cs" />
+    <Compile Include="JSON\Schema\ValidationEventHandler.cs" />
+    <Compile Include="JSON\SerializationBinder.cs" />
+    <Compile Include="JSON\Serialization\CachedAttributeGetter.cs" />
+    <Compile Include="JSON\Serialization\CamelCasePropertyNamesContractResolver.cs" />
+    <Compile Include="JSON\Serialization\DefaultContractResolver.cs" />
+    <Compile Include="JSON\Serialization\DefaultReferenceResolver.cs" />
+    <Compile Include="JSON\Serialization\DefaultSerializationBinder.cs" />
+    <Compile Include="JSON\Serialization\DiagnosticsTraceWriter.cs" />
+    <Compile Include="JSON\Serialization\DynamicValueProvider.cs" />
+    <Compile Include="JSON\Serialization\ErrorContext.cs" />
+    <Compile Include="JSON\Serialization\ErrorEventArgs.cs" />
+    <Compile Include="JSON\Serialization\ExpressionValueProvider.cs" />
+    <Compile Include="JSON\Serialization\IContractResolver.cs" />
+    <Compile Include="JSON\Serialization\IReferenceResolver.cs" />
+    <Compile Include="JSON\Serialization\ITraceWriter.cs" />
+    <Compile Include="JSON\Serialization\IValueProvider.cs" />
+    <Compile Include="JSON\Serialization\JsonArrayContract.cs" />
+    <Compile Include="JSON\Serialization\JsonContainerContract.cs" />
+    <Compile Include="JSON\Serialization\JsonContract.cs" />
+    <Compile Include="JSON\Serialization\JsonDictionaryContract.cs" />
+    <Compile Include="JSON\Serialization\JsonDynamicContract.cs" />
+    <Compile Include="JSON\Serialization\JsonFormatterConverter.cs" />
+    <Compile Include="JSON\Serialization\JsonISerializableContract.cs" />
+    <Compile Include="JSON\Serialization\JsonLinqContract.cs" />
+    <Compile Include="JSON\Serialization\JsonObjectContract.cs" />
+    <Compile Include="JSON\Serialization\JsonPrimitiveContract.cs" />
+    <Compile Include="JSON\Serialization\JsonProperty.cs" />
+    <Compile Include="JSON\Serialization\JsonPropertyCollection.cs" />
+    <Compile Include="JSON\Serialization\JsonSerializerInternalBase.cs" />
+    <Compile Include="JSON\Serialization\JsonSerializerInternalReader.cs" />
+    <Compile Include="JSON\Serialization\JsonSerializerInternalWriter.cs" />
+    <Compile Include="JSON\Serialization\JsonSerializerProxy.cs" />
+    <Compile Include="JSON\Serialization\JsonStringContract.cs" />
+    <Compile Include="JSON\Serialization\JsonTypeReflector.cs" />
+    <Compile Include="JSON\Serialization\LateBoundMetadataTypeAttribute.cs" />
+    <Compile Include="JSON\Serialization\MemoryTraceWriter.cs" />
+    <Compile Include="JSON\Serialization\ObjectConstructor.cs" />
+    <Compile Include="JSON\Serialization\OnErrorAttribute.cs" />
+    <Compile Include="JSON\Serialization\ReflectionValueProvider.cs" />
+    <Compile Include="JSON\Serialization\TraceJsonReader.cs" />
+    <Compile Include="JSON\Serialization\TraceJsonWriter.cs" />
+    <Compile Include="JSON\StringEscapeHandling.cs" />
+    <Compile Include="JSON\TraceLevel.cs" />
+    <Compile Include="JSON\TypeNameHandling.cs" />
+    <Compile Include="JSON\Utilities\Base64Encoder.cs" />
+    <Compile Include="JSON\Utilities\BidirectionalDictionary.cs" />
+    <Compile Include="JSON\Utilities\CollectionUtils.cs" />
+    <Compile Include="JSON\Utilities\CollectionWrapper.cs" />
+    <Compile Include="JSON\Utilities\ConvertUtils.cs" />
+    <Compile Include="JSON\Utilities\DateTimeParser.cs" />
+    <Compile Include="JSON\Utilities\DateTimeUtils.cs" />
+    <Compile Include="JSON\Utilities\DictionaryWrapper.cs" />
+    <Compile Include="JSON\Utilities\DynamicProxy.cs" />
+    <Compile Include="JSON\Utilities\DynamicProxyMetaObject.cs" />
+    <Compile Include="JSON\Utilities\DynamicReflectionDelegateFactory.cs" />
+    <Compile Include="JSON\Utilities\DynamicUtils.cs" />
+    <Compile Include="JSON\Utilities\DynamicWrapper.cs" />
+    <Compile Include="JSON\Utilities\EnumUtils.cs" />
+    <Compile Include="JSON\Utilities\EnumValue.cs" />
+    <Compile Include="JSON\Utilities\EnumValues.cs" />
+    <Compile Include="JSON\Utilities\ExpressionReflectionDelegateFactory.cs" />
+    <Compile Include="JSON\Utilities\ILGeneratorExtensions.cs" />
+    <Compile Include="JSON\Utilities\ImmutableCollectionsUtils.cs" />
+    <Compile Include="JSON\Utilities\JavaScriptUtils.cs" />
+    <Compile Include="JSON\Utilities\LateBoundReflectionDelegateFactory.cs" />
+    <Compile Include="JSON\Utilities\LinqBridge.cs" />
+    <Compile Include="JSON\Utilities\MathUtils.cs" />
+    <Compile Include="JSON\Utilities\MethodCall.cs" />
+    <Compile Include="JSON\Utilities\MiscellaneousUtils.cs" />
+    <Compile Include="JSON\Utilities\ReflectionDelegateFactory.cs" />
+    <Compile Include="JSON\Utilities\ReflectionUtils.cs" />
+    <Compile Include="JSON\Utilities\StringBuffer.cs" />
+    <Compile Include="JSON\Utilities\StringReference.cs" />
+    <Compile Include="JSON\Utilities\StringUtils.cs" />
+    <Compile Include="JSON\Utilities\ThreadSafeStore.cs" />
+    <Compile Include="JSON\Utilities\TypeExtensions.cs" />
+    <Compile Include="JSON\Utilities\ValidationUtils.cs" />
+    <Compile Include="JSON\WriteState.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SessionStarter.cs" />
+    <EmbeddedResource Include="AlphaFS\Resources.resx" />
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="app.manifest" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <None Include="Resources\Vulpes_Licensing.cer" />
+    <None Include="Resources\Vulpes_Main.cer" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Fox.ico" />
+    <None Include="Resources\Vulpes.txt" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

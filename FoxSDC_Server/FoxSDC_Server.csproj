@@ -1,0 +1,223 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{DE5687C8-9D45-45DB-8D67-3A2ED56D90FF}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>FoxSDC_Server</RootNamespace>
+    <AssemblyName>FoxSDC_Server</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;REPORTING</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\Release\</OutputPath>
+    <DefineConstants>TRACE;REPORTING</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Fox.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration.Install" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Telerik.Reporting, Version=9.1.15.731, Culture=neutral, PublicKeyToken=a9d7983dfcc261be, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>DLL\Telerik.Reporting.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AutoVersion.cs" />
+    <Compile Include="BlankLocalDB.cs" />
+    <Compile Include="DBUpdate.cs" />
+    <Compile Include="FlagsConst.cs" />
+    <Compile Include="FoxEventLog.cs" />
+    <Compile Include="FS_Watcher.cs" />
+    <Compile Include="HTTPCFG.cs" />
+    <Compile Include="LicensingSystem.cs" />
+    <Compile Include="MailSender.cs" />
+    <Compile Include="MaintenanceTasks.cs" />
+    <Compile Include="Modules\BitlockerRK.cs" />
+    <Compile Include="Modules\ClientUpdate.cs" />
+    <Compile Include="Modules\Computers.cs" />
+    <Compile Include="Modules\Contract.cs" />
+    <Compile Include="Modules\DeviceConfig.cs" />
+    <Compile Include="Modules\DeviceFilters.cs" />
+    <Compile Include="Modules\DiskData.cs" />
+    <Compile Include="Modules\Downloader.cs" />
+    <Compile Include="Modules\EventLogReporting.cs" />
+    <Compile Include="Modules\FileTransfer.cs" />
+    <Compile Include="Modules\Groups.cs" />
+    <Compile Include="Modules\AddRemovePrograms.cs" />
+    <Compile Include="Modules\ManageReportingPapers.cs" />
+    <Compile Include="Modules\NetworkConfiguration.cs" />
+    <Compile Include="Modules\Packages.cs" />
+    <Compile Include="Modules\Policies.cs" />
+    <Compile Include="Modules\RSOP.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Pushes\Chat.cs" />
+    <Compile Include="Pushes\Clock.cs" />
+    <Compile Include="Pushes\DirFiles.cs" />
+    <Compile Include="Pushes\Ping.cs" />
+    <Compile Include="Pushes\PushService.cs" />
+    <Compile Include="Modules\ServerSettings.cs" />
+    <Compile Include="Modules\Status.cs" />
+    <Compile Include="Modules\Test.cs" />
+    <Compile Include="Modules\Users.cs" />
+    <Compile Include="Modules\WindowsLic.cs" />
+    <Compile Include="NetworkConnection.cs" />
+    <Compile Include="NetworkConnectionThread.cs" />
+    <Compile Include="PolicyCertificates.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="ProjectInstaller.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ProjectInstaller.Designer.cs">
+      <DependentUpon>ProjectInstaller.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Pushes\RemoteNetworkConnection.cs" />
+    <Compile Include="Pushes\Screendata.cs" />
+    <Compile Include="Pushes\Services.cs" />
+    <Compile Include="Pushes\StdIO.cs" />
+    <Compile Include="Pushes\TaskManager.cs" />
+    <Compile Include="Pushes\WindowsUpdate.cs" />
+    <Compile Include="RegistrySettings.cs" />
+    <Compile Include="ReportingSystem\RenderReport.cs" />
+    <Compile Include="ReportingSystem\ReportingElements.cs" />
+    <Compile Include="ReportingSystem\ReportingModelsInternal.cs" />
+    <Compile Include="ReportingSystem\ReportingPaper.cs" />
+    <Compile Include="ReportingSystem\ReportingThread.cs" />
+    <Compile Include="RESTful.cs" />
+    <Compile Include="ServiceElement.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ServiceElement.Designer.cs">
+      <DependentUpon>ServiceElement.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SettingsManager.cs" />
+    <Compile Include="SQLLib.cs" />
+    <Compile Include="SQLTest.cs" />
+    <Compile Include="Utilities.cs" />
+    <Compile Include="WebServer.cs" />
+    <Compile Include="WebServerClass.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="app.manifest" />
+    <None Include="Computer Report.trdp" />
+    <None Include="Telerik.ReportDesigner.exe.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FoxSDC_Common\FoxSDC_Common.csproj">
+      <Project>{fd37aca6-18e7-43be-8e3b-f17c39aed146}</Project>
+      <Name>FoxSDC_Common</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Blank DB.sql" />
+    <Content Include="DLL\Telerik.Reporting.dll" />
+    <Content Include="DLL\Telerik.Reporting.pdb" />
+    <Content Include="Fox.ico" />
+    <None Include="Resources\setup.ico" />
+    <Content Include="Telerik.ReportDesigner.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Include="Resources\Event Log.ico" />
+    <None Include="Resources\Vulpes.ico" />
+    <None Include="Resources\Nix.ico" />
+    <None Include="Resources\Disk.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ProjectInstaller.resx">
+      <DependentUpon>ProjectInstaller.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ServiceElement.resx">
+      <DependentUpon>ServiceElement.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>"$(TargetDir)FoxSDC_AutoVersion.exe" "$(ProjectDir)AutoVersion.cs" "FoxSDC_Server"</PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>copy "$(SolutionDir)Test Lic.lic" "$(TargetDir)License.lic"</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

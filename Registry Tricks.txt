@@ -1,0 +1,68 @@
+* SDC Agent
+
+HKLM\Software\Policies\Fox\SDC
+
+	all supported elements are defined in the ADMX files
+
+HKLM\Software\Fox\SDC
+
+	LastSyncPolicies - QWORD - Last Synced Policies - should not be set - deleting the value causes the programm to resync ASAP
+	LastSyncReporting - QWORD - Last Synced Reporting - should not be set - deleting the value causes the programm to resync ASAP
+	LastSyncReporting2 - QWORD - Last Synced Reporting - should not be set - deleting the value causes the programm to resync ASAP
+	Verbose - DWORD - set to 1 causes more blahblah to appear in Event Log
+	EarlyUpdates - DWORD - set to 1 will the agent to ask for earlier update versions from the server
+	PackagesCheckSuccessWait - DWORD - minutes - recheck successfull packages after X minutes
+	PackagesCheckWait - DWORD - minutes - recheck failed/not needed packages after X minutes
+	LastSyncPoliciesWaitTime - QWORD - minutes - wait time between policies sync
+	LastSyncReportingWaitTime - QWORD - minutes - wait time between reporting sync
+	LastSyncReportingWaitTime2 - QWORD - minutes - wait time between reporting sync
+	ID - SZ - the machine ID ... do not mess/delete this value
+	PassID - SZ - the password ID ... do not mess/delete this value
+	InstallPath - SZ - where are the programs located (will be written at every startup)
+	Server - SZ - the server URL to connect to
+	UseOnPremServer - DWORD - Uses the on-prem server, specified in "Server" instead of the built-in Vulpes URL
+	ContractID - SZ - Contract ID
+	ContractPassword - SZ - Contract Password
+	ShowClientEnhancedMenu - DWORD - Set this to 1 to always show the full menu for the client
+	AdministratorName - SZ - Name of the administrator (decorative effect only)
+	MessageDisclaimer - SZ - Message disclaimer - shown when using "contact" in SDC Agent UI
+
+HKLM\Software\Fox\SDC\Reportings
+
+	all are DWORD "bools" (1 = set, "enabled", 0 = unset, "disabled") - if missing, 0 is the default
+	names are self-explanatory
+
+	DisableEventLogSync
+	DisableAddRemoveProgramsSync
+	DisableDiskDataSync
+	DisableNetadapterSync
+	DisableDeviceManagerSync
+	DisableFilterDriverSync
+	DisableWinLicenseSync
+	EnableBitlockerRKSync
+
+
+* SDC Server
+
+HKLM\Software\Fox\FoxSDC
+
+	DBServer - SZ - Database server
+	DBDB - SZ - Database to use on the given server
+	DBType - SZ - Type of the database ()
+	DBLocalPath - SZ - Path to the database file
+	ListenOn - SZ - Listen port
+	DataPath - SZ - Path where the data (packages and such) are located at
+	UseContract - DWORD - Enable contract mode on the server (if license permits it)
+	CensorSQLInformations - DWORD - Removes SQL Informations from the information packet
+	CensorLicInformations - DWORD - Removes Licensing Informations from the information packet
+
+* SDC Manager
+
+HKCU\Software\Fox\SDC_MGMT
+
+	LastServer - SZ - the last connected server
+	LastUsername - SZ - the last entered username
+	EnableConMouse - DWORD - 1 = enables mouse input in SDC Console Redirection
+	LoopPing - DWORD - 1 = Loops ping until remote agent respond in SDC Console Redirection
+	EnableDebug - SZ - "1" = enables advanced menus
+

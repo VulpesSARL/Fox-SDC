@@ -1,0 +1,631 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{69F9A6BF-591D-45E4-B5AF-343C2729EF08}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>FoxSDC_MGMT</RootNamespace>
+    <AssemblyName>FoxSDC_MGMT</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Fox.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AddFilesFromRemoteClient.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AddFilesFromRemoteClient.Designer.cs">
+      <DependentUpon>AddFilesFromRemoteClient.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AddFilesToLocal.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AddFilesToLocal.Designer.cs">
+      <DependentUpon>AddFilesToLocal.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AddFilesToRemoteClient.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AddFilesToRemoteClient.Designer.cs">
+      <DependentUpon>AddFilesToRemoteClient.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ApproveRefusePC.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ApproveRefusePC.Designer.cs">
+      <DependentUpon>ApproveRefusePC.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AskText.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AskText.Designer.cs">
+      <DependentUpon>AskText.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AutoVersion.cs" />
+    <Compile Include="ChangePassword.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ChangePassword.designer.cs">
+      <DependentUpon>ChangePassword.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ChangePaths.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ChangePaths.Designer.cs">
+      <DependentUpon>ChangePaths.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ComputerInfo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ComputerInfo.Designer.cs">
+      <DependentUpon>ComputerInfo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CreateCertificate.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CreateCertificate.Designer.cs">
+      <DependentUpon>CreateCertificate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CreateGroup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CreateGroup.Designer.cs">
+      <DependentUpon>CreateGroup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CreatePolicy.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CreatePolicy.Designer.cs">
+      <DependentUpon>CreatePolicy.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Exiting.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Exiting.Designer.cs">
+      <DependentUpon>Exiting.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormExtender.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GroupFolders.cs" />
+    <Compile Include="InternalModels.cs" />
+    <Compile Include="ListPackages.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ListPackages.Designer.cs">
+      <DependentUpon>ListPackages.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ListViewItemSorter.cs" />
+    <Compile Include="Login.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Login.Designer.cs">
+      <DependentUpon>Login.cs</DependentUpon>
+    </Compile>
+    <Compile Include="LowLevelEdit.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LowLevelEdit.Designer.cs">
+      <DependentUpon>LowLevelEdit.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MainDLG.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MainDLG.Designer.cs">
+      <DependentUpon>MainDLG.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\AddRemovePrograms.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Modules\AddRemovePrograms.Designer.cs">
+      <DependentUpon>AddRemovePrograms.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\BitlockerRK.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Modules\BitlockerRK.Designer.cs">
+      <DependentUpon>BitlockerRK.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Devices.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Modules\Devices.Designer.cs">
+      <DependentUpon>Devices.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\DevicesFilter.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Modules\DevicesFilter.Designer.cs">
+      <DependentUpon>DevicesFilter.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\EventLogs.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Modules\EventLogs.Designer.cs">
+      <DependentUpon>EventLogs.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\FileTransfer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Modules\FileTransfer.Designer.cs">
+      <DependentUpon>FileTransfer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\FirstPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Modules\FirstPage.Designer.cs">
+      <DependentUpon>FirstPage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\ListDiskData.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Modules\ListDiskData.Designer.cs">
+      <DependentUpon>ListDiskData.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\ListNetworkConfig.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Modules\ListNetworkConfig.Designer.cs">
+      <DependentUpon>ListNetworkConfig.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\ListPCs.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Modules\ListPCs.Designer.cs">
+      <DependentUpon>ListPCs.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\PaperManager.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Modules\PaperManager.Designer.cs">
+      <DependentUpon>PaperManager.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\PendingChats.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Modules\PendingChats.Designer.cs">
+      <DependentUpon>PendingChats.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Services.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Modules\Services.Designer.cs">
+      <DependentUpon>Services.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\UploadDownloadStatus.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Modules\UploadDownloadStatus.Designer.cs">
+      <DependentUpon>UploadDownloadStatus.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\WindowsLicense.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Modules\WindowsLicense.Designer.cs">
+      <DependentUpon>WindowsLicense.cs</DependentUpon>
+    </Compile>
+    <Compile Include="NewTask.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NewTask.Designer.cs">
+      <DependentUpon>NewTask.cs</DependentUpon>
+    </Compile>
+    <Compile Include="NT3PathListBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Policies\ClientSettings.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Policies\ClientSettings.Designer.cs">
+      <DependentUpon>ClientSettings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Policies\InstallPackages.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Policies\InstallPackages.Designer.cs">
+      <DependentUpon>InstallPackages.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Policies\Intl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Policies\Intl.Designer.cs">
+      <DependentUpon>Intl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Policies\LinkPolicy.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Policies\LinkPolicy.Designer.cs">
+      <DependentUpon>LinkPolicy.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Policies\PackageCertificates.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Policies\PackageCertificates.Designer.cs">
+      <DependentUpon>PackageCertificates.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Policies\ConnectionCertificates.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Policies\ConnectionCertificates.Designer.cs">
+      <DependentUpon>ConnectionCertificates.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Policies\Reporting.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Policies\Reporting.Designer.cs">
+      <DependentUpon>Reporting.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Policies\Testing.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Policies\Testing.Designer.cs">
+      <DependentUpon>Testing.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Policies\WSUSSettings.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Policies\WSUSSettings.Designer.cs">
+      <DependentUpon>WSUSSettings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PolicyList.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="PropertiesWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PropertiesWindow.Designer.cs">
+      <DependentUpon>PropertiesWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RemoteBrowseFolder.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="RemoteBrowseFolder.Designer.cs">
+      <DependentUpon>RemoteBrowseFolder.cs</DependentUpon>
+    </Compile>
+    <Compile Include="RemoteOpenSaveDlg.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="RemoteOpenSaveDlg.Designer.cs">
+      <DependentUpon>RemoteOpenSaveDlg.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ReportingMGMT\AddRemovePrograms.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ReportingMGMT\AddRemovePrograms.Designer.cs">
+      <DependentUpon>AddRemovePrograms.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ReportingMGMT\DiskSpace.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ReportingMGMT\DiskSpace.Designer.cs">
+      <DependentUpon>DiskSpace.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ReportingMGMT\EventLog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ReportingMGMT\EventLog.Designer.cs">
+      <DependentUpon>EventLog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="RequestReport.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="RequestReport.Designer.cs">
+      <DependentUpon>RequestReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SelectPolicy.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SelectPolicy.Designer.cs">
+      <DependentUpon>SelectPolicy.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SelectGroup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SelectGroup.Designer.cs">
+      <DependentUpon>SelectGroup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Settings.cs" />
+    <Compile Include="SetupScheduler.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SetupScheduler.Designer.cs">
+      <DependentUpon>SetupScheduler.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SeverSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SeverSettings.Designer.cs">
+      <DependentUpon>SeverSettings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UploadDownloadDataThread.cs" />
+    <Compile Include="UploaderBar.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UploadProgress.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UploadProgress.Designer.cs">
+      <DependentUpon>UploadProgress.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Utilities.cs" />
+    <EmbeddedResource Include="AddFilesFromRemoteClient.resx">
+      <DependentUpon>AddFilesFromRemoteClient.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AddFilesToLocal.resx">
+      <DependentUpon>AddFilesToLocal.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AddFilesToRemoteClient.resx">
+      <DependentUpon>AddFilesToRemoteClient.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ApproveRefusePC.resx">
+      <DependentUpon>ApproveRefusePC.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AskText.resx">
+      <DependentUpon>AskText.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ChangePassword.resx">
+      <DependentUpon>ChangePassword.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ChangePaths.resx">
+      <DependentUpon>ChangePaths.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ComputerInfo.resx">
+      <DependentUpon>ComputerInfo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CreateCertificate.resx">
+      <DependentUpon>CreateCertificate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CreateGroup.resx">
+      <DependentUpon>CreateGroup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CreatePolicy.resx">
+      <DependentUpon>CreatePolicy.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Exiting.resx">
+      <DependentUpon>Exiting.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ListPackages.resx">
+      <DependentUpon>ListPackages.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Login.resx">
+      <DependentUpon>Login.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LowLevelEdit.resx">
+      <DependentUpon>LowLevelEdit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MainDLG.resx">
+      <DependentUpon>MainDLG.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\AddRemovePrograms.resx">
+      <DependentUpon>AddRemovePrograms.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\BitlockerRK.resx">
+      <DependentUpon>BitlockerRK.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\Devices.resx">
+      <DependentUpon>Devices.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\DevicesFilter.resx">
+      <DependentUpon>DevicesFilter.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\EventLogs.resx">
+      <DependentUpon>EventLogs.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\FileTransfer.resx">
+      <DependentUpon>FileTransfer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\FirstPage.resx">
+      <DependentUpon>FirstPage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\ListDiskData.resx">
+      <DependentUpon>ListDiskData.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\ListNetworkConfig.resx">
+      <DependentUpon>ListNetworkConfig.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\ListPCs.resx">
+      <DependentUpon>ListPCs.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\PaperManager.resx">
+      <DependentUpon>PaperManager.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\PendingChats.resx">
+      <DependentUpon>PendingChats.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\Services.resx">
+      <DependentUpon>Services.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\UploadDownloadStatus.resx">
+      <DependentUpon>UploadDownloadStatus.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\WindowsLicense.resx">
+      <DependentUpon>WindowsLicense.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="NewTask.resx">
+      <DependentUpon>NewTask.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Policies\ClientSettings.resx">
+      <DependentUpon>ClientSettings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Policies\InstallPackages.resx">
+      <DependentUpon>InstallPackages.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Policies\Intl.resx">
+      <DependentUpon>Intl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Policies\LinkPolicy.resx">
+      <DependentUpon>LinkPolicy.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Policies\PackageCertificates.resx">
+      <DependentUpon>PackageCertificates.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Policies\ConnectionCertificates.resx">
+      <DependentUpon>ConnectionCertificates.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Policies\Reporting.resx">
+      <DependentUpon>Reporting.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Policies\Testing.resx">
+      <DependentUpon>Testing.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Policies\WSUSSettings.resx">
+      <DependentUpon>WSUSSettings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PropertiesWindow.resx">
+      <DependentUpon>PropertiesWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <EmbeddedResource Include="RemoteBrowseFolder.resx">
+      <DependentUpon>RemoteBrowseFolder.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="RemoteOpenSaveDlg.resx">
+      <DependentUpon>RemoteOpenSaveDlg.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportingMGMT\AddRemovePrograms.resx">
+      <DependentUpon>AddRemovePrograms.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportingMGMT\DiskSpace.resx">
+      <DependentUpon>DiskSpace.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportingMGMT\EventLog.resx">
+      <DependentUpon>EventLog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="RequestReport.resx">
+      <DependentUpon>RequestReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SelectPolicy.resx">
+      <DependentUpon>SelectPolicy.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SelectGroup.resx">
+      <DependentUpon>SelectGroup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SetupScheduler.resx">
+      <DependentUpon>SetupScheduler.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SeverSettings.resx">
+      <DependentUpon>SeverSettings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UploadProgress.resx">
+      <DependentUpon>UploadProgress.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="app.manifest" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FoxSDC_Common\FoxSDC_Common.csproj">
+      <Project>{fd37aca6-18e7-43be-8e3b-f17c39aed146}</Project>
+      <Name>FoxSDC_Common</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Fox.ico" />
+    <None Include="Resources\tosrv2.ico" />
+    <None Include="Resources\tosrv.ico" />
+    <None Include="Resources\Wrench.ico" />
+    <None Include="Resources\wsus.ico" />
+    <None Include="Resources\Box.ico" />
+    <Content Include="Resources\cert.ico" />
+    <None Include="Resources\Disk.ico" />
+    <None Include="Resources\Eventvwr103.bmp" />
+    <None Include="Resources\Eventvwr104.bmp" />
+    <None Include="Resources\Eventvwr105.bmp" />
+    <None Include="Resources\Eventvwr106.bmp" />
+    <None Include="Resources\Eventvwr107.bmp" />
+    <None Include="Resources\eventlog.ico" />
+    <Content Include="Resources\Computer2.ico" />
+    <None Include="Resources\Help.ico" />
+    <None Include="Resources\intl.ico" />
+    <None Include="Resources\KEYS03.ICO" />
+    <None Include="Resources\fromsrv.ico" />
+    <None Include="Resources\fromsrv2.ico" />
+    <None Include="Resources\fromtosrv.ico" />
+    <Content Include="Resources\link.ico" />
+    <None Include="Resources\Logo Alone Square 256 256.png" />
+    <Content Include="Resources\NetCon.ico" />
+    <Content Include="Resources\NetNotCon.ico" />
+    <Content Include="Resources\Nix.ico" />
+    <None Include="Resources\Report.ico" />
+    <Content Include="Resources\srv.ico" />
+    <Content Include="Resources\System.ico" />
+    <None Include="Resources\Computer.ico" />
+    <Content Include="Resources\Appwiz.ico" />
+    <Content Include="Resources\folder.ico" />
+    <Content Include="Resources\folderopen.ico" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>"$(TargetDir)FoxSDC_AutoVersion.exe" "$(ProjectDir)AutoVersion.cs" "FoxSDC_MGMT"</PreBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?define ProductVersion = "1.0.0.0"?>
+<?define UpgradeCode = "8fb6afdc-793b-4dfb-a005-42db7ede1e25"?>
+<?define IDCode = "A6F066EE-E795-4C65-8FE4-2D93AB52BC36"?>
+
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="$(var.IDCode)" Name="Fox SDC Agent" Language="2057" Version="$(var.ProductVersion)" Manufacturer="Vulpes" UpgradeCode="$(var.UpgradeCode)">
+    <Package InstallerVersion="301" Compressed="yes" InstallScope="perMachine" InstallPrivileges="elevated" ShortNames="no"/>
+
+
+
+
+
+    <Condition Message="Fox SDC Agent is only supported on Windows 7, 2008R2 or higher.">
+      <![CDATA[Installed OR (VersionNT >= 601)]]>
+    </Condition>
+
+    <Property Id="ARPNOREMOVE" Value="yes" Secure="yes" />
+    <Property Id="ARPNOREPAIR" Value="yes" Secure="yes" />
+    <Property Id="ARPNOMODIFY" Value="yes" Secure="yes" />
+    <Icon Id="Fox.ico" SourceFile="$(var.ProjectDir)\..\..\FoxSDC_Agent\Fox.ico"/>
+    <Property Id="ARPPRODUCTICON" Value="Fox.ico" />
+    
+    <MajorUpgrade DowngradeErrorMessage="A newer or same version of [ProductName] is already installed."  AllowSameVersionUpgrades="no" AllowDowngrades="no"/>
+    <MediaTemplate EmbedCab="yes" CompressionLevel="high"/>
+
+    <Feature Id="ProductFeature" Title="Fox SDC Agent" Level="1">
+      <ComponentGroupRef Id="ProductComponents" />
+
+      <ComponentRef Id="FoxSDC_Agent_UI.exe" />
+      <ComponentRef Id="FoxSDC_AgentDLL32.dll" />
+      <ComponentRef Id="FoxSDC_AgentDLL64.dll" />
+      <ComponentRef Id="FoxSDC_ApplyUserSettings.exe" />
+      <ComponentRef Id="FoxSDC_Common.dll" />
+      <ComponentRef Id="FoxSDC_Selfupdate.exe" />
+      <ComponentRef Id="FoxSDC_UninstallData.exe" />
+      <ComponentRef Id="MyUCID.exe" />
+      <ComponentRef Id="FoxSDC_Agent.exe" />
+      <ComponentRef Id="FoxSDC_Configure.exe" />
+      <ComponentRef Id="FoxSDC_SAS32.dll" />
+      <ComponentRef Id="FoxSDC_SAS64.dll" />
+      <ComponentRef Id="ApplicationShortcut" />
+    </Feature>
+
+    <Feature Id="VCRedist" Title="Visual C++ Runtime" AllowAdvertise="no" Display="hidden" Level="1">
+      <MergeRef Id="VCRedist1"/>
+      <MergeRef Id="VCRedist2"/>
+      <MergeRef Id="VCRedist3"/>
+      <MergeRef Id="VCRedist4"/>
+      <MergeRef Id="VCRedist5"/>
+    </Feature>
+
+    <DirectoryRef Id="TARGETDIR">
+      <Merge Id="VCRedist1" SourceFile="$(var.ProjectDir)Microsoft_VC141_CRT_x64.msm" Language="0" DiskId="1"/>
+      <Merge Id="VCRedist2" SourceFile="$(var.ProjectDir)Microsoft_VC141_CXXAMP_x64.msm" Language="0" DiskId="1"/>
+      <Merge Id="VCRedist3" SourceFile="$(var.ProjectDir)Microsoft_VC141_MFC_x64.msm" Language="0" DiskId="1"/>
+      <Merge Id="VCRedist4" SourceFile="$(var.ProjectDir)Microsoft_VC141_MFCLOC_x64.msm" Language="0" DiskId="1"/>
+      <Merge Id="VCRedist5" SourceFile="$(var.ProjectDir)Microsoft_VC141_OpenMP_x64.msm" Language="0" DiskId="1"/>
+    </DirectoryRef>
+  </Product>
+
+  <Fragment>
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFiles64Folder">
+        <Directory Id="INSTALLFOLDER" Name="Fox SDC Agent" />
+      </Directory>
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="ApplicationProgramsFolder" Name="Vulpes"/>
+      </Directory>
+    </Directory>
+  </Fragment>
+
+  <Fragment>
+    <DirectoryRef Id="ApplicationProgramsFolder">
+      <Component Id="ApplicationShortcut" Guid="6E6D5E38-3E66-474D-86EB-15EAAF966AA5">
+        <Shortcut Id="ApplicationStartMenuShortcut"
+                  Name="Configure Fox Software Deployment &amp; Control"
+                  Target="[#FoxSDC_Configure.exe]" Icon="Fox.ico"/>
+        <RemoveFolder Id="CleanUpShortCut" Directory="ApplicationProgramsFolder" On="uninstall"/>
+        <RegistryValue Root="HKCU" Key="Software\Fox\SDC\Shortcut" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+      </Component>
+    </DirectoryRef>
+  </Fragment>
+
+  <Fragment>
+    <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+
+      <Component Id="FoxSDC_Agent.exe" Guid="*">
+        <File Id="FoxSDC_Agent.exe" Source="$(var.ProjectDir)\..\..\Release\FoxSDC_Agent.exe" KeyPath="yes" />
+        <ServiceInstall Description="Provides functionallities to manage Software, Hardware &amp; Reporting from a central server or via Vulpes."
+                        DisplayName="Fox Software Deployement &amp; Control Agent" Name="FoxSDCA" Type="ownProcess" Start="auto"
+                        ErrorControl="normal" Id="InstallService"/>
+        <ServiceControl Id="StartService" Name="FoxSDCA" Start="install" Stop="both" Wait="yes" Remove="uninstall"/>
+      </Component>
+      <Component Id="FoxSDC_Agent_UI.exe" Guid="*">
+        <File Id="FoxSDC_Agent_UI.exe" Source="$(var.ProjectDir)\..\..\Release\FoxSDC_Agent_UI.exe" KeyPath="yes" />
+      </Component>
+      <Component Id="FoxSDC_AgentDLL32.dll" Guid="*">
+        <File Id="FoxSDC_AgentDLL32.dll" Source="$(var.ProjectDir)\..\..\Release\FoxSDC_AgentDLL32.dll" KeyPath="yes" />
+      </Component>
+      <Component Id="FoxSDC_AgentDLL64.dll" Guid="*">
+        <File Id="FoxSDC_AgentDLL64.dll" Source="$(var.ProjectDir)\..\..\Release\FoxSDC_AgentDLL64.dll" KeyPath="yes" />
+      </Component>
+      <Component Id="FoxSDC_ApplyUserSettings.exe" Guid="*">
+        <File Id="FoxSDC_ApplyUserSettings.exe" Source="$(var.ProjectDir)\..\..\Release\FoxSDC_ApplyUserSettings.exe" KeyPath="yes" />
+      </Component>
+      <Component Id="FoxSDC_Common.dll" Guid="*">
+        <File Id="FoxSDC_Common.dll" Source="$(var.ProjectDir)\..\..\Release\FoxSDC_Common.dll" KeyPath="yes" />
+      </Component>
+      <Component Id="FoxSDC_Selfupdate.exe" Guid="*">
+        <File Id="FoxSDC_Selfupdate.exe" Source="$(var.ProjectDir)\..\..\Release\FoxSDC_Selfupdate.exe" KeyPath="yes" />
+      </Component>
+      <Component Id="FoxSDC_UninstallData.exe" Guid="*">
+        <File Id="FoxSDC_UninstallData.exe" Source="$(var.ProjectDir)\..\..\Release\FoxSDC_UninstallData.exe" KeyPath="yes" />
+      </Component>
+      <Component Id="FoxSDC_Configure.exe" Guid="*">
+        <File Id="FoxSDC_Configure.exe" Source="$(var.ProjectDir)\..\..\Release\FoxSDC_Configure.exe" KeyPath="yes" />
+      </Component>
+      <Component Id="FoxSDC_SAS32.dll" Guid="*">
+        <File Id="FoxSDC_SAS32.dll" Source="$(var.ProjectDir)\..\..\Release\FoxSDC_SAS32.dll" KeyPath="yes" />
+      </Component>
+      <Component Id="FoxSDC_SAS64.dll" Guid="*">
+        <File Id="FoxSDC_SAS64.dll" Source="$(var.ProjectDir)\..\..\Release\FoxSDC_SAS64.dll" KeyPath="yes" />
+      </Component>
+      <Component Id="MyUCID.exe" Guid="*">
+        <File Id="MyUCID.exe" Source="$(var.ProjectDir)\..\..\Release\MyUCID.exe" KeyPath="yes" />
+      </Component>
+
+    </ComponentGroup>
+  </Fragment>
+</Wix>

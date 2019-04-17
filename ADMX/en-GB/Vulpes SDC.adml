@@ -1,0 +1,54 @@
+<policyDefinitionResources revision="1.0" schemaVersion="1.0">
+  <displayName>
+  </displayName>
+  <description>
+  </description>
+  <resources>
+    <stringTable>
+      <string id="CAT_1BB14941_235A_46AB_B15B_AF3774E17715">Vulpes</string>
+      <string id="CAT_1B826D87_EECF_487B_902A_B7D64E3A792A">SDC Agent</string>
+      <string id="POL_F8BB9CCA_DB25_4854_AFBF_31E7D0C3E75F">Server</string>
+      <string id="POL_F8BB9CCA_DB25_4854_AFBF_31E7D0C3E75F_Help">Specifies a custom server. To use in conjunction with on-prem licenses.
+If an URL is specified, is use the custom URL to connect to the server.
+Note that "Use On-Prem Server" must be enabled.</string>
+      <string id="POL_48D47765_98DC_42A1_8CA6_F880A21CBBAD">Use On-Prem Server</string>
+      <string id="POL_48D47765_98DC_42A1_8CA6_F880A21CBBAD_Help">Use a custom server. If this value is disabled or not set, it uses a the Vulpes Server. If it is enabled, you need to specify a URL in the "Server" element.
+
+Note that you must have a valid contract to use the Vulpes Server.</string>
+      <string id="POL_CF0C3178_A667_4D5F_A4FA_983606FE08F3">Contract ID</string>
+      <string id="POL_CF0C3178_A667_4D5F_A4FA_983606FE08F3_Help">Specifies a contract ID for the server. This is required for using with Vulpes Server. Most On-Prem Servers do not need this.</string>
+      <string id="POL_FD751D30_D461_4B3A_A69E_30D7A1A0014D">Contract Password</string>
+      <string id="POL_FD751D30_D461_4B3A_A69E_30D7A1A0014D_Help">Specifies a contract password for the server. This is required for using with Vulpes Server. Most On-Prem Servers do not need this.
+Note: this is not a password to login, or something alike. This field is stored / sent in plain-text.
+Do not type in a real password.
+
+If used with a Vulpes Server, the password is given in the contract. This is not the password for a login.</string>
+      <string id="POL_59557049_71D5_4F72_AC37_B0832318DD41">Disable Configuration Tool</string>
+      <string id="POL_59557049_71D5_4F72_AC37_B0832318DD41_Help">Disables the Configuration Tool. Note that policies have precedence over the Configuration tool.
+You should disable the tool when configuring SDC using policies.</string>
+    </stringTable>
+    <presentationTable>
+      <presentation id="POL_F8BB9CCA_DB25_4854_AFBF_31E7D0C3E75F">
+        <textBox refId="TXT_319FB5A6_14E4_4069_A0B9_ABFC4C9CC49E">
+          <label>Custom Server URL</label>
+          <defaultValue>
+          </defaultValue>
+        </textBox>
+      </presentation>
+      <presentation id="POL_CF0C3178_A667_4D5F_A4FA_983606FE08F3">
+        <textBox refId="TXT_BD225122_AE5A_4F39_AB55_1C8EB5F9E1ED">
+          <label>Contract ID</label>
+          <defaultValue>
+          </defaultValue>
+        </textBox>
+      </presentation>
+      <presentation id="POL_FD751D30_D461_4B3A_A69E_30D7A1A0014D">
+        <textBox refId="TXT_898F5E1C_E118_4B72_B51F_94D2834AD647">
+          <label>Contract Password</label>
+          <defaultValue>
+          </defaultValue>
+        </textBox>
+      </presentation>
+    </presentationTable>
+  </resources>
+</policyDefinitionResources>

@@ -259,3 +259,15 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+
+
+
+Telerik.ReportDesigner.exe
+Telerik.ReportDesigner.exe.config
+Telerik.Reporting.dll
+Telerik.Reporting.pdb
+
+Vulpes_Licensing.cer
+Vulpes_Main.cer
+
+AutoVersion.cs

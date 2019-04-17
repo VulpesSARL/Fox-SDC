@@ -1,0 +1,208 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{63A0B29B-E314-4EF1-9A54-DBAC12CE87FF}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>FoxSDC_Agent</RootNamespace>
+    <AssemblyName>FoxSDC_Agent</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Fox.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RunPostBuildEvent>Always</RunPostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug-SERVICE|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;DEBUGSERVICE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration.Install" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Runtime.WindowsRuntime, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\System.Runtime.WindowsRuntime.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Windows">
+      <HintPath>.\Windows.winmd</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ApplicationCertificate.cs" />
+    <Compile Include="AutoVersion.cs" />
+    <Compile Include="DownloadSystemFSData.cs" />
+    <Compile Include="DownloadSystemPackages.cs" />
+    <Compile Include="FilesystemData.cs" />
+    <Compile Include="FoxEventLog.cs" />
+    <Compile Include="InternalModels.cs" />
+    <Compile Include="MeteredConnection.cs" />
+    <Compile Include="PipeCommunicationSRV.cs" />
+    <Compile Include="PolicyObjects\ClientSettings.cs" />
+    <Compile Include="PolicyObjects\Intl.cpl.cs" />
+    <Compile Include="PolicyObjects\NTP.cs" />
+    <Compile Include="PolicyObjects\PackageCertificate.cs" />
+    <Compile Include="PolicyObjects\Packages.cs" />
+    <Compile Include="PolicyObjects\Reporting.cs" />
+    <Compile Include="PolicyObjects\SignCertificate.cs" />
+    <Compile Include="PolicyObjects\TestPolicy.cs" />
+    <Compile Include="PolicyObjects\WSUS.cs" />
+    <Compile Include="Process2ProcessComm.cs" />
+    <Compile Include="ProjectInstaller.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ProjectInstaller.Designer.cs">
+      <DependentUpon>ProjectInstaller.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Push\Filesystem.cs" />
+    <Compile Include="Push\NetRedir.cs" />
+    <Compile Include="Push\PushMain1.cs" />
+    <Compile Include="Push\PushMain0.cs" />
+    <Compile Include="Push\PushMain10.cs" />
+    <Compile Include="Push\PushMain2.cs" />
+    <Compile Include="Push\PushMain3.cs" />
+    <Compile Include="Redirs\MainScreenData.cs" />
+    <Compile Include="Push\Services.cs" />
+    <Compile Include="Push\TaskManager.cs" />
+    <Compile Include="Push\WindowsUpdateClient.cs" />
+    <Compile Include="RegistryData.cs" />
+    <Compile Include="RegistryData_Reportings.cs" />
+    <Compile Include="ServiceElement.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ServiceElement.Designer.cs">
+      <DependentUpon>ServiceElement.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Redirs\MainNetRedir.cs" />
+    <Compile Include="Redirs\MainSTDIORedir.cs" />
+    <Compile Include="Syncs\SyncBitlockerRK.cs" />
+    <Compile Include="Syncs\SyncDeviceManager.cs" />
+    <Compile Include="Syncs\SyncDiskData.cs" />
+    <Compile Include="Syncs\SyncEventLog.cs" />
+    <Compile Include="Syncs\SyncFilterDrivers.cs" />
+    <Compile Include="Syncs\SyncNetworkAdapterConfig.cs" />
+    <Compile Include="Syncs\SyncPolicy.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Status.cs" />
+    <Compile Include="Syncs\SyncAddRemovePrograms.cs" />
+    <Compile Include="Syncs\SyncWindowsLic.cs" />
+    <Compile Include="SystemInfo.cs" />
+    <Compile Include="Threads.cs" />
+    <Compile Include="UpdateCheck.cs" />
+    <Compile Include="Utilities.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="app.manifest">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Reg SDC.reg" />
+    <None Include="Windows.winmd" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FoxSDC_Common\FoxSDC_Common.csproj">
+      <Project>{fd37aca6-18e7-43be-8e3b-f17c39aed146}</Project>
+      <Name>FoxSDC_Common</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Fox.ico" />
+    <Content Include="FoxSDC_sas32.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="FoxSDC_sas64.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="System.Runtime.WindowsRuntime.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ProjectInstaller.resx">
+      <DependentUpon>ProjectInstaller.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ServiceElement.resx">
+      <DependentUpon>ServiceElement.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="WUApiLib">
+      <Guid>{B596CC9F-56E5-419E-A622-E01BB457431E}</Guid>
+      <VersionMajor>2</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>"$(TargetDir)FoxSDC_AutoVersion.exe" "$(ProjectDir)AutoVersion.cs" "FoxSDC_Agent"</PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
