@@ -38,9 +38,9 @@
             this.lblExit.AutoSize = true;
             this.lblExit.Location = new System.Drawing.Point(0, 9);
             this.lblExit.Name = "lblExit";
-            this.lblExit.Size = new System.Drawing.Size(207, 13);
+            this.lblExit.Size = new System.Drawing.Size(229, 13);
             this.lblExit.TabIndex = 0;
-            this.lblExit.Text = "Please wait while the program shuts down.";
+            this.lblExit.Text = "Please wait while the program is shutting down.";
             // 
             // TimExitTest
             // 

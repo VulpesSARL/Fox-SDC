@@ -312,6 +312,20 @@ namespace FoxSDC_Common
             return (true);
         }
 
+        public static bool Sign(SimpleTaskDataSigned policy, string CN)
+        {
+            if (policy == null)
+                return (false);
+            if (policy.STask == null)
+                return (false);
+            policy.STask.TimeStampCheck = DateTime.Now.ToUniversalTime();
+            string JSON = JsonConvert.SerializeObject(policy.STask, Formatting.None);
+            policy.Signature = Sign(Encoding.UTF8.GetBytes(JSON), CN, StoreLocation.LocalMachine);
+            if (policy.Signature == null)
+                return (false);
+            return (true);
+        }
+
         public static bool Sign(NetInt64ListSigned intlist, string CN)
         {
             if (intlist == null)
@@ -415,6 +429,29 @@ namespace FoxSDC_Common
 
             string JSON = policylist.TimeStampCheck.ToString("s") + "-" + policylist.Items.ToString();
             if (Verify(Encoding.UTF8.GetBytes(JSON), policylist.Signature, cer) == false)
+            {
+                Debug.WriteLine("Verify failed");
+                return (false);
+            }
+
+            return (true);
+        }
+
+        public static bool Verify(SimpleTaskDataSigned SimpleTask, byte[] cer)
+        {
+            if (SimpleTask == null)
+                return (false);
+            if (SimpleTask.STask == null)
+                return (false);
+            if (SimpleTask.STask.TimeStampCheck > DateTime.Now.ToUniversalTime().AddMinutes(TimeStampPlusMinus) &&
+                SimpleTask.STask.TimeStampCheck < DateTime.Now.ToUniversalTime().AddMinutes(-TimeStampPlusMinus))
+            {
+                Debug.WriteLine("Timestamp missmatch -+" + TimeStampPlusMinus.ToString() + " minutes");
+                return (false);
+            }
+
+            string JSON = JsonConvert.SerializeObject(SimpleTask.STask, Formatting.None);
+            if (Verify(Encoding.UTF8.GetBytes(JSON), SimpleTask.Signature, cer) == false)
             {
                 Debug.WriteLine("Verify failed");
                 return (false);

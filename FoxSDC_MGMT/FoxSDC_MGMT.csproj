@@ -237,6 +237,24 @@
     <Compile Include="Modules\Services.Designer.cs">
       <DependentUpon>Services.cs</DependentUpon>
     </Compile>
+    <Compile Include="Modules\SimpleTasks.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Modules\SimpleTasks.Designer.cs">
+      <DependentUpon>SimpleTasks.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\SMARTInfo.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Modules\SMARTInfo.Designer.cs">
+      <DependentUpon>SMARTInfo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\StartupItems.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Modules\StartupItems.Designer.cs">
+      <DependentUpon>StartupItems.cs</DependentUpon>
+    </Compile>
     <Compile Include="Modules\UploadDownloadStatus.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -351,6 +369,18 @@
     <Compile Include="ReportingMGMT\EventLog.Designer.cs">
       <DependentUpon>EventLog.cs</DependentUpon>
     </Compile>
+    <Compile Include="ReportingMGMT\SMARTConfig.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ReportingMGMT\SMARTConfig.Designer.cs">
+      <DependentUpon>SMARTConfig.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ReportingMGMT\Startup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ReportingMGMT\Startup.Designer.cs">
+      <DependentUpon>Startup.cs</DependentUpon>
+    </Compile>
     <Compile Include="RequestReport.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -381,6 +411,12 @@
     </Compile>
     <Compile Include="SeverSettings.Designer.cs">
       <DependentUpon>SeverSettings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SimpleTasks.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SimpleTasks.Designer.cs">
+      <DependentUpon>SimpleTasks.cs</DependentUpon>
     </Compile>
     <Compile Include="UploadDownloadDataThread.cs" />
     <Compile Include="UploaderBar.cs">
@@ -480,6 +516,15 @@
     <EmbeddedResource Include="Modules\Services.resx">
       <DependentUpon>Services.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Modules\SimpleTasks.resx">
+      <DependentUpon>SimpleTasks.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\SMARTInfo.resx">
+      <DependentUpon>SMARTInfo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\StartupItems.resx">
+      <DependentUpon>StartupItems.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Modules\UploadDownloadStatus.resx">
       <DependentUpon>UploadDownloadStatus.cs</DependentUpon>
     </EmbeddedResource>
@@ -544,6 +589,12 @@
     <EmbeddedResource Include="ReportingMGMT\EventLog.resx">
       <DependentUpon>EventLog.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="ReportingMGMT\SMARTConfig.resx">
+      <DependentUpon>SMARTConfig.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportingMGMT\Startup.resx">
+      <DependentUpon>Startup.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="RequestReport.resx">
       <DependentUpon>RequestReport.cs</DependentUpon>
     </EmbeddedResource>
@@ -558,6 +609,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="SeverSettings.resx">
       <DependentUpon>SeverSettings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SimpleTasks.resx">
+      <DependentUpon>SimpleTasks.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UploadProgress.resx">
       <DependentUpon>UploadProgress.cs</DependentUpon>
@@ -610,7 +664,9 @@
     <Content Include="Resources\NetNotCon.ico" />
     <Content Include="Resources\Nix.ico" />
     <None Include="Resources\Report.ico" />
+    <None Include="Resources\Run.ico" />
     <Content Include="Resources\srv.ico" />
+    <None Include="Resources\ST.ico" />
     <Content Include="Resources\System.ico" />
     <None Include="Resources\Computer.ico" />
     <Content Include="Resources\Appwiz.ico" />

@@ -21,7 +21,6 @@ namespace FoxSDC_Server
                 return (RESTStatus.Denied);
             }
 
-
             if (devices == null)
             {
                 ni.Error = "Invalid Items";

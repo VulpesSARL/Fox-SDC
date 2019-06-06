@@ -71,7 +71,7 @@ namespace FoxSDC_Agent
             }
             catch (ManagementException ee)
             {
-                if (ee.ErrorCode == ManagementStatus.CallCanceled)
+                if (ee.ErrorCode == ManagementStatus.CallCanceled || ee.ErrorCode == ManagementStatus.Timedout)
                 {
                     //drop message silently
                     Debug.WriteLine(ee.ToString());
@@ -108,6 +108,7 @@ namespace FoxSDC_Agent
                 if (Lic == null)
                 {
                     Status.UpdateMessage(1);
+                    net.CloseConnection();
                     return (false);
                 }
 

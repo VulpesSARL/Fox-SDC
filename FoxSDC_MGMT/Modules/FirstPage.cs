@@ -43,6 +43,8 @@ namespace FoxSDC_MGMT
             txtServerData.Text += "License Custom ID: " + Program.net.serverinfo.LicOwnerCustomID + "\r\n";
             txtServerData.Text += "License support valid to: " + (Program.net.serverinfo.LicSupportValidTo == null ? "∞" : Program.net.serverinfo.LicSupportValidTo.Value.ToLongDateString() + " " + Program.net.serverinfo.LicSupportValidTo.Value.ToLongTimeString()) + "\r\n";
             txtServerData.Text += "License valid to: " + (Program.net.serverinfo.LicValidTo == null ? "∞" : Program.net.serverinfo.LicValidTo.Value.ToLongDateString() + " " + Program.net.serverinfo.LicValidTo.Value.ToLongTimeString()) + "\r\n";
+            if (string.IsNullOrWhiteSpace(FoxSDC_Common.Memoriam.InMemoriam) == false)
+                txtServerData.Text += "\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n" + FoxSDC_Common.Memoriam.InMemoriam;
         }
 
         private void link_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)

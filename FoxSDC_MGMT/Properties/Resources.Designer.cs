@@ -313,9 +313,29 @@ namespace FoxSDC_MGMT.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
+        internal static System.Drawing.Icon Run {
+            get {
+                object obj = ResourceManager.GetObject("Run", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
         internal static System.Drawing.Icon srv {
             get {
                 object obj = ResourceManager.GetObject("srv", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon ST {
+            get {
+                object obj = ResourceManager.GetObject("ST", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
         }

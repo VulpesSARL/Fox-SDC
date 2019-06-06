@@ -208,6 +208,8 @@ namespace FoxSDC_Agent.Push
 
                     if (pd.Data.Action == "repeat")
                     {
+                        if (StopThread == true)
+                            return;
                         FoxEventLog.VerboseWriteEventLog("Push10: repeat", System.Diagnostics.EventLogEntryType.Information);
                         continue;
                     }

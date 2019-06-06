@@ -42,6 +42,7 @@ namespace FoxSDC_Server
         public string Text { get; set; }
         public int ReportingType { get; set; }
         public Int64 Flags { get; set; }
+        public string ContractID { get; set; }
     }
 
     [System.ComponentModel.DataObject]
@@ -61,6 +62,7 @@ namespace FoxSDC_Server
             To.UCID = From.UCID;
             To.VendorBIOS = From.VendorBIOS;
             To.VendorMake = From.VendorMake;
+            To.ContractID = From.ContractID;
         }
 
         [System.ComponentModel.DataObjectMethod(System.ComponentModel.DataObjectMethodType.Select)]
@@ -83,6 +85,7 @@ namespace FoxSDC_Server
                 funnybasicinfo.UCID = "F3489E4C92654D12A6EF6C4C2EAA4A5E";
                 funnybasicinfo.VendorBIOS = "Award BIOS 6";
                 funnybasicinfo.VendorMake = "Vulpes 486 PC";
+                funnybasicinfo.ContractID = "Company XXX Contract";
 
                 lst.Add(new ReportingPaperElements());
                 CopyBaseData(funnybasicinfo, lst[0]);
@@ -141,6 +144,7 @@ namespace FoxSDC_Server
             basicinfo.UCID = Convert.ToString(dr["UCID"]);
             basicinfo.VendorBIOS = Convert.ToString(dr["BIOS"]);
             basicinfo.VendorMake = Convert.ToString(dr["ComputerModel"]);
+            basicinfo.ContractID = Convert.ToString(dr["ContractID"]);
             dr.Close();
 
             string Query = "";

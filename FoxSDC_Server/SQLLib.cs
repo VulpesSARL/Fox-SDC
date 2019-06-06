@@ -664,19 +664,23 @@ namespace FoxSDC_Server
                     if (found == false)
                         continue;
 
-                    if (f.FieldType.IsGenericType && f.FieldType.GetGenericTypeDefinition() == typeof(Nullable<>))
+                    if (dr[column] is DBNull)
                     {
-                        if (dr[column] is DBNull)
-                            f.SetValue(obj, null);
-                        else
-                            f.SetValue(obj, Convert.ChangeType(dr[column], f.FieldType.GetGenericArguments()[0]));
+                        f.SetValue(obj, null);
                     }
                     else
                     {
-                        if (f.FieldType.IsEnum == true)
-                            f.SetValue(obj, Convert.ChangeType(dr[column], f.FieldType.GetEnumUnderlyingType()));
+                        if (f.FieldType.IsGenericType && f.FieldType.GetGenericTypeDefinition() == typeof(Nullable<>))
+                        {
+                            f.SetValue(obj, Convert.ChangeType(dr[column], f.FieldType.GetGenericArguments()[0]));
+                        }
                         else
-                            f.SetValue(obj, Convert.ChangeType(dr[column], f.FieldType));
+                        {
+                            if (f.FieldType.IsEnum == true)
+                                f.SetValue(obj, Convert.ChangeType(dr[column], f.FieldType.GetEnumUnderlyingType()));
+                            else
+                                f.SetValue(obj, Convert.ChangeType(dr[column], f.FieldType));
+                        }
                     }
                 }
             }

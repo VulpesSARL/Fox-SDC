@@ -34,6 +34,12 @@ namespace FoxSDC_MGMT
             data = cd;
         }
 
+        public frmPropertiesWindow(StartupItemFull cd)
+        {
+            InitializeComponent();
+            data = cd;
+        }
+
         private void cmdCancel_Click(object sender, EventArgs e)
         {
             this.Close();
@@ -65,6 +71,13 @@ namespace FoxSDC_MGMT
             {
                 this.Text = "Disk informations";
                 transformeddata = new PDiskDataReport();
+                ClassCopy.CopyClassData(data, transformeddata);
+                PropertiesG.SelectedObject = transformeddata;
+            }
+            if(data is StartupItemFull)
+            {
+                this.Text = "Startup informations";
+                transformeddata = new PStartupItemFull();
                 ClassCopy.CopyClassData(data, transformeddata);
                 PropertiesG.SelectedObject = transformeddata;
             }

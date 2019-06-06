@@ -24,9 +24,11 @@ namespace FoxSDC_MGMT
         {
             Program.LoadImageList(imageList1);
 
-            List<AddRemoveAppReport> lstApp = Program.net.GetAddRemovePrograms(MID);
-
             lstApps.Items.Clear();
+
+            List<AddRemoveAppReport> lstApp = Program.net.GetAddRemovePrograms(MID);
+            if (lstApp == null)
+                return;
 
             foreach (AddRemoveAppReport l in lstApp)
             {
@@ -34,6 +36,7 @@ namespace FoxSDC_MGMT
                 lst.Tag = l;
                 lst.ImageIndex = l.IsSystemComponent == true ? 4 : 3;
                 lst.SubItems.Add(l.Computername);
+                lst.SubItems.Add(string.IsNullOrWhiteSpace(l.Username) == true ? l.HKCUUser : l.Username);
                 lst.SubItems.Add(l.DisplayVersion);
                 lst.SubItems.Add(l.DisplayLanguage);
                 lst.SubItems.Add(l.DT.ToLongDateString() + " " + l.DT.ToLongTimeString());

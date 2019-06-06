@@ -73,6 +73,9 @@ namespace FoxSDC_MGMT
             AddTab(new ctlBitlockerRK(MID), "Bitlocker Recovery");
             AddTab(new ctlWindowsLicense(MID), "Windows License");
             AddTab(new ctlFileTransfer(MID), "File transfer");
+            AddTab(new ctlStartupItems(MID), "Startup Items");
+            AddTab(new ctlSMARTInfo(MID), "SMART Data");
+            AddTab(new ctlSimpleTasks(MID), "Simple Tasks");
 
             timerPinger_Tick(null, null);
 

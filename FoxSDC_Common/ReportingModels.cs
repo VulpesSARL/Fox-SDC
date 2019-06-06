@@ -11,7 +11,13 @@ namespace FoxSDC_Common
         None = 0,
         Disk = 1,
         EventLog = 2,
-        AddRemovePrograms = 3
+        AddRemovePrograms = 3,
+        Startup = 4,
+        SMART = 5,
+        SimpleTaskCompleted = 6,
+
+        //Special flags / purposes
+        SMARTCritical = 255,
         //License = ?,
         //NotificationTimeout = ? //when a computer didn't report for example - a few days
     }
@@ -90,4 +96,37 @@ namespace FoxSDC_Common
         public bool NotifyOnAdd;
         public bool NotifyOnUpdate;
     }
+
+    public class ReportingPolicyElementSMART
+    {
+        public bool NotifyOnError;
+        public bool NotifyOnRemove;
+        public bool NotifyOnAdd;
+        public bool NotifyOnUpdate;
+        public List<int> SkipAttribUpdateReport;
+    }
+
+    public class ReportingPolicyElementSimpleTaskCompleted
+    {
+        public bool Dummy;
+    }
+
+    public class ReportingPolicyElementStartup
+    {
+        public List<string> Names;
+        /// <summary>
+        /// 0 = exact Name
+        /// 1 = Name (contains)
+        /// 2 = Name (starts with)
+        /// </summary>
+        public int SearchNameIn;
+        /// <summary>
+        /// Semicolon separated
+        /// </summary>
+        public string SearchLocations;
+        public bool NotifyOnRemove;
+        public bool NotifyOnAdd;
+        public bool NotifyOnUpdate;
+    }
+
 }

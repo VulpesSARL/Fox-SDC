@@ -28,6 +28,9 @@ namespace FoxSDC_MGMT
 
         private void cmdOK_Click(object sender, EventArgs e)
         {
+            if (SelectedGroup == null)
+                return;
+
             foreach (ApproveListElement l in ListPCs)
             {
                 if (Program.net.ApproveComputers(l.MachineID, lstState.SelectedIndex == 0 ? true : false, SelectedGroup.Value) == false)

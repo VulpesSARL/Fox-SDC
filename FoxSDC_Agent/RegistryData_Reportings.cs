@@ -56,6 +56,42 @@ namespace FoxSDC_Agent
             }
         }
 
+        static public bool DisableSimpleTasks
+        {
+            get
+            {
+                return (ReadRepRegistry("DisableSimpleTasks"));
+            }
+            set
+            {
+                WriteRepRegistry("DisableSimpleTasks", value);
+            }
+        }
+
+        static public bool DisableUsersSync
+        {
+            get
+            {
+                return (ReadRepRegistry("DisableUsersSync"));
+            }
+            set
+            {
+                WriteRepRegistry("DisableUsersSync", value);
+            }
+        }
+
+        static public bool DisableStartupSync
+        {
+            get
+            {
+                return (ReadRepRegistry("DisableStartupSync"));
+            }
+            set
+            {
+                WriteRepRegistry("DisableStartupSync", value);
+            }
+        }
+        
         static public bool DisableAddRemoveProgramsSync
         {
             get
@@ -137,6 +173,18 @@ namespace FoxSDC_Agent
             set
             {
                 WriteRepRegistry("EnableBitlockerRKSync", value);
+            }
+        }
+
+        static public bool DisableSMARTSync
+        {
+            get
+            {
+                return (ReadRepRegistry("DisableSMARTSync"));
+            }
+            set
+            {
+                WriteRepRegistry("DisableSMARTSync", value);
             }
         }
 

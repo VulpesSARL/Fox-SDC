@@ -210,11 +210,14 @@ namespace FoxSDC_Agent
                 }
 
                 if (StopThreads == false)
-                    if (RegistryData.DisableWinLicenseSync == false)
-                        SyncWindowsLic.DoSyncWindowsLic();
+                    if (RegistryData.DisableSMARTSync == false)
+                        SyncSMARTData.DoSyncSMART();
                 if (StopThreads == false)
                     if (RegistryData.EnableBitlockerRKSync == true)
                         SyncBitlockerRK.DoSyncBitlockerRK();
+                if (StopThreads == false)
+                    if (RegistryData.DisableWinLicenseSync == false)
+                        SyncWindowsLic.DoSyncWindowsLic();
 
                 Int64 Tim = RegistryData.LastSyncReportingWaitTime2;
                 if (Tim < 1)
@@ -279,6 +282,18 @@ namespace FoxSDC_Agent
                 if (StopThreads == false)
                     if (RegistryData.DisableFilterDriverSync == false)
                         SyncFilterDrivers.DoSyncFilters();
+
+                if (StopThreads == false)
+                    if (RegistryData.DisableUsersSync == false)
+                        SyncUsers.DoSyncUsers();
+
+                if (StopThreads == false)
+                    if (RegistryData.DisableStartupSync == false)
+                        SyncStartups.DoSyncStartups();
+
+                if (StopThreads == false)
+                    if (RegistryData.DisableSimpleTasks == false)
+                        SyncSimpleTasks.DoSyncSimpleTasks();
 
                 if (StopThreads == false)
                     if (RegistryData.DisableEventLogSync == false)

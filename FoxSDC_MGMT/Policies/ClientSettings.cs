@@ -58,6 +58,10 @@ namespace FoxSDC_MGMT.Policies
             chkDisableFilterDriverSync.CheckState = C(CliSettings.DisableFilterDriverSync);
             chkDisableWinLicenseSync.CheckState = C(CliSettings.DisableWinLicenseSync);
             chkEnableBitlockerRKSync.CheckState = C(CliSettings.EnableBitlockerRKSync);
+            chkDisableUserSync.CheckState = C(CliSettings.DisableUsersSync);
+            chkDisableStartupSync.CheckState = C(CliSettings.DisableStartupSync);
+            chkDisableSMART.CheckState = C(CliSettings.DisableSMARTSync);
+            chkDisableSimpleTasks.CheckState = C(CliSettings.DisableSimpleTasks);
         }
 
         public string GetData()
@@ -70,6 +74,10 @@ namespace FoxSDC_MGMT.Policies
             CliSettings.DisableFilterDriverSync = C(chkDisableFilterDriverSync.CheckState);
             CliSettings.DisableWinLicenseSync = C(chkDisableWinLicenseSync.CheckState);
             CliSettings.EnableBitlockerRKSync = C(chkEnableBitlockerRKSync.CheckState);
+            CliSettings.DisableUsersSync = C(chkDisableUserSync.CheckState);
+            CliSettings.DisableStartupSync = C(chkDisableStartupSync.CheckState);
+            CliSettings.DisableSMARTSync = C(chkDisableSMART.CheckState);
+            CliSettings.DisableSimpleTasks = C(chkDisableSimpleTasks.CheckState);
             return (JsonConvert.SerializeObject(CliSettings));
         }
 

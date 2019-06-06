@@ -384,6 +384,22 @@ namespace FoxSDC_MGMT
             get { return _DT; }
             set { _DT = value; }
         }
+        string _HKCUUser;
+
+        [CategoryAttribute("User"), ReadOnlyAttribute(true), Browsable(true)]
+        public string HKCUUser
+        {
+            get { return _HKCUUser; }
+            set { _HKCUUser = value; }
+        }
+        string _Username;
+
+        [CategoryAttribute("User"), ReadOnlyAttribute(true), Browsable(true)]
+        public string Username
+        {
+            get { return _Username; }
+            set { _Username = value; }
+        }
     }
 
     public class PDiskDataReport
@@ -721,4 +737,34 @@ namespace FoxSDC_MGMT
         [CategoryAttribute("Status"), ReadOnlyAttribute(true), Browsable(true)]
         public string ConfigManagerErrorCodeText { get => _ConfigManagerErrorCodeText; set => _ConfigManagerErrorCodeText = value; }
     }
+
+    public class PStartupItemFull
+    {
+        string _Computername;
+        string _MachineID;
+        string _Key;
+        string _Item;
+        string _Location;
+        string _HKCUUser;
+        string _Username;
+        DateTime _DT;
+
+        [CategoryAttribute("Reporting"), ReadOnlyAttribute(true), Browsable(true)]
+        public DateTime DT { get => _DT; set => _DT = value; }
+        [CategoryAttribute("User"), ReadOnlyAttribute(true), Browsable(true)]
+        public string Username { get => _Username; set => _Username = value; }
+        [CategoryAttribute("User"), ReadOnlyAttribute(true), Browsable(true)]
+        public string HKCUUser { get => _HKCUUser; set => _HKCUUser = value; }
+        [CategoryAttribute("Element"), ReadOnlyAttribute(true), Browsable(true)]
+        public string Location { get => _Location; set => _Location = value; }
+        [CategoryAttribute("Element"), ReadOnlyAttribute(true), Browsable(true)]
+        public string Item { get => _Item; set => _Item = value; }
+        [CategoryAttribute("Element"), ReadOnlyAttribute(true), Browsable(true)]
+        public string Key { get => _Key; set => _Key = value; }
+        [CategoryAttribute("Computer"), ReadOnlyAttribute(true), Browsable(true)]
+        public string MachineID { get => _MachineID; set => _MachineID = value; }
+        [CategoryAttribute("Computer"), ReadOnlyAttribute(true), Browsable(true)]
+        public string Computername { get => _Computername; set => _Computername = value; }
+    }
+
 }

@@ -193,7 +193,7 @@ namespace FoxSDC_Common
             {
                 rdata = JsonConvert.DeserializeObject<U>(rjson);
             }
-            catch(Exception ee)
+            catch (Exception ee)
             {
                 Debug.WriteLine(ee.ToString());
                 return (false);
@@ -551,6 +551,12 @@ namespace FoxSDC_Common
             return (resb);
         }
 
+        public bool ReportStartups(ListStartupItems infos)
+        {
+            bool resb = SendReq<ListStartupItems>("api/reports/startups", Verb.POST, infos, out res);
+            return (resb);
+        }
+
         public bool ReportDiskData(ListDiskDataReport infos)
         {
             bool resb = SendReq<ListDiskDataReport>("api/reports/diskdata", Verb.POST, infos, out res);
@@ -566,6 +572,12 @@ namespace FoxSDC_Common
         public bool ReportDevicesList(PnPDeviceList infos)
         {
             bool resb = SendReq<PnPDeviceList>("api/reports/deviceslist", Verb.POST, infos, out res);
+            return (resb);
+        }
+
+        public bool ReportUsers(UsersList users)
+        {
+            bool resb = SendReq<UsersList>("api/reports/repuserslist", Verb.POST, users, out res);
             return (resb);
         }
 
@@ -591,10 +603,30 @@ namespace FoxSDC_Common
                 return (null);
         }
 
+        public List<VulpesSMARTInfo> GetSMARTInfo(string MachineID)
+        {
+            VulpesSMARTInfoList ni;
+            bool resb = SendReq<VulpesSMARTInfoList>("api/mgmt/reports/smartinfo/" + MachineID, Verb.GET, out ni, out res);
+            if (resb == true)
+                return (ni.List);
+            else
+                return (null);
+        }
+
         public List<AddRemoveAppReport> GetAddRemovePrograms(string MachineID)
         {
             ListAddRemoveAppsReport ni;
             bool resb = SendReq<ListAddRemoveAppsReport>("api/mgmt/reports/addremove/" + MachineID, Verb.GET, out ni, out res);
+            if (resb == true)
+                return (ni.Items);
+            else
+                return (null);
+        }
+
+        public List<StartupItemFull> GetStartupItems(string MachineID)
+        {
+            ListStartupItemReport ni;
+            bool resb = SendReq<ListStartupItemReport>("api/mgmt/reports/startupitems/" + MachineID, Verb.GET, out ni, out res);
             if (resb == true)
                 return (ni.Items);
             else
@@ -1006,6 +1038,15 @@ namespace FoxSDC_Common
             return (resb);
         }
 
+        public bool ReportSMARTInfos(string MachineID, List<VulpesSMARTInfo> smart)
+        {
+            VulpesSMARTInfoList rs = new VulpesSMARTInfoList();
+            rs.List = smart;
+            rs.MachineID = MachineID;
+            bool resb = SendReq<VulpesSMARTInfoList>("api/reports/smartinfo", Verb.POST, rs, out res);
+            return (resb);
+        }
+
         public bool PaperSaveTemplate(string Paper, byte[] data)
         {
             ReportPaper p = new ReportPaper();
@@ -1397,5 +1438,69 @@ namespace FoxSDC_Common
 
         //Use DownloadFile()  api/agent/filefiledownload/<id>
 
+        public List<SimpleTaskLite> GetSimpleTasks(string MachineID)
+        {
+            SimpleTaskLiteList po;
+            bool resb = SendReq<SimpleTaskLiteList>("api/mgmt/liststasks/" + MachineID, Verb.GET, out po, out res);
+            if (resb == true)
+                return (po.List);
+            else
+                return (null);
+        }
+
+        public SimpleTask GetSimpleTaskDetails(Int64 ID)
+        {
+            SimpleTask po;
+            bool resb = SendReq<SimpleTask>("api/mgmt/getstask/" + ID.ToString(), Verb.GET, out po, out res);
+            if (resb == true)
+                return (po);
+            else
+                return (null);
+        }
+
+        public Int64? SetSimpleTask(string Name, string MachineID, int Type, object data)
+        {
+            SimpleTask st = new SimpleTask();
+            st.Data = JsonConvert.SerializeObject(data);
+            st.MachineID = MachineID;
+            st.Type = Type;
+            st.Name = Name;
+            return (SetSimpleTask(st));
+        }
+
+        public Int64? SetSimpleTask(SimpleTask st)
+        {
+            NetInt64 po;
+            bool resb = SendReq<SimpleTask, NetInt64>("api/mgmt/setstask", Verb.POST, st, out po, out res);
+            if (resb == false)
+                return (null);
+            else
+                return (po.Data);
+        }
+
+        public bool DeleteSimpleTask(Int64 ID)
+        {
+            bool resb = SendReq("api/mgmt/setstask/" + ID.ToString(), Verb.DELETE, out res);
+            return (resb);
+        }
+
+        public SimpleTaskDataSigned GetSimpleTaskSigned()
+        {
+            SimpleTaskDataSigned po;
+            bool resb = SendReq<SimpleTaskDataSigned>("api/agent/stasksigned", Verb.GET, out po, out res);
+            if (resb == true)
+                return (po);
+            else
+                return (null);
+        }
+
+        public bool CompleteSimpleTask(SimpleTaskResult st)
+        {
+            bool resb = SendReq<SimpleTaskResult>("api/agent/staskcompleted", Verb.POST, st, out res);
+            if (resb == false)
+                return (false);
+            else
+                return (true);
+        }
     }
 }

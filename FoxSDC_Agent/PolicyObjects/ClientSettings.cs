@@ -87,6 +87,9 @@ namespace FoxSDC_Agent.PolicyObjects
                 if (p.DisableEventLogSync != null)
                     RunningPolicy.DisableEventLogSync = p.DisableEventLogSync;
 
+                if (p.DisableSimpleTasks != null)
+                    RunningPolicy.DisableSimpleTasks = p.DisableSimpleTasks;
+
                 if (p.DisableFilterDriverSync != null)
                     RunningPolicy.DisableFilterDriverSync = p.DisableFilterDriverSync;
 
@@ -98,6 +101,15 @@ namespace FoxSDC_Agent.PolicyObjects
 
                 if (p.EnableBitlockerRKSync != null)
                     RunningPolicy.EnableBitlockerRKSync = p.EnableBitlockerRKSync;
+
+                if (p.DisableSMARTSync != null)
+                    RunningPolicy.DisableSMARTSync = p.DisableSMARTSync;
+
+                if (p.DisableUsersSync != null)
+                    RunningPolicy.DisableUsersSync = p.DisableUsersSync;
+
+                if (p.DisableStartupSync != null)
+                    RunningPolicy.DisableStartupSync = p.DisableStartupSync;
             }
         }
 
@@ -123,6 +135,11 @@ namespace FoxSDC_Agent.PolicyObjects
             else
                 RegistryData.DisableEventLogSync = false;
 
+            if (p.DisableSimpleTasks != null)
+                RegistryData.DisableSimpleTasks = p.DisableSimpleTasks.Value;
+            else
+                RegistryData.DisableSimpleTasks = false;
+
             if (p.DisableFilterDriverSync != null)
                 RegistryData.DisableFilterDriverSync = p.DisableFilterDriverSync.Value;
             else
@@ -142,6 +159,21 @@ namespace FoxSDC_Agent.PolicyObjects
                 RegistryData.EnableBitlockerRKSync = p.EnableBitlockerRKSync.Value;
             else
                 RegistryData.EnableBitlockerRKSync = false;
+
+            if (p.DisableSMARTSync != null)
+                RegistryData.DisableSMARTSync = p.DisableSMARTSync.Value;
+            else
+                RegistryData.DisableSMARTSync = false;
+
+            if (p.DisableUsersSync != null)
+                RegistryData.DisableUsersSync = p.DisableUsersSync.Value;
+            else
+                RegistryData.DisableUsersSync = false;
+
+            if (p.DisableStartupSync != null)
+                RegistryData.DisableStartupSync = p.DisableStartupSync.Value;
+            else
+                RegistryData.DisableStartupSync = false;
         }
 
         public bool FinaliseApplyPolicy()

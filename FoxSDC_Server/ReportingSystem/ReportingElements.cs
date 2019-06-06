@@ -88,6 +88,49 @@ namespace FoxSDC_Server
                 new SQLData("Flags", Flags));
         }
 
+        public static void ReportSMART(SQLLib sql, string MachineID, string Method, ReportingSMART AR, ReportingFlags Flags, bool Critical)
+        {
+            Flags &= ~(ReportingFlags.AdminReported | ReportingFlags.ClientReported | ReportingFlags.UrgentAdminReported | ReportingFlags.UrgentClientReported);
+            
+            AR.Action = Method;
+
+            sql.InsertMultiData("Reporting",
+                new SQLData("MachineID", MachineID),
+                new SQLData("Type", Critical == false ? ReportingPolicyType.SMART : ReportingPolicyType.SMARTCritical),
+                new SQLData("Data", JsonConvert.SerializeObject(AR)),
+                new SQLData("Flags", Flags));
+        }
+
+        public static void ReportStartup(SQLLib sql, string MachineID, string Method, StartupItem AR, ReportingFlags Flags)
+        {
+            Flags &= ~(ReportingFlags.AdminReported | ReportingFlags.ClientReported | ReportingFlags.UrgentAdminReported | ReportingFlags.UrgentClientReported);
+
+            ReportingStartup a = new ReportingStartup();
+            a.Action = Method;
+            a.App = AR;
+
+            sql.InsertMultiData("Reporting",
+                new SQLData("MachineID", MachineID),
+                new SQLData("Type", ReportingPolicyType.Startup),
+                new SQLData("Data", JsonConvert.SerializeObject(a)),
+                new SQLData("Flags", Flags));
+        }
+
+        public static void ReportSimpleTaskCompletion(SQLLib sql, string MachineID, string Method, SimpleTaskResult AR, ReportingFlags Flags)
+        {
+            Flags &= ~(ReportingFlags.AdminReported | ReportingFlags.ClientReported | ReportingFlags.UrgentAdminReported | ReportingFlags.UrgentClientReported);
+
+            ReportingSimpleTaskCompletion a = new  ReportingSimpleTaskCompletion ();
+            a.Action = Method;
+            a.App = AR;
+
+            sql.InsertMultiData("Reporting",
+                new SQLData("MachineID", MachineID),
+                new SQLData("Type", ReportingPolicyType.SimpleTaskCompleted),
+                new SQLData("Data", JsonConvert.SerializeObject(a)),
+                new SQLData("Flags", Flags));
+        }
+
         static IEnumerable<Type> GetTypesWithHelpAttribute(Assembly assembly)
         {
             foreach (Type type in assembly.GetTypes())

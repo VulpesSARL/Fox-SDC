@@ -64,4 +64,9 @@ namespace FoxSDC_Common
         public PackageData Package;
     }
 
+    public class SimpleTaskDataSigned
+    {
+        public byte[] Signature;
+        public SimpleTask STask;
+    }
 }

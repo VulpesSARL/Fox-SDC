@@ -141,10 +141,15 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Status.cs" />
     <Compile Include="Syncs\SyncAddRemovePrograms.cs" />
+    <Compile Include="Syncs\SyncSimpleTasks.cs" />
+    <Compile Include="Syncs\SyncSMARTData.cs" />
+    <Compile Include="Syncs\SyncStartups.cs" />
+    <Compile Include="Syncs\SyncUsers.cs" />
     <Compile Include="Syncs\SyncWindowsLic.cs" />
     <Compile Include="SystemInfo.cs" />
     <Compile Include="Threads.cs" />
     <Compile Include="UpdateCheck.cs" />
+    <Compile Include="Userregistries.cs" />
     <Compile Include="Utilities.cs" />
   </ItemGroup>
   <ItemGroup>

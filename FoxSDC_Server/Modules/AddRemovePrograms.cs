@@ -46,6 +46,34 @@ namespace FoxSDC_Server
                 ni.ErrorID = ErrorFlags.InvalidValue;
                 return (RESTStatus.Fail);
             }
+            if (AddRemoveList.SIDUsers == null)
+                AddRemoveList.SIDUsers = new List<string>();
+
+            foreach (AddRemoveApp rep in AddRemoveList.Items)
+            {
+                if (rep.ProductID == null)
+                    rep.ProductID = "";
+                if (rep.Name == null)
+                    rep.Name = "";
+                if (rep.DisplayVersion == null)
+                    rep.DisplayVersion = "";
+                if (rep.UninstallString == null)
+                    rep.UninstallString = "";
+                if (rep.Language == null)
+                    rep.Language = "";
+                if (rep.DisplayLanguage == null)
+                    rep.DisplayLanguage = "";
+                if (rep.HKCUUser == null)
+                    rep.HKCUUser = "";
+
+                rep.ProductID = rep.ProductID.Trim();
+                rep.Name = rep.Name.Trim();
+                rep.DisplayVersion = rep.DisplayVersion.Trim();
+                rep.UninstallString = rep.UninstallString.Trim();
+                rep.Language = rep.Language.Trim();
+                rep.DisplayLanguage = rep.DisplayLanguage.Trim();
+                rep.HKCUUser = rep.HKCUUser.Trim();
+            }
 
             List<AddRemoveApp> Installed = new List<AddRemoveApp>();
             List<AddRemoveApp> Reported = AddRemoveList.Items;
@@ -68,6 +96,10 @@ namespace FoxSDC_Server
                     ar.UninstallString = Convert.ToString(dr["UninstallString"]);
                     ar.VersionMajor = Convert.ToInt32(dr["VersionMajor"]);
                     ar.VersionMinor = Convert.ToInt32(dr["VersionMinor"]);
+                    ar.HKCUUser = Convert.ToString(dr["HKCUUser"]);
+                    if (string.IsNullOrWhiteSpace(ar.HKCUUser) == true)
+                        ar.HKCUUser = "";
+
                     Installed.Add(ar);
                 }
                 dr.Close();
@@ -99,31 +131,12 @@ namespace FoxSDC_Server
                 inst.UninstallString = inst.UninstallString.Trim();
                 inst.Language = inst.Language.Trim();
                 inst.DisplayLanguage = inst.DisplayLanguage.Trim();
+                inst.HKCUUser = inst.HKCUUser.Trim();
 
                 bool Found = false;
                 foreach (AddRemoveApp rep in Reported)
                 {
-                    if (rep.ProductID == null)
-                        rep.ProductID = "";
-                    if (rep.Name == null)
-                        rep.Name = "";
-                    if (rep.DisplayVersion == null)
-                        rep.DisplayVersion = "";
-                    if (rep.UninstallString == null)
-                        rep.UninstallString = "";
-                    if (rep.Language == null)
-                        rep.Language = "";
-                    if (rep.DisplayLanguage == null)
-                        rep.DisplayLanguage = "";
-
-                    rep.ProductID = rep.ProductID.Trim();
-                    rep.Name = rep.Name.Trim();
-                    rep.DisplayVersion = rep.DisplayVersion.Trim();
-                    rep.UninstallString = rep.UninstallString.Trim();
-                    rep.Language = rep.Language.Trim();
-                    rep.DisplayLanguage = rep.DisplayLanguage.Trim();
-
-                    if (rep.ProductID.ToLower() == inst.ProductID.ToLower() && rep.IsWOWBranch == inst.IsWOWBranch)
+                    if (rep.ProductID.ToLower() == inst.ProductID.ToLower() && rep.IsWOWBranch == inst.IsWOWBranch && rep.HKCUUser == inst.HKCUUser)
                     {
                         if (rep.IsMSI == inst.IsMSI && rep.IsSystemComponent == inst.IsSystemComponent && rep.Name.ToLower() == inst.Name.ToLower() &&
                             rep.DisplayVersion.ToLower() == inst.DisplayVersion.ToLower() && inst.UninstallString.ToLower() == rep.UninstallString.ToLower() &&
@@ -143,7 +156,17 @@ namespace FoxSDC_Server
                     }
                 }
                 if (Found == false)
-                    Removed.Add(inst);
+                {
+                    if (inst.HKCUUser != "" && AddRemoveList.SIDUsers.Contains(inst.HKCUUser, StringComparer.InvariantCultureIgnoreCase) == false)
+                    {
+                        //likely that this user is not logged on or such
+                        Unchanged.Add(inst);
+                    }
+                    else
+                    {
+                        Removed.Add(inst);
+                    }
+                }
             }
 
             foreach (AddRemoveApp inst in Reported)
@@ -151,7 +174,7 @@ namespace FoxSDC_Server
                 bool Found = false;
                 foreach (AddRemoveApp rep in Installed)
                 {
-                    if (rep.ProductID.ToLower() == inst.ProductID.ToLower() && rep.IsWOWBranch == inst.IsWOWBranch)
+                    if (rep.ProductID.ToLower() == inst.ProductID.ToLower() && rep.IsWOWBranch == inst.IsWOWBranch && rep.HKCUUser == inst.HKCUUser)
                     {
                         Found = true;
                         break;
@@ -169,9 +192,10 @@ namespace FoxSDC_Server
                     sql.SEHError = true;
                     foreach (AddRemoveApp ar in Removed)
                     {
-                        sql.ExecSQL("DELETE FROM AddRemovePrograms WHERE MachineID=@id AND IsWOWBranch=@wow AND ProductID=@prod",
+                        sql.ExecSQL("DELETE FROM AddRemovePrograms WHERE MachineID=@id AND IsWOWBranch=@wow AND ProductID=@prod AND HKCUUser=@user",
                             new SQLParam("@id", AddRemoveList.MachineID),
                             new SQLParam("@prod", ar.ProductID),
+                            new SQLParam("@user", ar.HKCUUser),
                             new SQLParam("@wow", ar.IsWOWBranch));
                     }
                     foreach (AddRemoveApp ar in Updated)
@@ -187,7 +211,7 @@ namespace FoxSDC_Server
                             Language=@Language,
                             DisplayLanguage=@DisplayLanguage,
                             DT=@DT
-                            WHERE MachineID=@id AND IsWOWBranch=@wow AND ProductID=@prod",
+                            WHERE MachineID=@id AND IsWOWBranch=@wow AND ProductID=@prod AND HKCUUser=@user",
                             new SQLParam("@id", AddRemoveList.MachineID),
                             new SQLParam("@prod", ar.ProductID),
                             new SQLParam("@wow", ar.IsWOWBranch),
@@ -200,6 +224,7 @@ namespace FoxSDC_Server
                             new SQLParam("@VersionMinor", ar.VersionMinor),
                             new SQLParam("@Language", ar.Language),
                             new SQLParam("@DisplayLanguage", ar.DisplayLanguage),
+                            new SQLParam("@user", ar.HKCUUser),
                             new SQLParam("@DT", DateTime.UtcNow));
                     }
                     foreach (AddRemoveApp ar in Added)
@@ -217,6 +242,7 @@ namespace FoxSDC_Server
                             new SQLData("VersionMinor", ar.VersionMinor),
                             new SQLData("Language", ar.Language),
                             new SQLData("DisplayLanguage", ar.DisplayLanguage),
+                            new SQLData("HKCUUser", ar.HKCUUser),
                             new SQLData("DT", DateTime.UtcNow));
                     }
                     sql.CommitTransaction();
@@ -311,7 +337,9 @@ namespace FoxSDC_Server
 
         void ReportThings(SQLLib sql, string MachineID, string Method, AddRemoveApp ar, ref Dictionary<string, Int64> AlreadyReported, ReportingPolicyElement RepElementRoot)
         {
-            string ID = ar.ProductID.ToLower() + "\\\\" + (ar.IsWOWBranch == true ? "1" : "0");
+            string ID = MachineID + "\\\\" + ar.ProductID.ToLower() + "\\\\" + (ar.IsWOWBranch == true ? "1" : "0");
+            if (string.IsNullOrWhiteSpace(ar.HKCUUser) == false)
+                ID += "\\\\" + ar.HKCUUser;
             bool ReportToAdmin = RepElementRoot.ReportToAdmin.Value;
             bool ReportToClient = RepElementRoot.ReportToClient.Value;
             bool UrgentForAdmin = RepElementRoot.UrgentForAdmin.Value;
@@ -450,6 +478,7 @@ namespace FoxSDC_Server
                     res += rd.App.Name + "\r\n";
                     res += "Version: " + rd.App.DisplayVersion + "\r\n";
                     res += "ID: " + rd.App.ProductID + "\r\n";
+                    res += "HKCUUser: " + (string.IsNullOrWhiteSpace(rd.App.HKCUUser) == true ? "HKLM SYSTEM" : rd.App.HKCUUser) + "\r\n";
                     res += "IsWOW: " + (rd.App.IsWOWBranch == false ? "no" : "yes") +
                         " IsMSI: " + (rd.App.IsMSI == false ? "no" : "yes") +
                         " IsSystem: " + (rd.App.IsSystemComponent == false ? "no" : "yes");
@@ -486,7 +515,7 @@ namespace FoxSDC_Server
                 SqlDataReader dr;
                 if (string.IsNullOrWhiteSpace(id) == true)
                 {
-                    dr = sql.ExecSQLReader("select * from AddRemovePrograms inner join ComputerAccounts on ComputerAccounts.MachineID=AddRemovePrograms.MachineID order by Name,VersionMajor,VersionMinor");
+                    dr = sql.ExecSQLReader("select * from AddRemovePrograms inner join ComputerAccounts on ComputerAccounts.MachineID=AddRemovePrograms.MachineID left outer join UsersList on UsersList.SID=HKCUUser AND UsersList.MachineID=AddRemovePrograms.MachineID order by Name,VersionMajor,VersionMinor");
                 }
                 else
                 {
@@ -497,7 +526,7 @@ namespace FoxSDC_Server
                         return (RESTStatus.NotFound);
                     }
 
-                    dr = sql.ExecSQLReader("select * from AddRemovePrograms inner join ComputerAccounts on ComputerAccounts.MachineID=AddRemovePrograms.MachineID WHERE ComputerAccounts.MachineID=@m order by Name,VersionMajor,VersionMinor",
+                    dr = sql.ExecSQLReader("select * from AddRemovePrograms inner join ComputerAccounts on ComputerAccounts.MachineID=AddRemovePrograms.MachineID left outer join UsersList on UsersList.SID=HKCUUser AND UsersList.MachineID=AddRemovePrograms.MachineID WHERE ComputerAccounts.MachineID=@m order by Name,VersionMajor,VersionMinor",
                         new SQLParam("@m", id));
                 }
 
@@ -518,6 +547,11 @@ namespace FoxSDC_Server
                     ar.VersionMajor = Convert.ToInt32(dr["VersionMajor"]);
                     ar.VersionMinor = Convert.ToInt32(dr["VersionMinor"]);
                     ar.DT = SQLLib.GetDTUTC(dr["DT"]);
+                    ar.HKCUUser = Convert.ToString(dr["HKCUUser"]);
+                    ar.Username = Convert.ToString(dr["Username"]);
+                    if (string.IsNullOrWhiteSpace(ar.HKCUUser) == true)
+                        ar.HKCUUser = "";
+
                     AddRemoveRep.Items.Add(ar);
                 }
                 dr.Close();

@@ -156,6 +156,21 @@ namespace FoxSDC_Agent
             return (SignedOK);
         }
 
+        public static bool Verify(SimpleTaskDataSigned data)
+        {
+            bool SignedOK = false;
+            foreach (FilesystemCertificateData cer in FilesystemData.LoadedCertificates)
+            {
+                if (Certificates.Verify(data, cer.Certificate) == true)
+                {
+                    SignedOK = true;
+                    break;
+                }
+            }
+
+            return (SignedOK);
+        }
+
         public static bool Verify(NetInt64ListSigned data)
         {
             bool SignedOK = false;

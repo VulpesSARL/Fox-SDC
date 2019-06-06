@@ -102,7 +102,7 @@ namespace FoxSDC_Server
             if (Certificates.Sign(PackageDataSigned, SettingsManager.Settings.UseCertificate) == false)
             {
                 FoxEventLog.WriteEventLog("Cannot sign package element with Certificate " + SettingsManager.Settings.UseCertificate, System.Diagnostics.EventLogEntryType.Warning);
-                ni.Error = "Cannot sign policy list with Certificate " + SettingsManager.Settings.UseCertificate;
+                ni.Error = "Cannot sign package element with Certificate " + SettingsManager.Settings.UseCertificate;
                 ni.ErrorID = ErrorFlags.CannotSign;
                 return (RESTStatus.ServerError);
             }

@@ -38,6 +38,10 @@
             this.chkDisableWinLicenseSync = new System.Windows.Forms.CheckBox();
             this.cmdSave = new System.Windows.Forms.Button();
             this.chkEnableBitlockerRKSync = new System.Windows.Forms.CheckBox();
+            this.chkDisableUserSync = new System.Windows.Forms.CheckBox();
+            this.chkDisableStartupSync = new System.Windows.Forms.CheckBox();
+            this.chkDisableSMART = new System.Windows.Forms.CheckBox();
+            this.chkDisableSimpleTasks = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // lblName
@@ -128,10 +132,10 @@
             // 
             // cmdSave
             // 
-            this.cmdSave.Location = new System.Drawing.Point(13, 314);
+            this.cmdSave.Location = new System.Drawing.Point(13, 341);
             this.cmdSave.Name = "cmdSave";
             this.cmdSave.Size = new System.Drawing.Size(91, 50);
-            this.cmdSave.TabIndex = 8;
+            this.cmdSave.TabIndex = 12;
             this.cmdSave.Text = "Save";
             this.cmdSave.UseVisualStyleBackColor = true;
             this.cmdSave.Click += new System.EventHandler(this.cmdSave_Click);
@@ -139,18 +143,66 @@
             // chkEnableBitlockerRKSync
             // 
             this.chkEnableBitlockerRKSync.AutoSize = true;
-            this.chkEnableBitlockerRKSync.Location = new System.Drawing.Point(31, 223);
+            this.chkEnableBitlockerRKSync.Location = new System.Drawing.Point(31, 303);
             this.chkEnableBitlockerRKSync.Name = "chkEnableBitlockerRKSync";
             this.chkEnableBitlockerRKSync.Size = new System.Drawing.Size(205, 17);
-            this.chkEnableBitlockerRKSync.TabIndex = 7;
+            this.chkEnableBitlockerRKSync.TabIndex = 11;
             this.chkEnableBitlockerRKSync.Text = "Enable Bitlocker Recovery Keys Sync";
             this.chkEnableBitlockerRKSync.ThreeState = true;
             this.chkEnableBitlockerRKSync.UseVisualStyleBackColor = true;
+            // 
+            // chkDisableUserSync
+            // 
+            this.chkDisableUserSync.AutoSize = true;
+            this.chkDisableUserSync.Location = new System.Drawing.Point(31, 191);
+            this.chkDisableUserSync.Name = "chkDisableUserSync";
+            this.chkDisableUserSync.Size = new System.Drawing.Size(113, 17);
+            this.chkDisableUserSync.TabIndex = 7;
+            this.chkDisableUserSync.Text = "Disable User Sync";
+            this.chkDisableUserSync.ThreeState = true;
+            this.chkDisableUserSync.UseVisualStyleBackColor = true;
+            // 
+            // chkDisableStartupSync
+            // 
+            this.chkDisableStartupSync.AutoSize = true;
+            this.chkDisableStartupSync.Location = new System.Drawing.Point(31, 214);
+            this.chkDisableStartupSync.Name = "chkDisableStartupSync";
+            this.chkDisableStartupSync.Size = new System.Drawing.Size(125, 17);
+            this.chkDisableStartupSync.TabIndex = 8;
+            this.chkDisableStartupSync.Text = "Disable Startup Sync";
+            this.chkDisableStartupSync.ThreeState = true;
+            this.chkDisableStartupSync.UseVisualStyleBackColor = true;
+            // 
+            // chkDisableSMART
+            // 
+            this.chkDisableSMART.AutoSize = true;
+            this.chkDisableSMART.Location = new System.Drawing.Point(31, 237);
+            this.chkDisableSMART.Name = "chkDisableSMART";
+            this.chkDisableSMART.Size = new System.Drawing.Size(129, 17);
+            this.chkDisableSMART.TabIndex = 9;
+            this.chkDisableSMART.Text = "Disable SMART Sync";
+            this.chkDisableSMART.ThreeState = true;
+            this.chkDisableSMART.UseVisualStyleBackColor = true;
+            // 
+            // chkDisableSimpleTasks
+            // 
+            this.chkDisableSimpleTasks.AutoSize = true;
+            this.chkDisableSimpleTasks.Location = new System.Drawing.Point(31, 260);
+            this.chkDisableSimpleTasks.Name = "chkDisableSimpleTasks";
+            this.chkDisableSimpleTasks.Size = new System.Drawing.Size(127, 17);
+            this.chkDisableSimpleTasks.TabIndex = 10;
+            this.chkDisableSimpleTasks.Text = "Disable Simple Tasks";
+            this.chkDisableSimpleTasks.ThreeState = true;
+            this.chkDisableSimpleTasks.UseVisualStyleBackColor = true;
             // 
             // ctlClientSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.chkDisableSimpleTasks);
+            this.Controls.Add(this.chkDisableSMART);
+            this.Controls.Add(this.chkDisableStartupSync);
+            this.Controls.Add(this.chkDisableUserSync);
             this.Controls.Add(this.chkEnableBitlockerRKSync);
             this.Controls.Add(this.cmdSave);
             this.Controls.Add(this.chkDisableWinLicenseSync);
@@ -162,7 +214,7 @@
             this.Controls.Add(this.chkDisableEventLogSync);
             this.Controls.Add(this.lblName);
             this.Name = "ctlClientSettings";
-            this.Size = new System.Drawing.Size(312, 374);
+            this.Size = new System.Drawing.Size(312, 404);
             this.Load += new System.EventHandler(this.ctlClientSettings_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -181,5 +233,9 @@
         private System.Windows.Forms.CheckBox chkDisableWinLicenseSync;
         private System.Windows.Forms.Button cmdSave;
         private System.Windows.Forms.CheckBox chkEnableBitlockerRKSync;
+        private System.Windows.Forms.CheckBox chkDisableUserSync;
+        private System.Windows.Forms.CheckBox chkDisableStartupSync;
+        private System.Windows.Forms.CheckBox chkDisableSMART;
+        private System.Windows.Forms.CheckBox chkDisableSimpleTasks;
     }
 }

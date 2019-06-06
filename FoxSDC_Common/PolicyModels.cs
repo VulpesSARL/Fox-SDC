@@ -354,6 +354,10 @@ namespace FoxSDC_Common
         public bool? DisableDeviceManagerSync;
         public bool? DisableFilterDriverSync;
         public bool? DisableWinLicenseSync;
+        public bool? DisableUsersSync;
+        public bool? DisableStartupSync;
         public bool? EnableBitlockerRKSync;
+        public bool? DisableSMARTSync;
+        public bool? DisableSimpleTasks;
     }
 }

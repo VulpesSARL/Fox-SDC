@@ -63,6 +63,8 @@ namespace FoxSDC_Agent_UI
             lblLicID.Text = LicID;
             lblLicOwner.Text = LicOwner;
             lblLicCustomID.Text = LicCustomID;
+
+            lblMemoriam.Text = FoxSDC_Common.Memoriam.InMemoriam;
         }
 
         private void copyToolStripMenuItem_Click(object sender, EventArgs e)

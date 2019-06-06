@@ -41,8 +41,10 @@ namespace FoxSDC_MGMT
             treeAction.Nodes.Add("allprograms", "All programs", 3, 3);
             treeAction.Nodes.Add("alldiskdata", "All disk status", 7, 7);
             treeAction.Nodes.Add("alleventlogs", "All Event logs", 11, 11);
+            treeAction.Nodes.Add("allstartup", "Startup Elements", 22, 22);
             treeAction.Nodes.Add("pendingchats", "Pending chats", 16, 16);
             treeAction.Nodes.Add("uploaddownload", "Uploads / Downloads", 21, 21);
+            treeAction.Nodes.Add("simpletasks", "Simple Tasks", 23, 23);
             GroupFolders.CreateRootFolder(treeAction);
             treeAction.SelectedNode = treeAction.Nodes[0];
 
@@ -113,6 +115,13 @@ namespace FoxSDC_MGMT
                         Splitty.Panel2.Controls.Add(ctl);
                         break;
                     }
+                case "allstartup":
+                    {
+                        ctlStartupItems ctl = new ctlStartupItems("");
+                        ctl.Dock = DockStyle.Fill;
+                        Splitty.Panel2.Controls.Add(ctl);
+                        break;
+                    }
                 case "pendingchats":
                     {
                         ctlPendingChats ctl = new ctlPendingChats();
@@ -123,6 +132,13 @@ namespace FoxSDC_MGMT
                 case "uploaddownload":
                     {
                         ctlUploadDownloadStatus ctl = new ctlUploadDownloadStatus();
+                        ctl.Dock = DockStyle.Fill;
+                        Splitty.Panel2.Controls.Add(ctl);
+                        break;
+                    }
+                case "simpletasks":
+                    {
+                        ctlSimpleTasks ctl = new ctlSimpleTasks("");
                         ctl.Dock = DockStyle.Fill;
                         Splitty.Panel2.Controls.Add(ctl);
                         break;
@@ -431,8 +447,8 @@ namespace FoxSDC_MGMT
         {
             if (UploadDownloadDataThread.DataListRunning > 0)
             {
-                if (MessageBox.Show (this, "Ther're some upload / downloads running. If you close the Management now, these will be canceled.\nDo you want to close the Management Window?",
-                    Program.Title, MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2)== DialogResult.No)
+                if (MessageBox.Show(this, "Ther're some upload / downloads running. If you close the Management now, these will be canceled.\nDo you want to close the Management Window?",
+                    Program.Title, MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2) == DialogResult.No)
                 {
                     e.Cancel = true;
                     return;

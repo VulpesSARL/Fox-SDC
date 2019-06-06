@@ -320,6 +320,11 @@ namespace FoxSDC_Server
 
             lock (ni.sqllock)
             {
+                sql.ExecSQLScalar("UPDATE ComputerAccounts SET Accepted=0 WHERE MachineID=@m", new SQLParam("@m", id));
+            }
+
+            lock (ni.sqllock)
+            {
                 //delete other things
                 sql.ExecSQLScalar(@"DECLARE @Deleted_Rows INT
                             DECLARE @Deleted_Rows_Total INT
@@ -336,32 +341,40 @@ namespace FoxSDC_Server
                             Select @Deleted_Rows_Total",
                             new SQLParam("@m", id));
             }
-            lock(ni.sqllock)
+            lock (ni.sqllock)
                 sql.ExecSQL("UPDATE Policies SET MachineID=null, Enabled=0 WHERE MachineID=@m", new SQLParam("@m", id));
-            lock(ni.sqllock)
+            lock (ni.sqllock)
                 sql.ExecSQL("DELETE FROM AddRemovePrograms WHERE MachineID=@m", new SQLParam("@m", id));
-            lock(ni.sqllock)
+            lock (ni.sqllock)
                 sql.ExecSQL("DELETE FROM BitlockerRK WHERE MachineID=@m", new SQLParam("@m", id));
-            lock(ni.sqllock)
+            lock (ni.sqllock)
                 sql.ExecSQL("DELETE FROM DevicesConfig WHERE MachineID=@m", new SQLParam("@m", id));
-            lock(ni.sqllock)
+            lock (ni.sqllock)
                 sql.ExecSQL("DELETE FROM DevicesFilter WHERE MachineID=@m", new SQLParam("@m", id));
-            lock(ni.sqllock)
+            lock (ni.sqllock)
                 sql.ExecSQL("DELETE FROM DiskData WHERE MachineID=@m", new SQLParam("@m", id));
-            lock(ni.sqllock)
+            lock (ni.sqllock)
                 sql.ExecSQL("DELETE FROM NetworkConfigSuppl WHERE MachineID=@m", new SQLParam("@m", id));
-            lock(ni.sqllock)
+            lock (ni.sqllock)
                 sql.ExecSQL("DELETE FROM NetworkConfig WHERE MachineID=@m", new SQLParam("@m", id));
-            lock(ni.sqllock)
+            lock (ni.sqllock)
                 sql.ExecSQL("DELETE FROM Reporting WHERE MachineID=@m", new SQLParam("@m", id));
-            lock(ni.sqllock)
+            lock (ni.sqllock)
                 sql.ExecSQL("DELETE FROM WindowsLic WHERE MachineID=@m", new SQLParam("@m", id));
-            lock(ni.sqllock)
+            lock (ni.sqllock)
                 sql.ExecSQL("DELETE FROM Chats WHERE MachineID=@m", new SQLParam("@m", id));
+            lock (ni.sqllock)
+                sql.ExecSQL("DELETE FROM UsersList WHERE MachineID=@m", new SQLParam("@m", id));
+            lock (ni.sqllock)
+                sql.ExecSQL("DELETE FROM SMARTDataAttributes WHERE MachineID=@m", new SQLParam("@m", id));
+            lock (ni.sqllock)
+                sql.ExecSQL("DELETE FROM SMARTData WHERE MachineID=@m", new SQLParam("@m", id));
+            lock (ni.sqllock)
+                sql.ExecSQL("DELETE FROM SimpleTasks WHERE MachineID=@m", new SQLParam("@m", id));
             lock (ni.sqllock)
                 Modules.FileTransfer.DeleteAllFiles(sql, id);
             //finally delete computer
-            lock(ni.sqllock)
+            lock (ni.sqllock)
                 sql.ExecSQL("DELETE FROM ComputerAccounts WHERE MachineID=@m", new SQLParam("@m", id));
 
             return (RESTStatus.NoContent);

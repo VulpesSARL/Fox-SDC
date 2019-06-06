@@ -314,17 +314,51 @@ namespace FoxSDC_Common
         public int VersionMinor;
         public string Language;
         public string DisplayLanguage;
+        public string HKCUUser;
     }
 
     public class ListAddRemoveApps
     {
         public List<AddRemoveApp> Items;
         public string MachineID;
+        public List<string> SIDUsers;
     }
 
     public class ListAddRemoveAppsReport
     {
         public List<AddRemoveAppReport> Items;
+    }
+
+    public class ListStartupItems
+    {
+        public List<StartupItem> Items;
+        public string MachineID;
+        public List<string> SIDUsers;
+    }
+
+    public class StartupItem
+    {
+        public string Key;
+        public string Item;
+        public string Location;
+        public string HKCUUser;
+    }
+
+    public class StartupItemFull
+    {
+        public string Computername;
+        public string MachineID;
+        public string Key;
+        public string Item;
+        public string Location;
+        public string HKCUUser;
+        public string Username;
+        public DateTime DT;
+    }
+
+    public class ListStartupItemReport
+    {
+        public List<StartupItemFull> Items;
     }
 
     public class ListEventLogReport
@@ -389,6 +423,8 @@ namespace FoxSDC_Common
         public string Language;
         public string DisplayLanguage;
         public DateTime DT;
+        public string HKCUUser;
+        public string Username;
     }
 
     public class NewPolicyReq
@@ -570,6 +606,12 @@ namespace FoxSDC_Common
         public string Name;
     }
 
+    public class UsersList
+    {
+        public Dictionary<string,string> Users;
+        public string MachineID;
+    }
+
     public class PnPDeviceList
     {
         public string MachineID;
@@ -695,4 +737,86 @@ namespace FoxSDC_Common
         public byte[] Signature;
     }
 
+    public class VulpesSMARTInfoList
+    {
+        public List<VulpesSMARTInfo> List;
+        public string MachineID;
+    }
+
+    public class VulpesSMARTInfo
+    {
+        public string PNPDeviceID;
+        public string Name;
+        public string Model;
+        public string InterfaceType;
+        public string FirmwareRevision;
+        public string SerialNumber;
+        public Int64 Size;
+        public string Status;
+        public string Caption;
+        public bool? PredictFailure;
+        public byte[] VendorSpecific;
+        public byte[] VendorSpecificThreshold;
+        public Dictionary<int, VulpesSMARTAttribute> Attributes = new Dictionary<int, VulpesSMARTAttribute>();
+    }
+
+    public class VulpesSMARTAttribute
+    {
+        public int ID;
+        public int Flags;
+        public bool FailureImminent;
+        public int Value;
+        public int Worst;
+        public int Vendordata;
+        public int Threshold;
+    }
+
+    public class SimpleTaskLite
+    {
+        public string MachineID;
+        public string ComputerName;
+        public Int64 ID;
+        public int Type;
+        public string Name;
+    }
+
+    public class SimpleTaskLiteList
+    {
+        public List<SimpleTaskLite> List;
+    }
+
+    public class SimpleTask
+    {
+        public string MachineID;
+        public Int64 ID;
+        public int Type;
+        public string Name;
+        public string Data;
+        public DateTime TimeStampCheck;
+    }
+
+    public class SimpleTaskResult
+    {
+        public Int64 ID;
+        public string Name;
+        public string MachineID;
+        public int Result;
+        public string Text;
+    }
+
+    public class SimpleTaskRunProgramm
+    {
+        public string Executable;
+        public string Parameters;
+    }
+
+    public class SimpleTaskRegistry
+    {
+        public int Action;
+        public int Root;
+        public string Folder;
+        public string Valuename;
+        public int ValueType;
+        public string Data;
+    }
 }

@@ -1999,6 +1999,7 @@
     <Compile Include="JSON\Utilities\ValidationUtils.cs" />
     <Compile Include="JSON\WriteState.cs" />
     <Compile Include="MD5.cs" />
+    <Compile Include="Memoriam.cs" />
     <Compile Include="Models.cs" />
     <Compile Include="Network.cs" />
     <Compile Include="NullTest.cs" />
@@ -2020,6 +2021,7 @@
     <Compile Include="ReportingStatusPicture.cs" />
     <Compile Include="Scheduler.cs" />
     <Compile Include="SmartCards.cs" />
+    <Compile Include="SMARTDescription.cs" />
     <Compile Include="UCID.cs" />
     <Compile Include="Win10DevClasses.cs" />
     <Compile Include="Win10Version.cs" />

@@ -103,9 +103,49 @@ namespace FoxSDC_Server.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
+        internal static System.Drawing.Icon Run {
+            get {
+                object obj = ResourceManager.GetObject("Run", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
         internal static System.Drawing.Icon setup {
             get {
                 object obj = ResourceManager.GetObject("setup", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon smart_hdd {
+            get {
+                object obj = ResourceManager.GetObject("smart_hdd", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon smart_hddcrit {
+            get {
+                object obj = ResourceManager.GetObject("smart_hddcrit", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon ST {
+            get {
+                object obj = ResourceManager.GetObject("ST", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
         }

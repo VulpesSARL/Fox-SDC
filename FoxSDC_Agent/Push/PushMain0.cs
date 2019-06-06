@@ -18,7 +18,7 @@ namespace FoxSDC_Agent.Push
             public Network net;
         }
 
-        static bool StopThread = false;
+        static bool StopThread { get; set; } = false;
         static Thread pm;
         const int WaitNoConnection = 120;
         const int WaitPDisNULL = 60;
@@ -177,6 +177,8 @@ namespace FoxSDC_Agent.Push
 
                     if (pd.Data.Action == "repeat")
                     {
+                        if (StopThread == true)
+                            return;
                         FoxEventLog.VerboseWriteEventLog("Push0: repeat", System.Diagnostics.EventLogEntryType.Information);
                         continue;
                     }

@@ -40,6 +40,8 @@ namespace FoxSDC_MGMT
             imageList.Images.Add(Resources.fromsrv); //19
             imageList.Images.Add(Resources.fromsrv2); //20
             imageList.Images.Add(Resources.fromtosrv); //21
+            imageList.Images.Add(Resources.Run); //22
+            imageList.Images.Add(Resources.ST); //23
         }
 
         [STAThread]

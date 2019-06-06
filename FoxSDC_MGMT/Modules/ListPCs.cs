@@ -15,12 +15,73 @@ namespace FoxSDC_MGMT
     {
         bool? Approved;
         Int64? Group;
+        bool LstOnly;
 
         public ctlListPCs(bool? approved, Int64? group)
         {
             Approved = approved;
             Group = group;
             InitializeComponent();
+        }
+
+        public void SelectMachineID(string MID)
+        {
+            foreach (ListViewItem lst in lstComputers.Items)
+            {
+                ComputerData cd = (ComputerData)lst.Tag;
+                if (cd.MachineID.ToLower() == MID.ToLower())
+                {
+                    lst.Checked = true;
+                    lst.Selected = true;
+                    lstComputers.EnsureVisible(lst.Index);
+                }
+            }
+        }
+
+        public void UncheckItems()
+        {
+            foreach (ListViewItem lst in lstComputers.Items)
+            {
+                lst.Checked = false;
+            }
+        }
+
+        public ctlListPCs()
+        {
+            Approved = true;
+            Group = null;
+            InitializeComponent();
+        }
+        public bool ShowCheckBoxes
+        {
+            get
+            {
+                return (lstComputers.CheckBoxes);
+            }
+            set
+            {
+                lstComputers.CheckBoxes = value;
+            }
+        }
+
+        public bool ListOnly
+        {
+            get
+            {
+                return (LstOnly);
+            }
+            set
+            {
+                LstOnly = value;
+            }
+        }
+
+        public ListView.CheckedListViewItemCollection CheckedItems
+        {
+            get
+            {
+                return (lstComputers.CheckedItems);
+            }
         }
 
         void LoadList()
@@ -52,12 +113,18 @@ namespace FoxSDC_MGMT
 
         private void ctlUnapprovedPCs_Load(object sender, EventArgs e)
         {
+            if (this.DesignMode == true)
+                return;
             Program.LoadImageList(imageList1);
             LoadList();
+            if (LstOnly == true)
+                lstComputers.ContextMenu = null;
         }
 
         private void propertiesToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (LstOnly == true)
+                return;
             if (lstComputers.SelectedItems.Count == 0)
                 return;
             ComputerData cd = (ComputerData)lstComputers.SelectedItems[0].Tag;
@@ -67,12 +134,16 @@ namespace FoxSDC_MGMT
 
         private void lstComputers_KeyDown(object sender, KeyEventArgs e)
         {
+            if (LstOnly == true)
+                return;
             if (e.KeyCode == Keys.Enter || e.KeyCode == Keys.Return)
                 propertiesToolStripMenuItem_Click(sender, e);
         }
 
         private void approveRefuseToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (LstOnly == true)
+                return;
             if (lstComputers.SelectedItems.Count == 0)
                 return;
 
@@ -93,11 +164,15 @@ namespace FoxSDC_MGMT
 
         private void lstComputers_DoubleClick(object sender, EventArgs e)
         {
+            if (LstOnly == true)
+                return;
             propertiesToolStripMenuItem_Click(sender, e);
         }
 
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (LstOnly == true)
+                return;
             if (lstComputers.SelectedItems.Count == 0)
                 return;
             foreach (ListViewItem l in lstComputers.SelectedItems)
@@ -119,6 +194,8 @@ namespace FoxSDC_MGMT
 
         private void setcommentToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (LstOnly == true)
+                return;
             if (lstComputers.SelectedItems.Count != 1)
                 return;
             foreach (ListViewItem l in lstComputers.SelectedItems)
@@ -134,6 +211,8 @@ namespace FoxSDC_MGMT
 
         private void connectToScreenToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (LstOnly == true)
+                return;
             if (lstComputers.SelectedItems.Count == 0)
                 return;
             foreach (ListViewItem l in lstComputers.SelectedItems)

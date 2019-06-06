@@ -200,6 +200,97 @@ namespace FoxSDC_MGMT
                             res = res.Substring(0, res.Length - 2);
                         break;
                     }
+                case 4:
+                    {
+                        ReportingPolicyElementStartup d = JsonConvert.DeserializeObject<ReportingPolicyElementStartup>(e);
+                        if (d.Names == null)
+                            d.Names = new List<string>();
+                        res = "";
+                        switch (d.SearchNameIn)
+                        {
+                            case 0: res += "Startup Item with their exact text: "; break;
+                            case 1: res += "Startup Item containing: "; break;
+                            case 2: res += "Startup Item starting with: "; break;
+                            default: res += "????? " + d.SearchNameIn.ToString() + ": "; break;
+                        }
+                        if (d.Names.Count == 0)
+                        {
+                            res += "(any)";
+                        }
+                        else
+                        {
+                            foreach (string s in d.Names)
+                            {
+                                res += "\"" + s + "\", ";
+                            }
+                            if (res.EndsWith(", ") == true)
+                                res = res.Substring(0, res.Length - 2);
+                        }
+                        res += " ";
+
+                        if (string.IsNullOrWhiteSpace(d.SearchLocations) == false)
+                        {
+                            res += " Locations: " + d.SearchLocations;
+                        }
+
+                        res += " Notify on: ";
+                        if (d.NotifyOnAdd == true)
+                            res += "Add, ";
+                        if (d.NotifyOnRemove == true)
+                            res += "Removal, ";
+                        if (d.NotifyOnUpdate == true)
+                            res += "Update, ";
+                        if (res.EndsWith(", ") == true)
+                            res = res.Substring(0, res.Length - 2);
+                        break;
+                    }
+                case 5:
+                    {
+                        ReportingPolicyElementSMART d = JsonConvert.DeserializeObject<ReportingPolicyElementSMART>(e);
+                        res = "";
+
+                        res += " Notify on: ";
+                        if (d.NotifyOnAdd == true)
+                            res += "Add, ";
+                        if (d.NotifyOnRemove == true)
+                            res += "Removal, ";
+                        if (d.NotifyOnUpdate == true)
+                        {
+                            res += "Update";
+                            if (d.SkipAttribUpdateReport != null)
+                            {
+                                if (d.SkipAttribUpdateReport.Count > 0)
+                                {
+                                    res += " (Skip Attributes: ";
+                                    foreach (int s in d.SkipAttribUpdateReport)
+                                    {
+                                        res += "0x" + s.ToString("X") + ", ";
+                                    }
+                                    if (res.EndsWith(", ") == true)
+                                        res = res.Substring(0, res.Length - 2);
+                                    res += "), ";
+                                }
+                                else
+                                {
+                                    res += ", ";
+                                }
+                            }
+                            else
+                            {
+                                res += ", ";
+                            }
+                        }
+                        if (d.NotifyOnError == true)
+                            res += "Error, ";
+                        if (res.EndsWith(", ") == true)
+                            res = res.Substring(0, res.Length - 2);
+                        break;
+                    }
+                case 6:
+                    {
+                        res = "Simple Task is completed";
+                        break;
+                    }
             }
             return (res);
         }
@@ -212,6 +303,9 @@ namespace FoxSDC_MGMT
                 lstType.Items.Add("Disk Space");
                 lstType.Items.Add("Event Log");
                 lstType.Items.Add("Add/Remove Programs");
+                lstType.Items.Add("Startup Elements");
+                lstType.Items.Add("SMART Reporting");
+                lstType.Items.Add("Simple Tasks completed");
             }
 
             lstType.SelectedIndex = (int)Cert.Type;
@@ -304,6 +398,30 @@ namespace FoxSDC_MGMT
                         UpdateStatus();
                     }
                     break;
+                case 4:
+                    {
+                        frmStartup d = new frmStartup(null);
+                        if (d.ShowDialog(this) != DialogResult.OK)
+                            return;
+                        Cert.ReportingElements.Add(JsonConvert.SerializeObject(d.Element));
+                        UpdateStatus();
+                    }
+                    break;
+                case 5:
+                    {
+                        frmSMARTConfig d = new frmSMARTConfig(null);
+                        if (d.ShowDialog(this) != DialogResult.OK)
+                            return;
+                        Cert.ReportingElements.Add(JsonConvert.SerializeObject(d.Element));
+                        UpdateStatus();
+                    }
+                    break;
+                case 6:
+                    {
+                        Cert.ReportingElements.Add(JsonConvert.SerializeObject(new ReportingPolicyElementSimpleTaskCompleted()));
+                        UpdateStatus();
+                    }
+                    break;
             }
         }
 
@@ -388,6 +506,30 @@ namespace FoxSDC_MGMT
                         if (d.ShowDialog(this) != DialogResult.OK)
                             return;
                         Cert.ReportingElements[index] = JsonConvert.SerializeObject(d.Element);
+                        UpdateStatus();
+                    }
+                    break;
+                case 4:
+                    {
+                        frmStartup d = new frmStartup(r.Element);
+                        if (d.ShowDialog(this) != DialogResult.OK)
+                            return;
+                        Cert.ReportingElements[index] = JsonConvert.SerializeObject(d.Element);
+                        UpdateStatus();
+                    }
+                    break;
+                case 5:
+                    {
+                        frmSMARTConfig d = new frmSMARTConfig(r.Element);
+                        if (d.ShowDialog(this) != DialogResult.OK)
+                            return;
+                        Cert.ReportingElements[index] = JsonConvert.SerializeObject(d.Element);
+                        UpdateStatus();
+                    }
+                    break;
+                case 6:
+                    {
+                        Cert.ReportingElements[index] = JsonConvert.SerializeObject(new ReportingPolicyElementSimpleTaskCompleted());
                         UpdateStatus();
                     }
                     break;

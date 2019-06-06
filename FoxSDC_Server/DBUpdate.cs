@@ -9,7 +9,7 @@ namespace FoxSDC_Server
 {
     class DBUpdate
     {
-        public const int DBVersion = 33;
+        public const int DBVersion = 40;
         static public bool UpdateDB(SQLLib sql)
         {
             try
@@ -651,6 +651,154 @@ namespace FoxSDC_Server
                         sql.ExecSQL("ALTER TABLE [FileTransfers] WITH CHECK ADD  CONSTRAINT [FK_FileTransfers_ComputerAccounts] FOREIGN KEY([MachineID]) REFERENCES [ComputerAccounts] ([MachineID])");
                         sql.ExecSQL("ALTER TABLE [FileTransfers] CHECK CONSTRAINT [FK_FileTransfers_ComputerAccounts]");
                         Version = 33;
+                        sql.ExecSQL("UPDATE CONFIG SET [Value]=@ver WHERE [Key]='Version'", new SQLParam("@ver", Version));
+                        sql.CommitTransaction();
+                        FoxEventLog.WriteEventLog("Updated DB to Version " + Version.ToString(), EventLogEntryType.Information);
+                        return (false);
+                    case 33:
+                        sql.BeginTransaction();
+                        sql.ExecSQL("ALTER TABLE AddRemovePrograms ADD HKCUUser varchar(98) NOT NULL DEFAULT ('')");
+                        Version = 34;
+                        sql.ExecSQL("UPDATE CONFIG SET [Value]=@ver WHERE [Key]='Version'", new SQLParam("@ver", Version));
+                        sql.CommitTransaction();
+                        FoxEventLog.WriteEventLog("Updated DB to Version " + Version.ToString(), EventLogEntryType.Information);
+                        return (false);
+                    case 34:
+                        sql.BeginTransaction();
+                        sql.ExecSQL("ALTER TABLE AddRemovePrograms DROP CONSTRAINT PK_AddRemovePrograms");
+                        sql.ExecSQL(@"ALTER TABLE AddRemovePrograms ADD CONSTRAINT
+                            PK_AddRemovePrograms PRIMARY KEY CLUSTERED 
+                            (
+                            MachineID,
+                            ProductID,
+                            IsWOWBranch,
+                            HKCUUser) WITH(STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]");
+                        Version = 35;
+                        sql.ExecSQL("UPDATE CONFIG SET [Value]=@ver WHERE [Key]='Version'", new SQLParam("@ver", Version));
+                        sql.CommitTransaction();
+                        FoxEventLog.WriteEventLog("Updated DB to Version " + Version.ToString(), EventLogEntryType.Information);
+                        return (false);
+                    case 35:
+                        sql.BeginTransaction();
+                        sql.ExecSQL(@"CREATE TABLE UsersList
+                            (
+                            MachineID nvarchar(100) NOT NULL,
+                            SID varchar(100) NOT NULL,
+                            Username nvarchar(200) NOT NULL
+                            )  ON[PRIMARY]");
+                        sql.ExecSQL(@"ALTER TABLE UsersList ADD CONSTRAINT PK_UsersList PRIMARY KEY CLUSTERED
+                            (
+                            MachineID,
+                            SID
+                            ) WITH(STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON[PRIMARY]");
+                        sql.ExecSQL("ALTER TABLE UsersList WITH CHECK ADD  CONSTRAINT [FK_UsersList_ComputerAccounts] FOREIGN KEY([MachineID]) REFERENCES [ComputerAccounts] ([MachineID])");
+                        sql.ExecSQL("ALTER TABLE UsersList CHECK CONSTRAINT [FK_UsersList_ComputerAccounts]");
+                        Version = 36;
+                        sql.ExecSQL("UPDATE CONFIG SET [Value]=@ver WHERE [Key]='Version'", new SQLParam("@ver", Version));
+                        sql.CommitTransaction();
+                        FoxEventLog.WriteEventLog("Updated DB to Version " + Version.ToString(), EventLogEntryType.Information);
+                        return (false);
+                    case 36:
+                        sql.BeginTransaction();
+                        sql.ExecSQL(@"CREATE TABLE Startups
+                            (
+                            MachineID nvarchar(100) NOT NULL,
+                            Location varchar(50) NOT NULL,
+                            [Key] nvarchar(200) NOT NULL,
+                            [Item] nvarchar(200) NOT NULL,
+                            [DT] [datetime] NOT NULL,
+                            HKCUUser varchar(98) NOT NULL DEFAULT ('')
+                            )  ON[PRIMARY]");
+                        sql.ExecSQL(@"ALTER TABLE Startups ADD CONSTRAINT PK_Startups PRIMARY KEY CLUSTERED
+                            (
+                            MachineID,
+                            Location,
+                            [Key],
+                            HKCUUser
+                            ) WITH(STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON[PRIMARY]");
+                        sql.ExecSQL("ALTER TABLE Startups WITH CHECK ADD  CONSTRAINT [FK_Startups_ComputerAccounts] FOREIGN KEY([MachineID]) REFERENCES [ComputerAccounts] ([MachineID])");
+                        sql.ExecSQL("ALTER TABLE Startups CHECK CONSTRAINT [FK_Startups_ComputerAccounts]");
+                        Version = 37;
+                        sql.ExecSQL("UPDATE CONFIG SET [Value]=@ver WHERE [Key]='Version'", new SQLParam("@ver", Version));
+                        sql.CommitTransaction();
+                        FoxEventLog.WriteEventLog("Updated DB to Version " + Version.ToString(), EventLogEntryType.Information);
+                        return (false);
+                    case 37:
+                        sql.BeginTransaction();
+                        sql.ExecSQL(@"CREATE Table SMARTData
+                            (
+                            MachineID nvarchar(100) NOT NULL,
+                            PNPDeviceID varchar(200) NOT NULL,
+                            Name nvarchar(100) NOT NULL,
+                            Model nvarchar(100) NOT NULL,
+                            InterfaceType nvarchar(100) NOT NULL,
+                            FirmwareRevision nvarchar(100) NOT NULL,
+                            SerialNumber nvarchar(100) NOT NULL,
+                            Size BIGINT NOT NULL,
+                            Status nvarchar(100) NOT NULL,
+                            Caption nvarchar(100) NOT NULL,
+                            PredictFailure BIT NULL,
+                            VendorSpecific varbinary(MAX) NULL,
+                            VendorSpecificThreshold varbinary(MAX) NULL,
+                            [DT] datetime NOT NULL) ON [PRIMARY]");
+                        sql.ExecSQL(@"ALTER TABLE SMARTData ADD CONSTRAINT PK_SMARTData PRIMARY KEY CLUSTERED
+                            (
+                            MachineID,
+                            PNPDeviceID
+                            ) WITH(STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON[PRIMARY]");
+                        sql.ExecSQL("ALTER TABLE SMARTData WITH CHECK ADD  CONSTRAINT [FK_SMARTData_ComputerAccounts] FOREIGN KEY([MachineID]) REFERENCES [ComputerAccounts] ([MachineID])");
+                        sql.ExecSQL("ALTER TABLE SMARTData CHECK CONSTRAINT [FK_SMARTData_ComputerAccounts]");
+
+                        sql.ExecSQL(@"CREATE Table SMARTDataAttributes (
+                            MachineID nvarchar(100) NOT NULL,
+                            PNPDeviceID varchar(200) NOT NULL,
+                            ID int NOT NULL,
+                            Flags int NOT NULL,
+                            FailureImminent BIT NOT NULL,
+                            [Value] int NOT NULL,
+                            Worst int NOT NULL,
+                            Vendordata int NOT NULL,
+                            Threshold int NOT NULL) ON [PRIMARY]");
+                        sql.ExecSQL(@"ALTER TABLE SMARTDataAttributes ADD CONSTRAINT PK_SMARTDataAttributes PRIMARY KEY CLUSTERED
+                            (
+                            MachineID,
+                            PNPDeviceID,
+                            ID
+                            ) WITH(STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON[PRIMARY]");
+
+                        sql.ExecSQL("ALTER TABLE SMARTDataAttributes WITH CHECK ADD  CONSTRAINT [FK_SMARTDataAttributes_SMARTData] FOREIGN KEY([MachineID], [PNPDeviceID]) REFERENCES [SMARTData] ([MachineID], [PNPDeviceID])");
+                        sql.ExecSQL("ALTER TABLE SMARTDataAttributes CHECK CONSTRAINT [FK_SMARTDataAttributes_SMARTData]");
+                        Version = 38;
+                        sql.ExecSQL("UPDATE CONFIG SET [Value]=@ver WHERE [Key]='Version'", new SQLParam("@ver", Version));
+                        sql.CommitTransaction();
+                        FoxEventLog.WriteEventLog("Updated DB to Version " + Version.ToString(), EventLogEntryType.Information);
+                        return (false);
+                    case 38:
+                        sql.BeginTransaction();
+                        sql.ExecSQL(@"CREATE Table SimpleTasks
+                            (
+                            MachineID nvarchar(100) NOT NULL,
+                            ID bigint NOT NULL IDENTITY(1, 1),
+                            [Type] int NOT NULL,
+                            Name nvarchar(500) NOT NULL,
+                            [Data] nvarchar(MAX) NOT NULL
+                            ) ON [PRIMARY]");
+                        sql.ExecSQL(@"ALTER TABLE SimpleTasks ADD CONSTRAINT PK_SimpleTasks PRIMARY KEY CLUSTERED
+                            (
+                            MachineID,
+                            ID
+                            ) WITH(STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON[PRIMARY]");
+                        sql.ExecSQL("ALTER TABLE SimpleTasks WITH CHECK ADD CONSTRAINT [FK_SimpleTasks_ComputerTasks] FOREIGN KEY([MachineID]) REFERENCES [ComputerAccounts] ([MachineID])");
+                        sql.ExecSQL("ALTER TABLE SimpleTasks CHECK CONSTRAINT [FK_SimpleTasks_ComputerTasks]");
+                        Version = 39;
+                        sql.ExecSQL("UPDATE CONFIG SET [Value]=@ver WHERE [Key]='Version'", new SQLParam("@ver", Version));
+                        sql.CommitTransaction();
+                        FoxEventLog.WriteEventLog("Updated DB to Version " + Version.ToString(), EventLogEntryType.Information);
+                        return (false);
+                    case 39:
+                        sql.BeginTransaction();
+                        sql.ExecSQL(@"update Reporting Set Type=255 WHERE Type=6"); //Move the SMART Critical Reportings aside
+                        Version = 40;
                         sql.ExecSQL("UPDATE CONFIG SET [Value]=@ver WHERE [Key]='Version'", new SQLParam("@ver", Version));
                         sql.CommitTransaction();
                         FoxEventLog.WriteEventLog("Updated DB to Version " + Version.ToString(), EventLogEntryType.Information);

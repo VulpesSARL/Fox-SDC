@@ -54,6 +54,7 @@
             this.lblLicCustomID = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.lblMemoriam = new System.Windows.Forms.Label();
             this.contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -293,12 +294,23 @@
             this.pictureBox1.TabStop = false;
             this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
             // 
+            // lblMemoriam
+            // 
+            this.lblMemoriam.AutoSize = true;
+            this.lblMemoriam.ContextMenuStrip = this.contextMenuStrip1;
+            this.lblMemoriam.Location = new System.Drawing.Point(226, 317);
+            this.lblMemoriam.Name = "lblMemoriam";
+            this.lblMemoriam.Size = new System.Drawing.Size(16, 13);
+            this.lblMemoriam.TabIndex = 23;
+            this.lblMemoriam.Text = "---";
+            // 
             // frmAbout
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.cmdClose;
             this.ClientSize = new System.Drawing.Size(568, 347);
+            this.Controls.Add(this.lblMemoriam);
             this.Controls.Add(this.lblLicCustomID);
             this.Controls.Add(this.label10);
             this.Controls.Add(this.lblLicID);
@@ -362,5 +374,6 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label lblLicCustomID;
         private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label lblMemoriam;
     }
 }
