@@ -372,6 +372,8 @@ namespace FoxSDC_Server
             lock (ni.sqllock)
                 sql.ExecSQL("DELETE FROM SimpleTasks WHERE MachineID=@m", new SQLParam("@m", id));
             lock (ni.sqllock)
+                sql.ExecSQL("DELETE FROM Startups WHERE MachineID=@m", new SQLParam("@m", id));
+            lock (ni.sqllock)
                 Modules.FileTransfer.DeleteAllFiles(sql, id);
             //finally delete computer
             lock (ni.sqllock)

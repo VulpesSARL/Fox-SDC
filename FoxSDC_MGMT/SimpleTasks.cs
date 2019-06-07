@@ -91,6 +91,7 @@ namespace FoxSDC_MGMT
                             SimpleTaskRunProgramm stapp = JsonConvert.DeserializeObject<SimpleTaskRunProgramm>(editst.Data);
                             txtRunArgs.Text = stapp.Parameters;
                             txtRunExec.Text = stapp.Executable;
+                            txtRunUser.Text = stapp.User;
                             break;
                         }
                     case 2://edit registry
@@ -107,6 +108,8 @@ namespace FoxSDC_MGMT
                         }
                 }
                 this.Text = "Edit Simple Task";
+                if (editst.ID == -1)
+                    editst = null;
             }
         }
 
@@ -156,6 +159,7 @@ namespace FoxSDC_MGMT
                         SimpleTaskRunProgramm stapp = new SimpleTaskRunProgramm();
                         stapp.Executable = txtRunExec.Text.Trim();
                         stapp.Parameters = txtRunArgs.Text.Trim();
+                        stapp.User = txtRunUser.Text.Trim();
 
                         RemovePreviousThing();
 

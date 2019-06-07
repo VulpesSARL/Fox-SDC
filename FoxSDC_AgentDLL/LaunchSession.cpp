@@ -103,7 +103,7 @@ bool LauchApp(WCHAR* FILE, WCHAR* ARGS)
 	return(true);
 }
 
-bool LauchApp(WCHAR* FILE, WCHAR* ARGS, DWORD SessionID)
+bool LauchApp(WCHAR* FILE, WCHAR* ARGS, DWORD SessionID, DWORD *PID)
 {
 	HANDLE token;
 	HANDLE copiedtoken;
@@ -134,6 +134,11 @@ bool LauchApp(WCHAR* FILE, WCHAR* ARGS, DWORD SessionID)
 
 	int res = CreateProcessAsUser(copiedtoken, FILE, ARGS, &Security1, &Security2, false,
 		NORMAL_PRIORITY_CLASS | CREATE_UNICODE_ENVIRONMENT, Environment, NULL, &StartupInfo, &processInfo);
+
+	if (PID != NULL)
+	{
+		*PID = processInfo.dwProcessId;
+	}
 
 	if (res == 0)
 	{

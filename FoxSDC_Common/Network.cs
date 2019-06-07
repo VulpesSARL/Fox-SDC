@@ -1478,6 +1478,18 @@ namespace FoxSDC_Common
                 return (po.Data);
         }
 
+        public Int64? PutSimpleTaskAside(Int64 st)
+        {
+            NetInt64 po;
+            NetInt64 s = new NetInt64();
+            s.Data = st;
+            bool resb = SendReq<NetInt64, NetInt64>("api/agent/staskputaside", Verb.POST, s, out po, out res);
+            if (resb == false)
+                return (null);
+            else
+                return (po.Data);
+        }
+
         public bool DeleteSimpleTask(Int64 ID)
         {
             bool resb = SendReq("api/mgmt/setstask/" + ID.ToString(), Verb.DELETE, out res);

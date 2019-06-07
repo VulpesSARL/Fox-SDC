@@ -25,8 +25,9 @@ namespace FoxSDC_Agent
             net.CompleteSimpleTask(res);
         }
 
-        static bool ProcessSimpleTask(Network net, SimpleTask st)
+        static bool ProcessSimpleTask(Network net, SimpleTask st, out Int64 NewID)
         {
+            NewID = -1;
             Status.UpdateMessage(0, "Running Simple Task: " + st.Name);
             try
             {
@@ -44,10 +45,56 @@ namespace FoxSDC_Agent
                             }
 
                             Process proc = new Process();
-                            proc.StartInfo.UseShellExecute = false;
-                            proc.StartInfo.FileName = Environment.ExpandEnvironmentVariables(rt.Executable);
-                            proc.StartInfo.Arguments = rt.Parameters;
-                            proc.Start();
+                            if (string.IsNullOrWhiteSpace(rt.User) == false)
+                            {
+                                PushRunningSessionList sessions = ProgramAgent.CPP.GetActiveTSSessions();
+                                int SessionID = -1;
+                                foreach(PushRunningSessionElement session in sessions.Data)
+                                {
+                                    if (rt.User.ToLower() == (session.Domain + "\\" + session.User).ToLower())
+                                    {
+                                        SessionID = session.SessionID;
+                                        break;
+                                    }
+                                }
+
+                                if (SessionID == -1)
+                                {
+                                    Int64? nid = net.PutSimpleTaskAside(st.ID);
+                                    if (nid == null)
+                                    {
+                                        return (false);
+                                    }
+                                    else
+                                    {
+                                        NewID = nid.Value;
+                                        return (true);
+                                    }
+                                }
+
+                                int processid = ProgramAgent.CPP.StartAppAsUserID(Environment.ExpandEnvironmentVariables(rt.Executable), rt.Parameters, SessionID);
+                                if (processid == -1)
+                                {
+                                    CompleteTask(net, st, 0xFFF3, "Cannot start process " + rt.Executable);
+                                    break;
+                                }
+                                proc = Process.GetProcessById(processid);
+                            }
+                            else
+                            {
+                                try
+                                {
+                                    proc.StartInfo.UseShellExecute = false;
+                                    proc.StartInfo.FileName = Environment.ExpandEnvironmentVariables(rt.Executable);
+                                    proc.StartInfo.Arguments = rt.Parameters;
+                                    proc.Start();
+                                }
+                                catch
+                                {
+                                    CompleteTask(net, st, 0xFFF3, "Cannot start process " + rt.Executable);
+                                    break;
+                                }
+                            }
 
                             int Counter = 0;
                             do
@@ -56,6 +103,8 @@ namespace FoxSDC_Agent
                                 if (proc.HasExited == true)
                                     break;
                                 Counter++;
+                                if (Counter % 120 == 0)
+                                    net.Ping();
                             } while (Counter < 3600);
 
                             if (proc.HasExited == false)
@@ -64,7 +113,7 @@ namespace FoxSDC_Agent
                                 CompleteTask(net, st, 0xFFF2, "Process has been killed, took too long.");
                                 break;
                             }
-
+                            
                             CompleteTask(net, st, proc.ExitCode, "Process completed successfully.");
                             break;
                         }
@@ -152,7 +201,16 @@ namespace FoxSDC_Agent
                                     //user not loaded (logged in)
                                     if (r == null)
                                     {
-                                        return (false);
+                                        Int64? nid = net.PutSimpleTaskAside(st.ID);
+                                        if (nid == null)
+                                        {
+                                            return (false);
+                                        }
+                                        else
+                                        {
+                                            NewID = nid.Value;
+                                            return (true);
+                                        }
                                     }
                                 }
                             }
@@ -333,6 +391,8 @@ namespace FoxSDC_Agent
 
                 Status.UpdateMessage(0, "Checking Simple Tasks");
 
+                Int64 Aside = -1;
+
                 SimpleTaskDataSigned st = null;
                 do
                 {
@@ -344,9 +404,15 @@ namespace FoxSDC_Agent
                         FoxEventLog.WriteEventLog("One or more Simple Tasks are tampered - no tasks will be processed.", System.Diagnostics.EventLogEntryType.Error);
                         break;
                     }
+                    if (Aside != -1)
+                        if (Aside == st.STask.ID)
+                            break;
 
-                    if (ProcessSimpleTask(net, st.STask) == false)
+                    Int64 AID;
+                    if (ProcessSimpleTask(net, st.STask, out AID) == false)
                         break;
+                    if (AID != -1)
+                        Aside = AID;
 
                 } while (st != null);
 

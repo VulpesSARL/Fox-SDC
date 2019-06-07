@@ -57,7 +57,12 @@ namespace FoxSDC_MGMT
 
         private void cmdNew_Click(object sender, EventArgs e)
         {
-            frmSimpleTasks st = new frmSimpleTasks();
+            frmSimpleTasks st;
+            if (string.IsNullOrWhiteSpace(MID) == true)
+                st = new frmSimpleTasks();
+            else
+                st = new frmSimpleTasks(new List<string>() { MID });
+
             if (st.ShowDialog(this) == DialogResult.OK)
                 LoadData();
         }

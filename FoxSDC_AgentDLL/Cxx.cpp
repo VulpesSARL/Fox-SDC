@@ -20,7 +20,7 @@ extern BOOL GetFirmwareType_CXX(PFIRMWARE_TYPE firmwaretype);
 extern VOID SendSAS(BOOL AsUser);
 
 bool LauchApp(WCHAR* FILE, WCHAR* ARGS);
-bool LauchApp(WCHAR* FILE, WCHAR* ARGS, DWORD SessionID);
+bool LauchApp(WCHAR* FILE, WCHAR* ARGS, DWORD SessionID, DWORD *PID);
 bool LauchAppWait(WCHAR* FILE, WCHAR* ARGS, DWORD SessionID);
 bool LauchAppIntoWinLogon(WCHAR* FILE, WCHAR* ARGS);
 bool CSetToken(LPWSTR NAME);
@@ -128,12 +128,39 @@ namespace Fox
 			WCHAR* fn = (WCHAR*)(void*)Marshal::StringToHGlobalUni(Filename);
 			WCHAR* ag = (WCHAR*)(void*)Marshal::StringToHGlobalUni(Args);
 
-			bool res = LauchApp(fn, ag, SessionID);
+			bool res = LauchApp(fn, ag, SessionID, NULL);
 
 			Marshal::FreeHGlobal((IntPtr)fn);
 			Marshal::FreeHGlobal((IntPtr)ag);
 
 			return(res);
+		}
+
+		virtual int StartAppAsUserID(String^ Filename, String^ Args, int SessionID)
+		{
+			Filename = Filename->Trim();
+			if (Args == nullptr)
+				Args = "";
+
+			if (Filename->StartsWith("\"") == true && Filename->EndsWith("\"") == true)
+				Args = Filename + (Args == "" ? "" : " " + Args);
+			else
+				Args = "\"" + Filename + "\"" + (Args == "" ? "" : " " + Args);
+
+			WCHAR* fn = (WCHAR*)(void*)Marshal::StringToHGlobalUni(Filename);
+			WCHAR* ag = (WCHAR*)(void*)Marshal::StringToHGlobalUni(Args);
+
+			DWORD d;
+
+			bool res = LauchApp(fn, ag, SessionID, &d);
+
+			Marshal::FreeHGlobal((IntPtr)fn);
+			Marshal::FreeHGlobal((IntPtr)ag);
+
+			if (res == false)
+				return (-1);
+
+			return(d);
 		}
 
 		virtual Boolean StartAppAsUserWait(String^ Filename, String^ Args, int SessionID)

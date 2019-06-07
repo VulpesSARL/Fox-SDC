@@ -17,6 +17,7 @@ namespace FoxSDC_Common
         string FoxGetFirmwareType();
         PushRunningSessionList GetActiveTSSessions();
         bool StartAppAsUser(string Filename, string Args, int SessionID);
+        int StartAppAsUserID(string Filename, string Args, int SessionID);
         Int64 WGetLastError();
         bool StartAppAsUserWait(string Filename, string Args, int SessionID);
         void RestartSystem();

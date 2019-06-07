@@ -57,6 +57,8 @@
             this.panel2 = new System.Windows.Forms.Panel();
             this.cmdCancel = new System.Windows.Forms.Button();
             this.cmdOK = new System.Windows.Forms.Button();
+            this.txtRunUser = new System.Windows.Forms.TextBox();
+            this.label11 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -227,6 +229,8 @@
             // 
             // panelRunApp
             // 
+            this.panelRunApp.Controls.Add(this.txtRunUser);
+            this.panelRunApp.Controls.Add(this.label11);
             this.panelRunApp.Controls.Add(this.txtRunArgs);
             this.panelRunApp.Controls.Add(this.label3);
             this.panelRunApp.Controls.Add(this.txtRunExec);
@@ -355,6 +359,22 @@
             this.cmdOK.UseVisualStyleBackColor = true;
             this.cmdOK.Click += new System.EventHandler(this.cmdOK_Click);
             // 
+            // txtRunUser
+            // 
+            this.txtRunUser.Location = new System.Drawing.Point(95, 59);
+            this.txtRunUser.Name = "txtRunUser";
+            this.txtRunUser.Size = new System.Drawing.Size(253, 20);
+            this.txtRunUser.TabIndex = 5;
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(3, 62);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(32, 13);
+            this.label11.TabIndex = 4;
+            this.label11.Text = "User:";
+            // 
             // frmSimpleTasks
             // 
             this.AcceptButton = this.cmdOK;
@@ -420,5 +440,7 @@
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.ComboBox lstRegValueType;
         private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.TextBox txtRunUser;
+        private System.Windows.Forms.Label label11;
     }
 }

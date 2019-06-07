@@ -808,6 +808,7 @@ namespace FoxSDC_Common
     {
         public string Executable;
         public string Parameters;
+        public string User;
     }
 
     public class SimpleTaskRegistry

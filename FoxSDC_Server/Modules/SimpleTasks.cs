@@ -93,7 +93,7 @@ namespace FoxSDC_Server
 
         [VulpesRESTProtected]
         [VulpesRESTful(VulpesRESTfulVerb.GET, "api/mgmt/getstask", "SimpleTask", "id")]
-        public RESTStatus ListSTasks(SQLLib sql, object dummy, NetworkConnectionInfo ni, Int64 id)
+        public RESTStatus GetSTask(SQLLib sql, object dummy, NetworkConnectionInfo ni, Int64 id)
         {
             if (ni.HasAcl(ACLFlags.ChangeServerSettings) == false)
             {
@@ -246,8 +246,54 @@ namespace FoxSDC_Server
             return (RESTStatus.Success);
         }
 
+        [VulpesRESTful(VulpesRESTfulVerb.POST, "api/agent/staskputaside", "NewTaskID", "")]
+        public RESTStatus PutTaskAside(SQLLib sql, NetInt64 id, NetworkConnectionInfo ni)
+        {
+            if (ni.HasAcl(ACLFlags.ComputerLogin) == false)
+            {
+                ni.Error = "Access denied";
+                ni.ErrorID = ErrorFlags.AccessDenied;
+                return (RESTStatus.Denied);
+            }
+
+            if (STaskExsits(sql, id.Data, ni.Username) == false)
+            {
+                ni.Error = "Invalid ID";
+                ni.ErrorID = ErrorFlags.InvalidData;
+                return (RESTStatus.NotFound);
+            }
+
+            object res = sql.ExecSQLScalar(@"DECLARE @tabl table(ID bigint); 
+                insert into SimpleTasks (MachineID,Type,Name,Data) OUTPUT Inserted.ID INTO @tabl 
+                Select MachineID,Type,Name,Data from SimpleTasks WHERE ID=@id
+                DELETE FROM SimpleTasks where ID=@id
+                SELECT * FROM @tabl",
+                new SQLParam("@id", id.Data));
+
+            if (res == null || res is DBNull)
+            {
+                ni.Error = "SQL error";
+                ni.ErrorID = ErrorFlags.SQLError;
+                return (RESTStatus.NotFound);
+            }
+
+            NewTaskID = new NetInt64();
+            try
+            {
+                NewTaskID.Data = Convert.ToInt64(res);
+            }
+            catch
+            {
+                ni.Error = "other SQL error";
+                ni.ErrorID = ErrorFlags.SQLError;
+                return (RESTStatus.NotFound);
+            }
+
+            return (RESTStatus.Success);
+        }
+
         [VulpesRESTful(VulpesRESTfulVerb.POST, "api/agent/staskcompleted", "", "")]
-        public RESTStatus GetSTaskSigned(SQLLib sql, SimpleTaskResult STaskResult, NetworkConnectionInfo ni)
+        public RESTStatus CompleteSTask(SQLLib sql, SimpleTaskResult STaskResult, NetworkConnectionInfo ni)
         {
             if (ni.HasAcl(ACLFlags.ComputerLogin) == false)
             {
