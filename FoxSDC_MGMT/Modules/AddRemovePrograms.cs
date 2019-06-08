@@ -136,7 +136,7 @@ namespace FoxSDC_MGMT
                     }
                     else
                     {
-                        run.Executable = lt.UninstallString.Substring(0, lt.UninstallString.IndexOf(' ') - 1);
+                        run.Executable = lt.UninstallString.Substring(0, lt.UninstallString.IndexOf(' '));
                         run.Parameters = lt.UninstallString.Substring(lt.UninstallString.IndexOf(' ') + 1);
                     }
 
