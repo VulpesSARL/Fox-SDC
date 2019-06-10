@@ -1,0 +1,3 @@
+SET SHACERT=48b804f3d3be6c5f06e72d94be29b10601b2d820
+SET PKG=CERT "CN=GitHub Test - Vulpes Main"
+

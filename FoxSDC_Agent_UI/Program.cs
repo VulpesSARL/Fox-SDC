@@ -12,7 +12,7 @@ namespace FoxSDC_Agent_UI
 {
     static class Program
     {
-        public static string AppTitle = "Fox SDC Agent";
+        public static string AppTitle = VulpesBranding.AgentUITitle;
         public static MainDLG MainDLG = null;
         public static frmChat Chat = null;
         public static frmNT3Icon NT3 = null;
@@ -44,7 +44,7 @@ namespace FoxSDC_Agent_UI
             if (QuitApp == true)
                 return;
 
-            using (Mutex mutex = new Mutex(false, "Local\\Fox-SDC-AgentMutex-FFE87757-F4A8-4F21-AE70-BD31A9D696A2"))
+            using (Mutex mutex = new Mutex(false, "Local\\" + VulpesBranding.AgentUIMutex))
             {
                 if (!mutex.WaitOne(0, false))
                 {

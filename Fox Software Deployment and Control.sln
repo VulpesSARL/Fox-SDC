@@ -62,9 +62,11 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{57A7E4B0-129F-4F49-98F1-23595E148D3C}"
 	ProjectSection(SolutionItems) = preProject
 		INSTALL\all.cmd = INSTALL\all.cmd
+		Branding.cs = Branding.cs
 		INSTALL\collect.cmd = INSTALL\collect.cmd
 		LICENSE = LICENSE
 		README.md = README.md
+		INSTALL\initvars.cmd = INSTALL\initvars.cmd
 		Registry Tricks.txt = Registry Tricks.txt
 		INSTALL\SDCA.foxps = INSTALL\SDCA.foxps
 		signall.cmd = signall.cmd

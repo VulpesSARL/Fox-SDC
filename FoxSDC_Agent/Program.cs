@@ -22,7 +22,7 @@ namespace FoxSDC_Agent
     public class ProgramAgent
     {
         public static CPPInterface CPP;
-        public const string VulpesURL = "https://fox-sdc.vulpes.lu/sdc";
+        public const string VulpesURL = VulpesBranding.BuiltInOnPremURL;
         public static string AppPath;
         public static string DLLFile;
 
@@ -203,11 +203,11 @@ namespace FoxSDC_Agent
 
             if (UsePipeAction == false && UseScreenAction == false)
             {
-                using (RegistryKey installer = Registry.LocalMachine.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{A6F066EE-E795-4C65-8FE4-2D93AB52BC36}", false))
+                using (RegistryKey installer = Registry.LocalMachine.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\" + VulpesBranding.MSIGUID, false))
                 {
                     if (installer == null)
                     {
-                        FoxEventLog.WriteEventLog("Missing installer key in HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{A6F066EE-E795-4C65-8FE4-2D93AB52BC36}. This can lead to erratic behavoir of the program!", EventLogEntryType.Warning);
+                        FoxEventLog.WriteEventLog("Missing installer key in HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\" + VulpesBranding.MSIGUID + ". This can lead to erratic behavoir of the program!", EventLogEntryType.Warning);
                     }
                 }
 
@@ -305,7 +305,7 @@ namespace FoxSDC_Agent
             }
 
             try
-            {              
+            {
                 using (RegistryKey reg = Registry.LocalMachine.OpenSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\System", true))
                 {
                     object o = reg.GetValue("SoftwareSASGeneration", null);

@@ -354,7 +354,7 @@ namespace FoxSDC_RedirConsole
 
         static void Main(string[] args)
         {
-            Console.WriteLine("Fox SDC Redirection Console");
+            Console.WriteLine(VulpesBranding.REDIRTitle);
 
             if (Console.IsErrorRedirected == true || Console.IsInputRedirected == true || Console.IsOutputRedirected == true)
             {

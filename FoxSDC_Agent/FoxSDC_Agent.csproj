@@ -84,6 +84,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Branding.cs">
+      <Link>Branding.cs</Link>
+    </Compile>
     <Compile Include="ApplicationCertificate.cs" />
     <Compile Include="AutoVersion.cs" />
     <Compile Include="DownloadSystemFSData.cs" />

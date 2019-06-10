@@ -12,7 +12,7 @@ namespace FoxSDC_PackageCreator
 {
     static class Program
     {
-        public static string AppTitle = "Fox SDC Package Creator";
+        public static string AppTitle = VulpesBranding.PKGTitle;
         public static string AppPath = "";
 
         public static void LoadImageList(ImageList imageList)

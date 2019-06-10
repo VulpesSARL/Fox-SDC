@@ -56,6 +56,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Branding.cs">
+      <Link>Branding.cs</Link>
+    </Compile>
     <Compile Include="AddFilesFromRemoteClient.cs">
       <SubType>Form</SubType>
     </Compile>

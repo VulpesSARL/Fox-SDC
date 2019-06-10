@@ -47,7 +47,7 @@ namespace FoxSDC_MGMT
         [STAThread]
         static int Main(string[] args)
         {
-            Title = "Fox SDC " + Version;
+            Title = VulpesBranding.MGMTTitle + " " + Version;
 
             if (args.Length > 1)
             {
@@ -69,7 +69,6 @@ namespace FoxSDC_MGMT
                     return (-255);
                 }
             }
-
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

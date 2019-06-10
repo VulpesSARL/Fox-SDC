@@ -43,8 +43,8 @@ call msbuild "FoxSDC_Agent_Setup64\FoxSDC_Agent_Setup64.wixproj" /property:Confi
 copy "FoxSDC_Agent_Setup64\bin\x64\Release\FoxSDC_Agent_Setup.msi" "CD\FoxSDC_Agent_Setup64.msi"
 copy "FoxSDC_Agent_Setup32\bin\Release\FoxSDC_Agent_Setup.msi" "CD\FoxSDC_Agent_Setup32.msi"
 
-call signtool sign /sha1 BLAHBLAH "CD\FoxSDC_Agent_Setup32.msi" "CD\FoxSDC_Agent_Setup64.msi"
-call "CD\SDC Tools\FoxSDC_PackageCreatorC.exe" compile SDCA.foxps csp "opensc csp"
+call signtool sign /sha1 %SHACERT% "CD\FoxSDC_Agent_Setup32.msi" "CD\FoxSDC_Agent_Setup64.msi"
+call "CD\SDC Tools\FoxSDC_PackageCreatorC.exe" compile SDCA.foxps %PKG%
 
 copy SDCA.foxpkg "CD"
 

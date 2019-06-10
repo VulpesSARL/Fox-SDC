@@ -57,6 +57,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Branding.cs">
+      <Link>Branding.cs</Link>
+    </Compile>
     <Compile Include="About.cs">
       <SubType>Form</SubType>
     </Compile>

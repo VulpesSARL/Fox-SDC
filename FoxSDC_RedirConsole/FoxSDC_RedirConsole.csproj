@@ -55,6 +55,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Branding.cs">
+      <Link>Branding.cs</Link>
+    </Compile>
     <Compile Include="AutoVersion.cs" />
     <Compile Include="FormExtender.cs">
       <SubType>Form</SubType>

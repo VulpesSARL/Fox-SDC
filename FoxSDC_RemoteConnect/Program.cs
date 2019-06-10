@@ -9,7 +9,7 @@ namespace FoxSDC_RemoteConnect
 {
     static class Program
     {
-        public static string Title = "Fox SDC Remote Connect";
+        public static string Title = VulpesBranding.REMOTECONNTitle;
         public static Network net;
 
         public static string Connection = "";
