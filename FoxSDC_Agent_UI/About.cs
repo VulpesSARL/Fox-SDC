@@ -25,6 +25,9 @@ namespace FoxSDC_Agent_UI
 
         private void About_Load(object sender, EventArgs e)
         {
+            lblTitle1.Text = VulpesBranding.AgentUIAboutLine1;
+            lblTitle2.Text = VulpesBranding.AgentUIAboutLine2;
+
             string AgentVersion = Status.GetAgentVersion();
             string ServerURL = "";
             string ServerVersion = "";

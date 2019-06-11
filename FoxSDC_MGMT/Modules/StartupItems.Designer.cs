@@ -39,6 +39,7 @@
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.propertiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
+            this.removeEntryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -97,9 +98,10 @@
             // contextMenuStrip1
             // 
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.removeEntryToolStripMenuItem,
             this.propertiesToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(151, 28);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(181, 74);
             // 
             // propertiesToolStripMenuItem
             // 
@@ -113,6 +115,13 @@
             this.imageList1.ColorDepth = System.Windows.Forms.ColorDepth.Depth8Bit;
             this.imageList1.ImageSize = new System.Drawing.Size(16, 16);
             this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
+            // 
+            // removeEntryToolStripMenuItem
+            // 
+            this.removeEntryToolStripMenuItem.Name = "removeEntryToolStripMenuItem";
+            this.removeEntryToolStripMenuItem.Size = new System.Drawing.Size(180, 24);
+            this.removeEntryToolStripMenuItem.Text = "&Remove Entry";
+            this.removeEntryToolStripMenuItem.Click += new System.EventHandler(this.removeEntryToolStripMenuItem_Click);
             // 
             // ctlStartupItems
             // 
@@ -139,5 +148,6 @@
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem propertiesToolStripMenuItem;
         private System.Windows.Forms.ImageList imageList1;
+        private System.Windows.Forms.ToolStripMenuItem removeEntryToolStripMenuItem;
     }
 }

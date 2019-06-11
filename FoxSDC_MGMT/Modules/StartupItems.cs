@@ -62,5 +62,48 @@ namespace FoxSDC_MGMT
             if (e.KeyCode == Keys.Enter || e.KeyCode == Keys.Return)
                 propertiesToolStripMenuItem_Click(sender, e);
         }
+
+        private void removeEntryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (lstStart.SelectedItems.Count == 0)
+                return;
+
+            if (MessageBox.Show(this, "Do you want to remove the selected " + lstStart.SelectedItems.Count.ToString() + " entr" + (lstStart.SelectedItems.Count == 1 ? "y" : "ies") + "?", Program.Title, MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) != DialogResult.Yes)
+                return;
+
+            foreach (ListViewItem lst in lstStart.SelectedItems)
+            {
+                StartupItemFull start = (StartupItemFull)lst.Tag;
+                SimpleTaskRegistry reg = new SimpleTaskRegistry();
+
+                if (string.IsNullOrWhiteSpace(start.HKCUUser) == false)
+                {
+                    reg.Root = 1; //HKCU
+                    reg.Folder = start.HKCUUser + "\\";
+                }
+                else
+                {
+                    reg.Root = 0; //HKLM                   
+                    reg.Folder = "";
+                }
+
+                switch (start.Location.ToLower())
+                {
+                    case "reg":
+                        reg.Folder += "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run";
+                        break;
+                    case "reg_wow":
+                        reg.Folder += "SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Run";
+                        break;
+                    default:
+                        continue;
+                }
+
+                reg.Action = 1;
+                reg.Valuename = start.Key == "(Default)" ? "" : start.Key;
+
+                Program.net.SetSimpleTask("Removing Startup Item: " + start.Key + (string.IsNullOrWhiteSpace(start.Username) == true ? "" : " (as " + start.Username + ")"), start.MachineID, 2, reg);
+            }
+        }
     }
 }

@@ -417,7 +417,7 @@ namespace FoxSDC_Agent
             {
                 SysInfo.IsMeteredConnection = MeteredConnection.IsMeteredConnection();
             }
-            catch(Exception ee)
+            catch (Exception ee)
             {
                 Debug.WriteLine(ee.ToString());
                 SysInfo.IsMeteredConnection = null;
@@ -429,9 +429,9 @@ namespace FoxSDC_Agent
             SysInfo.OSVerType = os.wSuiteMask;
 
 #if DEBUG
-            SysInfo.AgentVersion = "Fox SDC [DEBUG] " + FoxVersion.DTS;
+            SysInfo.AgentVersion = VulpesBranding.AgentIdentifier + " [DEBUG] " + FoxVersion.DTS;
 #else
-            SysInfo.AgentVersion = "Fox SDC " + FoxVersion.DTS;
+            SysInfo.AgentVersion = VulpesBranding.AgentIdentifier + " " + FoxVersion.DTS;
 #endif
             SysInfo.AgentVersionID = FoxVersion.Version;
 

@@ -20,6 +20,9 @@ namespace FoxSDC_MGMT
 
         private void FirstPage_Load(object sender, EventArgs e)
         {
+            link.Text = VulpesBranding.MGMTMainPageURL;
+            lblCompany.Text = VulpesBranding.MGMTMainPageCompany;
+
             txtServerData.Text = "";
             txtServerData.Text += "Server: " + Program.net.ConnectedURL + "\r\n";
             txtServerData.Text += "Name: " + Program.net.serverinfo.Name + "\r\n";
@@ -52,7 +55,7 @@ namespace FoxSDC_MGMT
             try
             {
                 Process p = new Process();
-                p.StartInfo.FileName = "https://vulpes.lu";
+                p.StartInfo.FileName = VulpesBranding.MGMTMainPageURL;
                 p.StartInfo.UseShellExecute = true;
                 p.Start();
             }

@@ -33,8 +33,8 @@
             this.txtServerData = new System.Windows.Forms.TextBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.label2 = new System.Windows.Forms.Label();
             this.link = new System.Windows.Forms.LinkLabel();
+            this.lblCompany = new System.Windows.Forms.Label();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.panel3 = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -92,21 +92,12 @@
             // panel2
             // 
             this.panel2.Controls.Add(this.link);
-            this.panel2.Controls.Add(this.label2);
+            this.panel2.Controls.Add(this.lblCompany);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Right;
             this.panel2.Location = new System.Drawing.Point(553, 0);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(173, 16);
             this.panel2.TabIndex = 0;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(3, 1);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(70, 13);
-            this.label2.TabIndex = 0;
-            this.label2.Text = "Vulpes SARL";
             // 
             // link
             // 
@@ -118,6 +109,15 @@
             this.link.TabStop = true;
             this.link.Text = "https://vulpes.lu";
             this.link.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.link_LinkClicked);
+            // 
+            // lblCompany
+            // 
+            this.lblCompany.AutoSize = true;
+            this.lblCompany.Location = new System.Drawing.Point(3, 1);
+            this.lblCompany.Name = "lblCompany";
+            this.lblCompany.Size = new System.Drawing.Size(70, 13);
+            this.lblCompany.TabIndex = 0;
+            this.lblCompany.Text = "Vulpes SARL";
             // 
             // splitContainer1
             // 
@@ -181,7 +181,7 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.LinkLabel link;
-        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label lblCompany;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.Panel panel3;
     }
