@@ -316,7 +316,7 @@ namespace FoxSDC_Agent
                                     break;
                                 case 1: //Delete value
                                     {
-                                        using (RegistryKey k = regroot.OpenSubKey(reg.Folder))
+                                        using (RegistryKey k = regroot.OpenSubKey(reg.Folder, true))
                                         {
                                             if (k != null)
                                             {
@@ -336,7 +336,7 @@ namespace FoxSDC_Agent
                                         string f = reg.Folder.Substring(0, reg.Folder.LastIndexOf('\\'));
                                         string v = reg.Folder.Substring(reg.Folder.LastIndexOf('\\') + 1);
 
-                                        using (RegistryKey k = regroot.OpenSubKey(f))
+                                        using (RegistryKey k = regroot.OpenSubKey(f, true))
                                         {
                                             if (k != null)
                                             {
