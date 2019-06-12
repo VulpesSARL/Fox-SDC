@@ -49,7 +49,7 @@ namespace FoxSDC_Agent
                             {
                                 PushRunningSessionList sessions = ProgramAgent.CPP.GetActiveTSSessions();
                                 int SessionID = -1;
-                                foreach(PushRunningSessionElement session in sessions.Data)
+                                foreach (PushRunningSessionElement session in sessions.Data)
                                 {
                                     if (rt.User.ToLower() == (session.Domain + "\\" + session.User).ToLower())
                                     {
@@ -113,7 +113,7 @@ namespace FoxSDC_Agent
                                 CompleteTask(net, st, 0xFFF2, "Process has been killed, took too long.");
                                 break;
                             }
-                            
+
                             CompleteTask(net, st, proc.ExitCode, "Process completed successfully.");
                             break;
                         }
@@ -216,6 +216,7 @@ namespace FoxSDC_Agent
                             }
 
                             bool Success = false;
+                            string SuccessText = "";
 
                             switch (reg.Action)
                             {
@@ -230,10 +231,12 @@ namespace FoxSDC_Agent
                                                     case RegistryValueKind.String:
                                                     case RegistryValueKind.ExpandString:
                                                         k.SetValue(reg.Valuename, reg.Data, regtype);
+                                                        SuccessText = "Registry insertation completed successfully (REG_SZ/REG_EXPAND_SZ).";
                                                         Success = true;
                                                         break;
                                                     case RegistryValueKind.MultiString:
                                                         k.SetValue(reg.Valuename, reg.Data.Split(new string[] { "\\0" }, StringSplitOptions.None), regtype);
+                                                        SuccessText = "Registry insertation completed successfully (REG_MULTI_SZ).";
                                                         Success = true;
                                                         break;
                                                     case RegistryValueKind.DWord:
@@ -256,6 +259,7 @@ namespace FoxSDC_Agent
                                                                 }
                                                             }
                                                             k.SetValue(reg.Valuename, dword, regtype);
+                                                            SuccessText = "Registry insertation completed successfully (REG_DWORD).";
                                                             Success = true;
                                                         }
                                                         break;
@@ -279,6 +283,7 @@ namespace FoxSDC_Agent
                                                                 }
                                                             }
                                                             k.SetValue(reg.Valuename, dword, regtype);
+                                                            SuccessText = "Registry insertation completed successfully (REG_QWORD).";
                                                             Success = true;
                                                         }
                                                         break;
@@ -301,6 +306,7 @@ namespace FoxSDC_Agent
                                                                 bytedata.Add((byte)btmp);
                                                             }
                                                             k.SetValue(reg.Valuename, bytedata.ToArray(), regtype);
+                                                            SuccessText = "Registry insertation completed successfully (REG_BINARY).";
                                                             Success = true;
                                                         }
                                                         break;
@@ -321,6 +327,7 @@ namespace FoxSDC_Agent
                                             if (k != null)
                                             {
                                                 k.DeleteValue(reg.Valuename, false);
+                                                SuccessText = "Registry value deletation completed successfully.";
                                                 Success = true;
                                             }
                                             else
@@ -341,6 +348,7 @@ namespace FoxSDC_Agent
                                             if (k != null)
                                             {
                                                 k.DeleteSubKeyTree(v, false);
+                                                SuccessText = "Registry tree deletation completed successfully.";
                                                 Success = true;
                                             }
                                             else
@@ -359,7 +367,7 @@ namespace FoxSDC_Agent
                             }
 
                             if (Success == true)
-                                CompleteTask(net, st, 0, "Registry process completed successfully.");
+                                CompleteTask(net, st, 0, SuccessText);
                             break;
                         }
                     #endregion
