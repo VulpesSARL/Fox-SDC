@@ -58,6 +58,8 @@
             this.lowLevelEditPolicyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.timer_ping = new System.Windows.Forms.Timer(this.components);
+            this.runToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.manageUsersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Splitty)).BeginInit();
             this.Splitty.Panel1.SuspendLayout();
@@ -110,6 +112,7 @@
             // 
             this.serverToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.settingsToolStripMenuItem,
+            this.manageUsersToolStripMenuItem,
             this.toolStripMenuItem3,
             this.uploadPackageToolStripMenuItem,
             this.deletePackageToolStripMenuItem});
@@ -149,7 +152,8 @@
             this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.createCertificateToolStripMenuItem,
             this.toolStripMenuItem4,
-            this.createReportToolStripMenuItem});
+            this.createReportToolStripMenuItem,
+            this.runToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(58, 24);
             this.toolsToolStripMenuItem.Text = "&Tools";
@@ -291,6 +295,20 @@
             this.timer_ping.Interval = 60000;
             this.timer_ping.Tick += new System.EventHandler(this.timer_ping_Tick);
             // 
+            // runToolStripMenuItem
+            // 
+            this.runToolStripMenuItem.Name = "runToolStripMenuItem";
+            this.runToolStripMenuItem.Size = new System.Drawing.Size(230, 24);
+            this.runToolStripMenuItem.Text = "R&erun report";
+            this.runToolStripMenuItem.Click += new System.EventHandler(this.runToolStripMenuItem_Click);
+            // 
+            // manageUsersToolStripMenuItem
+            // 
+            this.manageUsersToolStripMenuItem.Name = "manageUsersToolStripMenuItem";
+            this.manageUsersToolStripMenuItem.Size = new System.Drawing.Size(245, 24);
+            this.manageUsersToolStripMenuItem.Text = "Manage u&sers";
+            this.manageUsersToolStripMenuItem.Click += new System.EventHandler(this.manageUsersToolStripMenuItem_Click);
+            // 
             // MainDLG
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -346,6 +364,8 @@
         private System.Windows.Forms.ToolStripMenuItem lowLevelEditPolicyToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem4;
         private System.Windows.Forms.ToolStripMenuItem createReportToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem runToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem manageUsersToolStripMenuItem;
     }
 }
 

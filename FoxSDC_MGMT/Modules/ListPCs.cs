@@ -8,6 +8,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using FoxSDC_Common;
+using System.IO;
+using System.Reflection;
+using System.Diagnostics;
+using System.Net.NetworkInformation;
+using FoxSDC_MGMT.Properties;
+using System.Net;
 
 namespace FoxSDC_MGMT
 {
@@ -100,6 +106,7 @@ namespace FoxSDC_MGMT
                 lst.SubItems.Add(cd.Approved == true ? "Approved" : "Not approved");
                 lst.SubItems.Add(cd.OS);
                 lst.SubItems.Add(cd.OSVersion);
+                lst.SubItems.Add(Win10Version.GetWin10Version(cd.OSVersion));
                 lst.SubItems.Add(cd.Is64Bit == true ? "64 bit" : "32 bit");
                 lst.SubItems.Add(cd.OSSuite);
                 lst.SubItems.Add(cd.Language);
@@ -220,6 +227,147 @@ namespace FoxSDC_MGMT
                 ComputerData cd = (ComputerData)l.Tag;
                 if (cd.Approved == true)
                     Utilities.ConnectToScreen(this, cd.MachineID);
+            }
+        }
+
+        private void openCommandPromptToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (LstOnly == true)
+                return;
+            if (lstComputers.SelectedItems.Count == 0)
+                return;
+            foreach (ListViewItem l in lstComputers.SelectedItems)
+            {
+                ComputerData cd = (ComputerData)l.Tag;
+                if (cd.Approved == true)
+                {
+                    PushRunTask nt = new PushRunTask();
+                    nt.Executable = cd.SystemRoot;
+                    if (nt.Executable.EndsWith("\\") == false)
+                        nt.Executable += "\\";
+                    nt.Executable += "System32\\cmd.exe";
+                    nt.Args = "";
+                    nt.SessionID = 0;
+                    nt.Username = "";
+                    nt.Password = "";
+                    nt.Option = PushRunTaskOption.SystemUserConsoleRedir;
+
+                    PushRunTaskResult Res = Program.net.PushRunFile(cd.MachineID, nt);
+                    if (Res == null)
+                    {
+                        MessageBox.Show(this, "No response from Server / Agent.", Program.Title, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        return;
+                    }
+                    if (Res.Result == 0)
+                    {
+                        string Exec = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "FoxSDC_RedirConsole.exe");
+                        string SessionID = Program.net.CloneSession();
+                        if (string.IsNullOrWhiteSpace(SessionID) == true)
+                        {
+                            MessageBox.Show(this, "Program started successfully at the remote location, but didn't got a cloned Session ID.", Program.Title, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                            return;
+                        }
+                        try
+                        {
+                            Process p = new Process();
+                            p.StartInfo.FileName = Exec;
+                            p.StartInfo.Arguments = "-direct \"" + Program.net.ConnectedURL + "\" \"" + cd.MachineID + "\" \"" + SessionID + "\" \"" + Res.SessionID + "\"";
+                            p.StartInfo.UseShellExecute = false;
+                            p.Start();
+                        }
+                        catch (Exception ee)
+                        {
+                            MessageBox.Show(this, "Cannot start the process " + Exec + " - " + ee.Message, Program.Title, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                            Debug.WriteLine(ee.ToString());
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+
+        bool PortAvailable(int Port)
+        {
+            IPGlobalProperties ipGlobalProperties = IPGlobalProperties.GetIPGlobalProperties();
+            IPEndPoint[] tcpConnInfoArray = ipGlobalProperties.GetActiveTcpListeners();
+
+            bool isAvailable = true;
+
+            foreach (IPEndPoint tcpi in tcpConnInfoArray)
+            {
+                if (tcpi.Port == Port)
+                {
+                    isAvailable = false;
+                    break;
+                }
+            }
+            return (isAvailable);
+        }
+
+        private void openRemoteDesktopConnectionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (LstOnly == true)
+                return;
+            if (lstComputers.SelectedItems.Count == 0)
+                return;
+
+            foreach (ListViewItem l in lstComputers.SelectedItems)
+            {
+                ComputerData cd = (ComputerData)l.Tag;
+                if (cd.Approved == true)
+                {
+                    int Port = 9999;
+                    while (PortAvailable(Port) == false)
+                    {
+                        Port++;
+                    }
+
+                    string Exec = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "FoxSDC_RemoteConnect.exe");
+                    string SessionID = Program.net.CloneSession();
+                    if (string.IsNullOrWhiteSpace(SessionID) == true)
+                    {
+                        MessageBox.Show(this, "Cannot get a new SessionID from the Server", Program.Title, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        return;
+                    }
+                    try
+                    {
+                        Process p = new Process();
+                        p.StartInfo.FileName = Exec;
+                        p.StartInfo.Arguments = "-direct \"" + Program.net.ConnectedURL + "\" \"" + cd.MachineID + "\" \"" + SessionID + "\" " + Port.ToString() + " \"" + "127.0.0.1" + "\" " + "3389";
+                        p.StartInfo.UseShellExecute = false;
+                        p.Start();
+                    }
+                    catch (Exception ee)
+                    {
+                        MessageBox.Show(this, "Cannot start the process " + Exec + " - " + ee.Message, Program.Title, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        Debug.WriteLine(ee.ToString());
+                        return;
+                    }
+
+                    try
+                    {
+                        string MSTSCSettings = Resources.MSTSC.Replace("{ADDR}", "127.0.0.1:" + Port.ToString());
+                        string TempFile;
+                        TempFile = Environment.ExpandEnvironmentVariables("%TEMP%");
+                        if (TempFile.EndsWith("\\") == false)
+                            TempFile += "\\";
+                        TempFile += "FoxSDC-MSTSC-" + Guid.NewGuid().ToString() + ".rdp";
+
+                        File.WriteAllText(TempFile, MSTSCSettings, Encoding.ASCII);
+
+                        Process p = new Process();
+                        p.StartInfo.FileName = Environment.ExpandEnvironmentVariables ("%systemroot%\\system32\\mstsc.exe");
+                        p.StartInfo.Arguments = TempFile;
+                        p.StartInfo.UseShellExecute = false;
+                        p.Start();                        
+                    }
+                    catch (Exception ee)
+                    {
+                        MessageBox.Show(this, "Cannot start the process " + Exec + " - " + ee.Message, Program.Title, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        Debug.WriteLine(ee.ToString());
+                        return;
+                    }
+                }
             }
         }
     }

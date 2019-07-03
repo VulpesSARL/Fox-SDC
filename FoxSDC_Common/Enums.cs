@@ -53,7 +53,8 @@ namespace FoxSDC_Common
         FaultyContractData = 32,
         ContractNumComputersExhausted = 33,
         ContractNotStarted_Expired = 34,
-        LicensingError = 35
+        LicensingError = 35,
+        IsLDAP = 36
     }
 
     public static class ACL

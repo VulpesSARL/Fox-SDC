@@ -64,6 +64,8 @@
     <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core" />
     <Reference Include="System.Design" />
+    <Reference Include="System.DirectoryServices" />
+    <Reference Include="System.DirectoryServices.AccountManagement" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Management" />
     <Reference Include="System.ServiceProcess" />
@@ -109,7 +111,8 @@
     <Compile Include="Modules\SimpleTasks.cs" />
     <Compile Include="Modules\SMARTData.cs" />
     <Compile Include="Modules\Startups.cs" />
-    <Compile Include="Modules\UsersData.cs" />
+    <Compile Include="Modules\WindowsUsersData.cs" />
+    <Compile Include="Modules\UsersMGMT.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -123,7 +126,7 @@
     <Compile Include="Modules\ServerSettings.cs" />
     <Compile Include="Modules\Status.cs" />
     <Compile Include="Modules\Test.cs" />
-    <Compile Include="Modules\Users.cs" />
+    <Compile Include="Modules\UsersLogin.cs" />
     <Compile Include="Modules\WindowsLic.cs" />
     <Compile Include="NetworkConnection.cs" />
     <Compile Include="NetworkConnectionThread.cs" />

@@ -9,7 +9,7 @@ namespace FoxSDC_Server
 {
     class DBUpdate
     {
-        public const int DBVersion = 40;
+        public const int DBVersion = 41;
         static public bool UpdateDB(SQLLib sql)
         {
             try
@@ -799,6 +799,14 @@ namespace FoxSDC_Server
                         sql.BeginTransaction();
                         sql.ExecSQL(@"update Reporting Set Type=255 WHERE Type=6"); //Move the SMART Critical Reportings aside
                         Version = 40;
+                        sql.ExecSQL("UPDATE CONFIG SET [Value]=@ver WHERE [Key]='Version'", new SQLParam("@ver", Version));
+                        sql.CommitTransaction();
+                        FoxEventLog.WriteEventLog("Updated DB to Version " + Version.ToString(), EventLogEntryType.Information);
+                        return (false);
+                    case 40:
+                        Version = 41;
+                        sql.ExecSQL("ALTER Table Users ADD UseLDAP bit NOT NULL CONSTRAINT [DF_Users_UseLDAP] DEFAULT ((0))");
+                        sql.ExecSQL("ALTER Table Users ADD LDAPUsername nvarchar(300) NULL");
                         sql.ExecSQL("UPDATE CONFIG SET [Value]=@ver WHERE [Key]='Version'", new SQLParam("@ver", Version));
                         sql.CommitTransaction();
                         FoxEventLog.WriteEventLog("Updated DB to Version " + Version.ToString(), EventLogEntryType.Information);

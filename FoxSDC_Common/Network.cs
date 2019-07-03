@@ -1514,5 +1514,51 @@ namespace FoxSDC_Common
             else
                 return (true);
         }
+
+        public UserInfo GetCurrentUserInfo()
+        {
+            UserInfo po;
+            bool resb = SendReq<UserInfo>("api/mgmt/login/user/userinfo", Verb.GET, out po, out res);
+            if (resb == false)
+                return (null);
+            if (res != 200)
+                return (null);
+            return (po);
+        }
+
+        public List<UserDetails> GetAllUsers()
+        {
+            UserDetailsList po;
+            bool resb = SendReq<UserDetailsList>("api/mgmt/login/user/allusers", Verb.GET, out po, out res);
+            if (resb == false)
+                return (null);
+            if (res != 200)
+                return (null);
+            return (po.List);
+        }
+
+        public bool ChangeUser(UserDetailsPassword User)
+        {
+            bool resb = SendReq<UserDetailsPassword>("api/mgmt/login/user/changeuser", Verb.GET, User, out res);
+            if (res != 200)
+                return (false);
+            return (resb);
+        }
+
+        public bool AddUser(string User)
+        {
+            bool resb = SendReq<NetString>("api/mgmt/login/user/adduser", Verb.GET, new NetString() { Data = User }, out res);
+            if (res != 200)
+                return (false);
+            return (resb);
+        }
+
+        public bool DeleteUser(string User)
+        {
+            bool resb = SendReq<NetString>("api/mgmt/login/user/deleteuser", Verb.GET, new NetString() { Data = User }, out res);
+            if (res != 200)
+                return (false);
+            return (resb);
+        }
     }
 }

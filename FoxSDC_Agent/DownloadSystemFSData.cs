@@ -670,7 +670,8 @@ namespace FoxSDC_Agent
             if (downloadnet != null)
                 downloadnet.StopDownload = true;
             StopService = true;
-            RunningThread.Join();
+            if (RunningThread != null)
+                RunningThread.Join();
         }
     }
 }

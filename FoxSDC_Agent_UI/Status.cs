@@ -23,7 +23,14 @@ namespace FoxSDC_Agent_UI
 
         static void ConnectThread()
         {
-            PC = new PipeCommunication();
+            try
+            {
+                PC = new PipeCommunication();
+            }
+            catch
+            {
+                PC = null;
+            }
         }
 
         static void PingThread()

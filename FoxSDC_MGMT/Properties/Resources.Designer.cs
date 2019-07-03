@@ -271,6 +271,36 @@ namespace FoxSDC_MGMT.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to screen mode id:i:1
+        ///use multimon:i:0
+        ///desktopwidth:i:1024
+        ///desktopheight:i:768
+        ///session bpp:i:15
+        ///compression:i:1
+        ///keyboardhook:i:1
+        ///audiocapturemode:i:0
+        ///videoplaybackmode:i:1
+        ///connection type:i:6
+        ///networkautodetect:i:0
+        ///bandwidthautodetect:i:1
+        ///displayconnectionbar:i:1
+        ///enableworkspacereconnect:i:0
+        ///disable wallpaper:i:0
+        ///allow font smoothing:i:0
+        ///allow desktop composition:i:0
+        ///disable full window drag:i:1
+        ///disable menu anims:i:1
+        ///disable themes:i:1
+        ///disable cursor setting:i:0
+        ///bitmapcachepersistenable:i: [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string MSTSC {
+            get {
+                return ResourceManager.GetString("MSTSC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
         internal static System.Drawing.Icon NetCon {

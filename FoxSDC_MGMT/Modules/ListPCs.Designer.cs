@@ -36,6 +36,7 @@
             this.columnHeader9 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader14 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader7 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -49,9 +50,11 @@
             this.propertiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
             this.connectToScreenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openCommandPromptToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.imageList1 = new System.Windows.Forms.ImageList(this.components);
+            this.openRemoteDesktopConnectionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -64,6 +67,7 @@
             this.columnHeader9,
             this.columnHeader2,
             this.columnHeader4,
+            this.columnHeader14,
             this.columnHeader5,
             this.columnHeader6,
             this.columnHeader7,
@@ -115,6 +119,10 @@
             this.columnHeader4.Text = "OS Version";
             this.columnHeader4.Width = 70;
             // 
+            // columnHeader14
+            // 
+            this.columnHeader14.Text = "Win 10";
+            // 
             // columnHeader5
             // 
             this.columnHeader5.Text = "Platform";
@@ -158,42 +166,63 @@
             this.toolStripMenuItem1,
             this.deleteToolStripMenuItem,
             this.toolStripMenuItem2,
-            this.connectToScreenToolStripMenuItem});
+            this.connectToScreenToolStripMenuItem,
+            this.openCommandPromptToolStripMenuItem,
+            this.openRemoteDesktopConnectionToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(204, 158);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(320, 206);
             // 
             // approveRefuseToolStripMenuItem
             // 
             this.approveRefuseToolStripMenuItem.Name = "approveRefuseToolStripMenuItem";
-            this.approveRefuseToolStripMenuItem.Size = new System.Drawing.Size(193, 24);
+            this.approveRefuseToolStripMenuItem.Size = new System.Drawing.Size(319, 24);
             this.approveRefuseToolStripMenuItem.Text = "&Approve/Refuse";
             this.approveRefuseToolStripMenuItem.Click += new System.EventHandler(this.approveRefuseToolStripMenuItem_Click);
             // 
             // setcommentToolStripMenuItem
             // 
             this.setcommentToolStripMenuItem.Name = "setcommentToolStripMenuItem";
-            this.setcommentToolStripMenuItem.Size = new System.Drawing.Size(193, 24);
+            this.setcommentToolStripMenuItem.Size = new System.Drawing.Size(319, 24);
             this.setcommentToolStripMenuItem.Text = "Set &comment";
             this.setcommentToolStripMenuItem.Click += new System.EventHandler(this.setcommentToolStripMenuItem_Click);
             // 
             // propertiesToolStripMenuItem
             // 
             this.propertiesToolStripMenuItem.Name = "propertiesToolStripMenuItem";
-            this.propertiesToolStripMenuItem.Size = new System.Drawing.Size(193, 24);
+            this.propertiesToolStripMenuItem.Size = new System.Drawing.Size(319, 24);
             this.propertiesToolStripMenuItem.Text = "&Properties";
             this.propertiesToolStripMenuItem.Click += new System.EventHandler(this.propertiesToolStripMenuItem_Click);
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(190, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(316, 6);
             // 
             // deleteToolStripMenuItem
             // 
             this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
-            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(193, 24);
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(319, 24);
             this.deleteToolStripMenuItem.Text = "&Delete";
             this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem2
+            // 
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(316, 6);
+            // 
+            // connectToScreenToolStripMenuItem
+            // 
+            this.connectToScreenToolStripMenuItem.Name = "connectToScreenToolStripMenuItem";
+            this.connectToScreenToolStripMenuItem.Size = new System.Drawing.Size(319, 24);
+            this.connectToScreenToolStripMenuItem.Text = "&Connect to screen";
+            this.connectToScreenToolStripMenuItem.Click += new System.EventHandler(this.connectToScreenToolStripMenuItem_Click);
+            // 
+            // openCommandPromptToolStripMenuItem
+            // 
+            this.openCommandPromptToolStripMenuItem.Name = "openCommandPromptToolStripMenuItem";
+            this.openCommandPromptToolStripMenuItem.Size = new System.Drawing.Size(319, 24);
+            this.openCommandPromptToolStripMenuItem.Text = "Open Command P&rompt";
+            this.openCommandPromptToolStripMenuItem.Click += new System.EventHandler(this.openCommandPromptToolStripMenuItem_Click);
             // 
             // imageList1
             // 
@@ -201,17 +230,12 @@
             this.imageList1.ImageSize = new System.Drawing.Size(16, 16);
             this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
             // 
-            // toolStripMenuItem2
+            // openRemoteDesktopConnectionToolStripMenuItem
             // 
-            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(190, 6);
-            // 
-            // connectToScreenToolStripMenuItem
-            // 
-            this.connectToScreenToolStripMenuItem.Name = "connectToScreenToolStripMenuItem";
-            this.connectToScreenToolStripMenuItem.Size = new System.Drawing.Size(203, 24);
-            this.connectToScreenToolStripMenuItem.Text = "&Connect to screen";
-            this.connectToScreenToolStripMenuItem.Click += new System.EventHandler(this.connectToScreenToolStripMenuItem_Click);
+            this.openRemoteDesktopConnectionToolStripMenuItem.Name = "openRemoteDesktopConnectionToolStripMenuItem";
+            this.openRemoteDesktopConnectionToolStripMenuItem.Size = new System.Drawing.Size(319, 24);
+            this.openRemoteDesktopConnectionToolStripMenuItem.Text = "Open Remote &Desktop Connection";
+            this.openRemoteDesktopConnectionToolStripMenuItem.Click += new System.EventHandler(this.openRemoteDesktopConnectionToolStripMenuItem_Click);
             // 
             // ctlListPCs
             // 
@@ -251,5 +275,8 @@
         private System.Windows.Forms.ColumnHeader columnHeader13;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
         private System.Windows.Forms.ToolStripMenuItem connectToScreenToolStripMenuItem;
+        private System.Windows.Forms.ColumnHeader columnHeader14;
+        private System.Windows.Forms.ToolStripMenuItem openCommandPromptToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem openRemoteDesktopConnectionToolStripMenuItem;
     }
 }

@@ -456,5 +456,16 @@ namespace FoxSDC_MGMT
             }
             UploadDownloadDataThread.CancelThread = true;
         }
+
+        private void runToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Program.net.RunAdminReportNow();
+        }
+
+        private void manageUsersToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            frmUserManagement usr = new frmUserManagement();
+            usr.ShowDialog(this);
+        }
     }
 }

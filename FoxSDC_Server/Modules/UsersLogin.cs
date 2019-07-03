@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Diagnostics;
+using System.DirectoryServices.AccountManagement;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,11 +12,20 @@ namespace FoxSDC_Server
 {
     class Users
     {
+        static bool LDAPLogin(string LDAPUsername, string Password)
+        {
+            using (PrincipalContext pc = new PrincipalContext(ContextType.Domain))
+            {
+                bool isValid = pc.ValidateCredentials(LDAPUsername, Password);
+                if (isValid == true)
+                    return (true);
+            }
+
+            return (false);
+        }
+
         [VulpesRESTfulRet("Err")]
         ErrorInfo Err;
-
-        [VulpesRESTfulRet("PwStatus")]
-        NetBool PwStatus;
 
         [VulpesRESTful(VulpesRESTfulVerb.POST, "api/login/computer", "Err", "", false, PutIPAddress = true)]
         public RESTStatus ComputerLogin(SQLLib sql, ComputerLogon logon, NetworkConnectionInfo ni, string IPAddress)
@@ -469,6 +479,7 @@ namespace FoxSDC_Server
             cloneni.EMail = ni.EMail;
             cloneni.FromClone = true;
             cloneni.IPAddress = ni.IPAddress;
+            cloneni.IsLDAP = ni.IsLDAP;
 
             if (NetworkConnectionProcessor.InitNi(cloneni) == false)
             {
@@ -514,9 +525,8 @@ namespace FoxSDC_Server
 
             string PWMD5REQ = Convert.ToBase64String(Encoding.Unicode.GetBytes(logon.Password));
 
-            SqlDataReader dr = sql.ExecSQLReader("SELECT * FROM Users WHERE Username=@u AND Password=@p",
-                new SQLParam("@u", logon.Username),
-                new SQLParam("@p", PWMD5REQ));
+            SqlDataReader dr = sql.ExecSQLReader("SELECT * FROM Users WHERE Username=@u",
+                new SQLParam("@u", logon.Username));
             if (dr == null)
             {
                 Err.Error = "No DR";
@@ -533,6 +543,36 @@ namespace FoxSDC_Server
                 return (RESTStatus.Fail);
             }
             dr.Read();
+            if (Convert.ToInt32(dr["UseLDAP"]) == 1)
+            {
+                if (LDAPLogin(Convert.ToString(dr["LDAPUsername"]), logon.Password) == false)
+                {
+                    dr.Close();
+                    Err.Error = "Invalid username/password";
+                    Err.ErrorID = (int)ErrorFlags.WrongUsernamePassword;
+                    NetworkConnection.DeleteSession(newID);
+                    return (RESTStatus.Fail);
+                }
+                else
+                {
+                    ni.IsLDAP = true;
+                }
+            }
+            else
+            {
+                if (Convert.ToString(dr["Password"]) != PWMD5REQ)
+                {
+                    dr.Close();
+                    Err.Error = "Invalid username/password";
+                    Err.ErrorID = (int)ErrorFlags.WrongUsernamePassword;
+                    NetworkConnection.DeleteSession(newID);
+                    return (RESTStatus.Fail);
+                }
+                else
+                {
+                    ni.IsLDAP = false;
+                }
+            }
             ni.Permissions = Convert.ToInt64(dr["Permissions"]);
             ni.Permissions = ni.Permissions & ~((Int64)ACLFlags.ComputerLogin);
             if (ACL.HasACL(ni.Permissions, ACLFlags.CanLogin) == false)
@@ -556,79 +596,6 @@ namespace FoxSDC_Server
             Err.ErrorID = (int)ErrorFlags.NoError;
 
             return (RESTStatus.Success);
-        }
-
-        private bool MeetPasswordPolicy(string PW)
-        {
-            if (PW.Length < 8)
-                return (false);
-            bool UpperChar = false;
-            bool LowerChar = false;
-            bool Number = false;
-
-            foreach (char S in PW)
-            {
-                if (S >= 48 && S <= 57)
-                    Number = true;
-                if (S >= 65 && S <= 90)
-                    UpperChar = true;
-                if (S >= 97 && S <= 122)
-                    LowerChar = true;
-            }
-
-            if (Number == false || UpperChar == false || LowerChar == false)
-                return (false);
-
-            return (true); //OK 
-        }
-
-        [VulpesRESTProtected]
-        [VulpesRESTful(VulpesRESTfulVerb.GET, "api/mgmt/login/user/password", "PwStatus", "")]
-        public RESTStatus Password(SQLLib sql, object dummy, NetworkConnectionInfo ni)
-        {
-            PwStatus = new NetBool();
-            PwStatus.Data = ni.MustChangePassword;
-            return (RESTStatus.Success);
-        }
-
-
-        [VulpesRESTProtected]
-        [VulpesRESTful(VulpesRESTfulVerb.POST, "api/mgmt/login/user/password", "", "")]
-        public RESTStatus ChangeMyPassword(SQLLib sql, ChangePassword chgpw, NetworkConnectionInfo ni)
-        {
-            if (ni.HasAcl(ACLFlags.ComputerLogin) == true)
-            {
-                ni.Error = "Access denied";
-                ni.ErrorID = ErrorFlags.AccessDenied;
-                return (RESTStatus.Denied);
-            }
-
-            ni.Error = "";
-
-            string PWMD5REQ = Convert.ToBase64String(Encoding.Unicode.GetBytes(chgpw.OldPassword));
-
-            if (MeetPasswordPolicy(chgpw.NewPassword) == false)
-            {
-                ni.Error = "Password policy not met";
-                ni.ErrorID = ErrorFlags.PWPolicyNotMet;
-                return (RESTStatus.Fail);
-            }
-            int Count = Convert.ToInt32(sql.ExecSQLScalar("SELECT Count(*) FROM Users WHERE Username=@u AND Password=@p",
-                new SQLParam("@u", ni.Username),
-                new SQLParam("@p", PWMD5REQ)));
-            if (Count < 1)
-            {
-                ni.Error = "Invalid old password";
-                ni.ErrorID = ErrorFlags.InvalidPassword;
-                return (RESTStatus.Fail);
-            }
-            string PWMD5New = Convert.ToBase64String(Encoding.Unicode.GetBytes(chgpw.NewPassword));
-            sql.ExecSQLNQ("UPDATE Users SET Password=@pw, MustChangePassword=0 WHERE Username=@u",
-                new SQLParam("@u", ni.Username),
-                new SQLParam("@pw", PWMD5New));
-            ni.MustChangePassword = false;
-
-            return (RESTStatus.NoContent);
         }
     }
 }

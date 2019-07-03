@@ -820,4 +820,38 @@ namespace FoxSDC_Common
         public int ValueType;
         public string Data;
     }
+
+    public class UserInfo
+    {
+        public string Username;
+        public string Name;
+    }
+
+    public class UserDetails
+    {
+        public string Username;
+        public string Name;
+        public Int64 Permissions;
+        public bool MustChangePassword;
+        public string EMail;
+        public bool UseLDAP;
+        public string LDAPUsername;
+    }
+
+    public class UserDetailsPassword
+    {
+        public string Username;
+        public string Name;
+        public Int64 Permissions;
+        public bool MustChangePassword;
+        public string EMail;
+        public bool UseLDAP;
+        public string LDAPUsername;
+        public string NewPassword;
+    }
+
+    public class UserDetailsList
+    {
+        public List<UserDetails> List;
+    }
 }

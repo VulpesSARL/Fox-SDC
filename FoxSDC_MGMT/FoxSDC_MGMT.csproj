@@ -431,6 +431,12 @@
     <Compile Include="UploadProgress.Designer.cs">
       <DependentUpon>UploadProgress.cs</DependentUpon>
     </Compile>
+    <Compile Include="UserManagement.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UserManagement.designer.cs">
+      <DependentUpon>UserManagement.cs</DependentUpon>
+    </Compile>
     <Compile Include="Utilities.cs" />
     <EmbeddedResource Include="AddFilesFromRemoteClient.resx">
       <DependentUpon>AddFilesFromRemoteClient.cs</DependentUpon>
@@ -619,6 +625,9 @@
     <EmbeddedResource Include="UploadProgress.resx">
       <DependentUpon>UploadProgress.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UserManagement.resx">
+      <DependentUpon>UserManagement.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="app.manifest" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -663,6 +672,7 @@
     <None Include="Resources\fromtosrv.ico" />
     <Content Include="Resources\link.ico" />
     <None Include="Resources\Logo Alone Square 256 256.png" />
+    <None Include="Resources\MSTSC.txt" />
     <Content Include="Resources\NetCon.ico" />
     <Content Include="Resources\NetNotCon.ico" />
     <Content Include="Resources\Nix.ico" />
