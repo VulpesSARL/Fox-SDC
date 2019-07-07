@@ -5,11 +5,12 @@ desktopheight:i:768
 session bpp:i:15
 compression:i:1
 keyboardhook:i:1
+winposstr:s:0,1,0,0,1124,868
 audiocapturemode:i:0
-videoplaybackmode:i:1
-connection type:i:6
+videoplaybackmode:i:0
+connection type:i:1
 networkautodetect:i:0
-bandwidthautodetect:i:1
+bandwidthautodetect:i:0
 displayconnectionbar:i:1
 enableworkspacereconnect:i:0
 disable wallpaper:i:0
@@ -21,9 +22,10 @@ disable themes:i:1
 disable cursor setting:i:0
 bitmapcachepersistenable:i:1
 full address:s:{ADDR}
-audiomode:i:0
+audiomode:i:2
 redirectprinters:i:0
 redirectcomports:i:0
+redirectdirectx:i:0
 redirectsmartcards:i:0
 redirectclipboard:i:1
 redirectposdevices:i:0
