@@ -253,8 +253,8 @@ namespace FoxSDC_Server
                                 if (Planned.Value < DateTime.UtcNow) //is in the past - run now (may also be a "miss")
                                 {
                                     dr = sql.ExecSQLReader(@"select ComputerAccounts.MachineID,ComputerAccounts.ContractID,EMail from ComputerAccounts
-                                inner join Contracts on Contracts.ContractID = ComputerAccounts.ContractID
-                                where Disabled = 0 and MachineID in (Select distinct machineid from Reporting where (Flags & @f1) != 0 AND(Flags & @f2) = 0) and EMail is not null and EMail !=''",
+                                        inner join Contracts on Contracts.ContractID = ComputerAccounts.ContractID
+                                        where Disabled = 0 and MachineID in (Select distinct machineid from Reporting where (Flags & @f1) != 0 AND(Flags & @f2) = 0) and EMail is not null and EMail !=''",
                                         new SQLParam("@f1", ReportingFlags.ReportToClient),
                                         new SQLParam("@f2", ReportingFlags.ClientReported));
 

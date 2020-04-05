@@ -11,6 +11,11 @@ namespace FoxSDC_Common
         public string Data;
     }
 
+    public class NetDictIntString
+    {
+        public Dictionary<int, string> Dict;
+    }
+
     public class NetStringList
     {
         public List<string> Items;
@@ -191,6 +196,7 @@ namespace FoxSDC_Common
         public string SystemRoot;
         public string SUSID;
         public bool? IsMeteredConnection;
+        public bool? RunningInWindowsPE;
     }
 
     public class ComputerLogon
@@ -200,6 +206,21 @@ namespace FoxSDC_Common
         public string ContractID;
         public string ContractPassword;
         public BaseSystemInfo SysInfo;
+    }
+
+    public class RecoveryLogon
+    {
+        public string ContractID;
+        public string ContractPassword;
+        public string UCID;
+        public string MoreMachineHash;
+    }
+
+    public class RecoveryData
+    {
+        public bool Worked;
+        public string MachineID;
+        public string MachinePassword;
     }
 
     public class ContractInfosList
@@ -269,6 +290,7 @@ namespace FoxSDC_Common
         public string SystemRoot;
         public string SUSID;
         public bool? IsMeteredConnection;
+        public bool? RunningInWindowsPE;
     }
 
     public class ComputerDataList

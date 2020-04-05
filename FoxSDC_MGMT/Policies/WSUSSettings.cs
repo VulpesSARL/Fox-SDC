@@ -12,6 +12,9 @@ using Newtonsoft.Json;
 
 namespace FoxSDC_MGMT.Policies
 {
+    /*
+    Dual Scan Documentation: https://blogs.technet.microsoft.com/swisspfe/2018/04/13/win10-updates-store-gpos-dualscandisabled-sup-wsus/
+    */
     public partial class ctlWSUSSettings : UserControl, PolicyElementInterface
     {
         PolicyObject Pol;
@@ -94,6 +97,7 @@ namespace FoxSDC_MGMT.Policies
             chkScheduleInstall.CheckState = C(WSUS.SpecifyScheduleInstall);
             chkMicrosoftUpdate.CheckState = C(WSUS.InstallMicrosoftUpdates);
             chkSpecUpdateMethod.CheckState = C(WSUS.SpecifyWUOptions);
+            chkDisableDualScan.CheckState = C(WSUS.DisableDualScan);
             chkDownloadMode.CheckState = C(WSUS.EnableDownloadMode);
             lstSchedInstDay.SelectedIndex = WSUS.ScheduleInstallDay;
             lstSchedInstHour.SelectedIndex = WSUS.ScheduleInstallHour;
@@ -151,6 +155,7 @@ namespace FoxSDC_MGMT.Policies
             WSUS.InstallMicrosoftUpdates = C(chkMicrosoftUpdate.CheckState);
             WSUS.SpecifyWUOptions = C(chkSpecUpdateMethod.CheckState);
             WSUS.EnableDownloadMode = C(chkDownloadMode.CheckState);
+            WSUS.DisableDualScan = C(chkDisableDualScan.CheckState);
             WSUS.ScheduleInstallDay = lstSchedInstDay.SelectedIndex;
             WSUS.ScheduleInstallHour = lstSchedInstHour.SelectedIndex;
             WSUS.Target = txtClientTarget.Text;

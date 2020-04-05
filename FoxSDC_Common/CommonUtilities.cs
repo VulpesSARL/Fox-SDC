@@ -246,5 +246,39 @@ namespace FoxSDC_Common
             return (true);
         }
 
+        public static byte[] Serialize<T>(T s) where T : struct
+        {
+            int size = Marshal.SizeOf(typeof(T));
+            byte[] array = new byte[size];
+            IntPtr ptr = Marshal.AllocHGlobal(size);
+            Marshal.StructureToPtr(s, ptr, true);
+            Marshal.Copy(ptr, array, 0, size);
+            Marshal.FreeHGlobal(ptr);
+            return (array);
+        }
+
+        public static T Deserialize<T>(byte[] array) where T : struct
+        {
+            var size = Marshal.SizeOf(typeof(T));
+            var ptr = Marshal.AllocHGlobal(size);
+            Marshal.Copy(array, 0, ptr, size);
+            var s = (T)Marshal.PtrToStructure(ptr, typeof(T));
+            Marshal.FreeHGlobal(ptr);
+            return s;
+        }
+
+        public static byte[] Combine(params byte[][] arrays)
+        {
+            byte[] rv = new byte[arrays.Sum(a => a.Length)];
+            int offset = 0;
+            foreach (byte[] array in arrays)
+            {
+                System.Buffer.BlockCopy(array, 0, rv, offset, array.Length);
+                offset += array.Length;
+            }
+            return (rv);
+        }
+
+
     }
 }

@@ -25,7 +25,11 @@ namespace FoxSDC_Agent.Redirs
         [OperationContract]
         NetBool SetKeyboard(string keyboardd);
         [OperationContract]
+        NetBool SetKeyboard2(int Flags, int ScanCode, int VirtualKey);
+        [OperationContract]
         NetBool SetMousePosition(string moused);
+        [OperationContract]
+        NetBool SetMousePosition2(int X, int Y, int Delta, int Flags);
         [OperationContract]
         PushScreenData GetFullscreen();
         [OperationContract]
@@ -67,16 +71,23 @@ namespace FoxSDC_Agent.Redirs
         {
             return (Channel.SetMousePosition(moused));
         }
+        public NetBool SetMousePosition(int X, int Y, int Delta, int Flags)
+        {
+            return (Channel.SetMousePosition2(X, Y, Delta, Flags));
+        }
         public NetBool SetKeyboard(string keyboardd)
         {
             return (Channel.SetKeyboard(keyboardd));
+        }
+        public NetBool SetKeyboard(int Flags, int ScanCode, int VirtualKey)
+        {
+            return (Channel.SetKeyboard2(Flags, ScanCode, VirtualKey));
         }
         public bool CloseSession()
         {
             return (Channel.CloseSession());
         }
     }
-
 
     /// <summary>
     /// Server to Client ("Main" Class)
@@ -331,6 +342,25 @@ namespace FoxSDC_Agent.Redirs
             return (nb);
         }
 
+        public NetBool SetMousePosition2(int X, int Y, int Delta, int Flags)
+        {
+            MainScreenSystemClient.LastCalled = DateTime.Now;
+            NetBool nb = new NetBool();
+
+            try
+            {
+                ProgramAgent.CPP.MoveMouse(X, Y, Delta, Flags);
+            }
+            catch (Exception ee)
+            {
+                Debug.WriteLine(ee.ToString());
+                nb.Data = false;
+                return (nb);
+            }
+
+            return (nb);
+        }
+
         public NetBool SetKeyboard(string keyboardd)
         {
             MainScreenSystemClient.LastCalled = DateTime.Now;
@@ -344,6 +374,8 @@ namespace FoxSDC_Agent.Redirs
                     ProgramAgent.CPP.SendCTRLALTDELETE();
                 else if (keyboard.VirtualKey == 0xFFFFFFF && keyboard.ScanCode == 0xFFFFFFE)
                     ProgramAgent.CPP.SetKeyboardLayout(keyboard.Flags);
+                else if (keyboard.VirtualKey == 0xFFFFFFF && keyboard.ScanCode == 0xFFFFFFD)
+                    ProgramAgent.CPP.TypeKeyboardChar((char)keyboard.Flags);
                 else
                     ProgramAgent.CPP.SetKeyboard(keyboard.VirtualKey, keyboard.ScanCode, keyboard.Flags);
             }
@@ -368,6 +400,32 @@ namespace FoxSDC_Agent.Redirs
                 }
             }
             return (null);
+        }
+
+        public NetBool SetKeyboard2(int Flags, int ScanCode, int VirtualKey)
+        {
+            MainScreenSystemClient.LastCalled = DateTime.Now;
+            NetBool nb = new NetBool();
+
+            try
+            {
+                if (Flags == 0xFFFFFFF && ScanCode == 0xFFFFFFF && VirtualKey == 0xFFFFFFF)
+                    ProgramAgent.CPP.SendCTRLALTDELETE();
+                else if (VirtualKey == 0xFFFFFFF && ScanCode == 0xFFFFFFE)
+                    ProgramAgent.CPP.SetKeyboardLayout(Flags);
+                else if (VirtualKey == 0xFFFFFFF && ScanCode == 0xFFFFFFD)
+                    ProgramAgent.CPP.TypeKeyboardChar((char)Flags);
+                else
+                    ProgramAgent.CPP.SetKeyboard(VirtualKey, ScanCode, Flags);
+            }
+            catch (Exception ee)
+            {
+                Debug.WriteLine(ee.ToString());
+                nb.Data = false;
+                return (nb);
+            }
+
+            return (nb);
         }
     }
 
@@ -409,11 +467,13 @@ namespace FoxSDC_Agent.Redirs
         static string CurrentConnectionGUID = "";
         static MainScreenRedir Pipe;
         static DateTime? LastCalled = null;
+        static int PipeProcessID;
 
-        static bool StartApp(string GUID)
+        static bool StartApp(string GUID, out int ProcessID)
         {
+            ProcessID = 0;
 #if !DEBUG || DEBUGSERVICE
-            if (ProgramAgent.CPP.StartAppInWinLogon(Assembly.GetExecutingAssembly().Location, "-screen " + GUID) == false)
+            if (ProgramAgent.CPP.StartAppInWinLogon(Assembly.GetExecutingAssembly().Location, "-screen " + GUID, out ProcessID) == false)
             {
                 Debug.WriteLine("Cannot start: 0x" + ProgramAgent.CPP.WGetLastError().ToString("X"));
                 FoxEventLog.WriteEventLog("Cannot start Screen Capture Program: 0x" + ProgramAgent.CPP.WGetLastError().ToString("X"), EventLogEntryType.Error);
@@ -423,7 +483,8 @@ namespace FoxSDC_Agent.Redirs
             //Crude: since we cannot copy the token as normal user / nor admin user
             try
             {
-                Process.Start(Assembly.GetExecutingAssembly().Location, "-screen " + GUID);
+                Process proc = Process.Start(Assembly.GetExecutingAssembly().Location, "-screen " + GUID);
+                ProcessID = proc.Id;
             }
             catch (Exception ee)
             {
@@ -435,6 +496,11 @@ namespace FoxSDC_Agent.Redirs
         }
 
         static object CheckConnectionLocker = new object();
+
+        static bool ProcessExists(int id)
+        {
+            return (Process.GetProcesses().Any(x => x.Id == id));
+        }
 
         static bool CheckConnection()
         {
@@ -457,6 +523,8 @@ namespace FoxSDC_Agent.Redirs
 
             lock (CheckConnectionLocker)
             {
+                FullReset:
+
                 Int64 Con = ProgramAgent.CPP.GetConsoleSessionID();
 
                 if (CurrentConsoleSessionID != Con)
@@ -484,7 +552,7 @@ namespace FoxSDC_Agent.Redirs
                 {
                     CurrentConnectionGUID = Guid.NewGuid().ToString();
                     FoxEventLog.VerboseWriteEventLog("Starting Screen Capture for Session ID " + CurrentConsoleSessionID.ToString() + " Pipe #" + CurrentConnectionGUID, EventLogEntryType.Information);
-                    if (StartApp(CurrentConnectionGUID) == false)
+                    if (StartApp(CurrentConnectionGUID, out PipeProcessID) == false)
                         return (false);
                     Pipe = new MainScreenRedir(CurrentConnectionGUID);
                     Pipe.Pipe1 = new PipeScreenDataComm(CurrentConnectionGUID);
@@ -495,6 +563,15 @@ namespace FoxSDC_Agent.Redirs
                 bool Connected = false;
                 do
                 {
+                    if (ProcessExists(PipeProcessID) == false)
+                    {
+                        FoxEventLog.VerboseWriteEventLog("Screen Capture Process ID " + PipeProcessID.ToString() + " for Session ID " + CurrentConsoleSessionID.ToString() + " Pipe #" + CurrentConnectionGUID + " gone", EventLogEntryType.Warning);
+                        Connected = false;
+                        if (ProgramAgent.CPP.GetConsoleSessionID() != CurrentConsoleSessionID)
+                            goto FullReset;
+                        break;
+                    }
+
                     try
                     {
                         if (Pipe.Pipe1.Ping() == true)
@@ -520,7 +597,7 @@ namespace FoxSDC_Agent.Redirs
                     //Restart the app
                     CurrentConnectionGUID = Guid.NewGuid().ToString();
                     FoxEventLog.VerboseWriteEventLog("Starting Screen Capture for Session ID " + CurrentConsoleSessionID.ToString() + " (2nd try!) Pipe #" + CurrentConnectionGUID, EventLogEntryType.Information);
-                    if (StartApp(CurrentConnectionGUID) == false)
+                    if (StartApp(CurrentConnectionGUID, out PipeProcessID) == false)
                         return (false);
                     Pipe = new MainScreenRedir(CurrentConnectionGUID);
                     Pipe.Pipe1 = new PipeScreenDataComm(CurrentConnectionGUID);
@@ -528,6 +605,15 @@ namespace FoxSDC_Agent.Redirs
                     Connected = false;
                     do
                     {
+                        if (ProcessExists(PipeProcessID) == false)
+                        {
+                            FoxEventLog.VerboseWriteEventLog("Screen Capture Process ID " + PipeProcessID.ToString() + " for Session ID " + CurrentConsoleSessionID.ToString() + " Pipe #" + CurrentConnectionGUID + " gone", EventLogEntryType.Warning);
+                            Connected = false;
+                            if (ProgramAgent.CPP.GetConsoleSessionID() != CurrentConsoleSessionID)
+                                goto FullReset;
+                            break;
+                        }
+
                         try
                         {
                             if (Pipe.Pipe1.Ping() == true)
@@ -559,6 +645,36 @@ namespace FoxSDC_Agent.Redirs
             }
         }
 
+        static public NetBool SetKeyboard(int Flags, int ScanCode, int VirtualKey)
+        {
+            try
+            {
+                if (Flags == 0xFFFFFFF && ScanCode == 0xFFFFFFF && VirtualKey == 0xFFFFFFF)
+                {
+                    ProgramAgent.CPP.SendCTRLALTDELETE();
+                    return (new NetBool() { Data = true });
+                }
+            }
+            catch
+            {
+
+            }
+
+            if (CheckConnection() == false)
+                return (new NetBool() { Data = false });
+
+            NetBool b;
+            try
+            {
+                b = Pipe.Pipe1.SetKeyboard(Flags, ScanCode, VirtualKey);
+            }
+            catch
+            {
+                return (new NetBool() { Data = false });
+            }
+
+            return (b);
+        }
         static public NetBool SetKeyboard(string keyboardd)
         {
             try
@@ -609,6 +725,23 @@ namespace FoxSDC_Agent.Redirs
             return (b);
         }
 
+        static public NetBool SetMousePosition(int X, int Y, int Delta, int Flags)
+        {
+            if (CheckConnection() == false)
+                return (new NetBool() { Data = false });
+
+            NetBool b;
+            try
+            {
+                b = Pipe.Pipe1.SetMousePosition(X, Y, Delta, Flags);
+            }
+            catch
+            {
+                return (new NetBool() { Data = false });
+            }
+            return (b);
+        }
+
         static public PushScreenData GetFullscreen()
         {
             if (CheckConnection() == false)
@@ -625,6 +758,62 @@ namespace FoxSDC_Agent.Redirs
             }
 
             return (b);
+        }
+
+        static byte[] ConvertListInt64ToByte(List<Int64> l)
+        {
+            byte[] b = new byte[l.Count * 8];
+
+            for (int i = 0; i < l.Count; i++)
+            {
+                Array.Copy(BitConverter.GetBytes(l[i]), 0, b, i * 8, 8);
+            }
+            return (b);
+        }
+
+        static byte[] ProcessPushScreenData(PushScreenData b)
+        {
+            PushScreenData2 b2 = new PushScreenData2();
+            b2.Header1 = 0x46;
+            b2.Header2 = 0x52;
+            b2.Header3 = 0x53;
+            b2.Header4 = 0x1;
+            b2.BlockX = b.BlockX;
+            b2.BlockY = b.BlockY;
+            b2.CursorX = b.CursorX;
+            b2.CursorY = b.CursorY;
+            b2.DataSZ = b.Data == null ? 0 : b.Data.LongLength;
+            b2.DataType = b.DataType;
+            b2.FailedCode = b.FailedCode;
+            b2.NumChangedBlocks = b.ChangedBlocks == null ? 0 : b.ChangedBlocks.Count;
+            b2.X = b.X;
+            b2.Y = b.Y;
+
+            byte[] data = CommonUtilities.Combine(CommonUtilities.Serialize<PushScreenData2>(b2),
+                b.Data == null ? new byte[0] : b.Data,
+                b.ChangedBlocks == null ? new byte[0] : ConvertListInt64ToByte(b.ChangedBlocks));
+
+            return (data);
+        }
+
+        static public byte[] GetFullscreen2()
+        {
+            PushScreenData b;
+
+            if (CheckConnection() == false)
+                b = new PushScreenData() { FailedCode = 0x50, X = 0, Y = 0 };
+
+            try
+            {
+                b = Pipe.Pipe2.GetFullscreen();
+            }
+            catch (Exception ee)
+            {
+                Debug.WriteLine(ee.ToString());
+                b = new PushScreenData() { FailedCode = 0x51, X = 0, Y = 0 };
+            }
+
+            return (ProcessPushScreenData(b));
         }
 
         static public PushScreenData GetDeltaScreen()
@@ -644,6 +833,26 @@ namespace FoxSDC_Agent.Redirs
 
             return (b);
         }
+
+        static public byte[] GetDeltaScreen2()
+        {
+            PushScreenData b;
+
+            if (CheckConnection() == false)
+                b = new PushScreenData() { FailedCode = 0x52, X = 0, Y = 0 };
+
+            try
+            {
+                b = Pipe.Pipe2.GetDeltaScreen();
+            }
+            catch
+            {
+                b = new PushScreenData() { FailedCode = 0x53, X = 0, Y = 0 };
+            }
+
+            return (ProcessPushScreenData(b));
+        }
+
     }
 
     class MainScreenSystemClient

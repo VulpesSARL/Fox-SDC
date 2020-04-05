@@ -40,6 +40,30 @@ namespace FoxSDC_Common
                 return (pres.Data);
         }
 
+        public Dictionary<int,string> GetEFIBootDevices(string MachineID)
+        {
+            NetDictIntString pres;
+            bool resb = SendReq<NetDictIntString>("api/pushy/listefibootdevices/" + MachineID, Verb.GET, out pres, out res, true);
+            if (resb == false)
+                return (null);
+            if (pres == null)
+                return (null);
+            else
+                return (pres.Dict);
+        }
+
+        public bool SetEFINextBootDevice(string MachineID, int ID)
+        {
+            NetInt32 p = new NetInt32();
+            p.Data = ID;
+            NetBool pres;
+            bool resb = SendReq<NetInt32, NetBool>("api/pushy/listefibootdevices/" + MachineID, Verb.POST, p, out pres, out res, true);
+            if (pres == null)
+                return (false);
+            else
+                return (pres.Data);
+        }
+
         public List<PushTaskManagerListElement> PushGetTasks(string MachineID)
         {
             PushTaskManagerList pres;
@@ -174,6 +198,21 @@ namespace FoxSDC_Common
                 return (pres);
         }
 
+        public PushConnectNetworkResult PushConnectToRemote2(string MachineID, string RemoteAddress, int RemotePort)
+        {
+            PushConnectNetworkResult pres;
+            PushConnectNetwork str = new PushConnectNetwork();
+            str.Address = RemoteAddress;
+            str.Port = RemotePort;
+            bool resb = SendReq<PushConnectNetwork, PushConnectNetworkResult>("api/pushy/wsconnectremotereq/" + MachineID, Verb.POST, str, out pres, out res, true);
+            if (resb == false)
+                return (null);
+            if (pres == null)
+                return (null);
+            else
+                return (pres);
+        }
+
         public PushConnectNetworkResult PushConnectionToRemoteData(string MachineID, string ConnectionGUID, byte[] data, Int64 Sequence)
         {
             PushConnectNetworkData d = new PushConnectNetworkData();
@@ -198,6 +237,21 @@ namespace FoxSDC_Common
 
             PushConnectNetworkResult b;
             bool resb = SendReq<PushConnectNetworkData, PushConnectNetworkResult>("api/pushy/connectremoteclosedata/" + MachineID, Verb.POST, d, out b, out res, true);
+            if (resb == false)
+                return (null);
+            if (b == null)
+                return (null);
+            return (b);
+        }
+
+        public PushConnectNetworkResult PushConnectionToRemoteClose2(string MachineID, string ConnectionGUID)
+        {
+            PushConnectNetworkData d = new PushConnectNetworkData();
+            d.data = null;
+            d.GUID = ConnectionGUID;
+
+            PushConnectNetworkResult b;
+            bool resb = SendReq<PushConnectNetworkData, PushConnectNetworkResult>("api/pushy/wsconnectremoteclosedata/" + MachineID, Verb.POST, d, out b, out res, true);
             if (resb == false)
                 return (null);
             if (b == null)
@@ -292,6 +346,15 @@ namespace FoxSDC_Common
         {
             PushScreenData pres;
             bool resb = SendReq<PushScreenData>("api/pushy/getscreenbuffer/" + MachineID, Verb.GET, out pres, out res, true);
+            if (resb == false)
+                return (null);
+            return (pres);
+        }
+
+        public PushConnectNetworkResult PushCreateWSScreenconnection(string MachineID)
+        {
+            PushConnectNetworkResult pres;
+            bool resb = SendReq<PushConnectNetworkResult>("api/pushy/wscreatescreenconnection/" + MachineID, Verb.GET, out pres, out res, true);
             if (resb == false)
                 return (null);
             return (pres);

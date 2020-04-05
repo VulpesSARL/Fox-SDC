@@ -10,7 +10,7 @@ namespace FoxSDC_Common
     {
         bool IsInHypervisor();
         bool StartAppAsUser(string Filename, string Args);
-        bool StartAppInWinLogon(string Filename, string Args);
+        bool StartAppInWinLogon(string Filename, string Args, out int ProcessID);
         bool SetToken();
         bool VerifyEXESignature(string Filename);
         bool SetDateTime(DateTime UTCTime);
@@ -28,7 +28,10 @@ namespace FoxSDC_Common
         Int64 GetConsoleSessionID();
         void SendCTRLALTDELETE();
         int SetKeyboardLayout(Int64 ID);
-
+        void TypeKeyboardChar(char ch);
+        bool GetEFIBootDevices(out Dictionary<int, string> Dict);
+        bool SetEFINextBootDevice(int ID);
+        List<List<string>> DNSQueryTXT(string Name);
     }
 
     public class CPPFrameBufferData

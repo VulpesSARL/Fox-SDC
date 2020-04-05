@@ -18,12 +18,12 @@ void CreateScreenshot(int *x, int *y, void **data, bool *failed, int *failedstep
 		if (oldDesktop != NULL)
 		{
 			HWINSTA WndSta = OpenWindowStation(L"WinSta0", false, MAXIMUM_ALLOWED);
-			
+
 			if (WndSta != NULL)
 			{
 				SetProcessWindowStation(WndSta);
 
-				HDESK Desk = OpenInputDesktop(0, DF_ALLOWOTHERACCOUNTHOOK, DESKTOP_CREATEMENU | DESKTOP_CREATEWINDOW |
+				HDESK Desk = OpenInputDesktop(DF_ALLOWOTHERACCOUNTHOOK, 1, DESKTOP_CREATEMENU | DESKTOP_CREATEWINDOW |
 					DESKTOP_ENUMERATE | DESKTOP_HOOKCONTROL |
 					DESKTOP_WRITEOBJECTS | DESKTOP_READOBJECTS |
 					DESKTOP_SWITCHDESKTOP | GENERIC_WRITE);
@@ -71,7 +71,8 @@ void CreateScreenshot(int *x, int *y, void **data, bool *failed, int *failedstep
 
 void FinalCapture(int *x, int *y, void **data, bool *failed, int *failedstep, int *datasz, int *curx, int *cury, int *GL)
 {
-	HDC Desktop = GetDC(NULL);
+	HWND DesktopWindow = GetDesktopWindow();
+	HDC Desktop = GetDC(DesktopWindow);
 	if (Desktop != NULL)
 	{
 		POINT CursorPos;
@@ -94,7 +95,7 @@ void FinalCapture(int *x, int *y, void **data, bool *failed, int *failedstep, in
 				HBITMAP bitmap = (HBITMAP)SelectObject(MemDesktop, tmpbitmap);
 				if (bitmap != NULL)
 				{
-					BitBlt(MemDesktop, 0, 0, ResX, ResY, Desktop, 0, 0, SRCCOPY);
+					BitBlt(MemDesktop, 0, 0, ResX, ResY, Desktop, 0, 0, CAPTUREBLT | SRCCOPY);
 
 					BITMAPINFOHEADER bi;
 

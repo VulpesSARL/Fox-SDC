@@ -21,6 +21,9 @@ namespace FoxSDC_Server.Modules
         [VulpesRESTfulRet("CliSettings")]
         ClientSettings ClientSettings;
 
+        [VulpesRESTfulRet("WSURL")]
+        NetString WSURL;
+
         [VulpesRESTful(VulpesRESTfulVerb.GET, "api/status/error", "Err", "")]
         public RESTStatus GetLastError(SQLLib sql, object foo, NetworkConnectionInfo ni)
         {
@@ -90,6 +93,13 @@ namespace FoxSDC_Server.Modules
             ClientSettings = new ClientSettings();
             ClientSettings.AdministratorName = SettingsManager.Settings.AdministratorName;
             ClientSettings.MessageDisclaimer = SettingsManager.Settings.MessageDisclaimer;
+            return (RESTStatus.Success);
+        }
+
+        [VulpesRESTful(VulpesRESTfulVerb.GET, "api/client/websocketurl", "WSURL", "")]
+        public RESTStatus GetWebsocketURL(SQLLib sql, object foo, NetworkConnectionInfo ni)
+        {
+            WSURL = new NetString() { Data = Settings.Default.WSPublishURL };
             return (RESTStatus.Success);
         }
 

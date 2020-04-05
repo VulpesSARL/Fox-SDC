@@ -112,17 +112,21 @@
     <Compile Include="ProjectInstaller.Designer.cs">
       <DependentUpon>ProjectInstaller.cs</DependentUpon>
     </Compile>
+    <Compile Include="Push\EFIBios.cs" />
     <Compile Include="Push\Filesystem.cs" />
-    <Compile Include="Push\NetRedir.cs" />
-    <Compile Include="Push\PushMain1.cs" />
-    <Compile Include="Push\PushMain0.cs" />
-    <Compile Include="Push\PushMain10.cs" />
-    <Compile Include="Push\PushMain2.cs" />
-    <Compile Include="Push\PushMain3.cs" />
+    <Compile Include="Push\NetRedirLegacy.cs" />
+    <Compile Include="Push\NetRedirWS.cs" />
+    <Compile Include="Push\PushMain01 - NetData.cs" />
+    <Compile Include="Push\PushMain00 - Base.cs" />
+    <Compile Include="Push\PushMain10 - Chat.cs" />
+    <Compile Include="Push\PushMain02 - ScreenRedir.cs" />
+    <Compile Include="Push\PushMain03 - ScreenRedir Input.cs" />
+    <Compile Include="Redirs\MainNetRedirWS.cs" />
     <Compile Include="Redirs\MainScreenData.cs" />
     <Compile Include="Push\Services.cs" />
     <Compile Include="Push\TaskManager.cs" />
     <Compile Include="Push\WindowsUpdateClient.cs" />
+    <Compile Include="Redirs\MainScreenDataWS.cs" />
     <Compile Include="RegistryData.cs" />
     <Compile Include="RegistryData_Reportings.cs" />
     <Compile Include="ServiceElement.cs">
@@ -131,7 +135,7 @@
     <Compile Include="ServiceElement.Designer.cs">
       <DependentUpon>ServiceElement.cs</DependentUpon>
     </Compile>
-    <Compile Include="Redirs\MainNetRedir.cs" />
+    <Compile Include="Redirs\MainNetRedirLegacy.cs" />
     <Compile Include="Redirs\MainSTDIORedir.cs" />
     <Compile Include="Syncs\SyncBitlockerRK.cs" />
     <Compile Include="Syncs\SyncDeviceManager.cs" />
@@ -154,6 +158,7 @@
     <Compile Include="UpdateCheck.cs" />
     <Compile Include="Userregistries.cs" />
     <Compile Include="Utilities.cs" />
+    <Compile Include="WindowsPE.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -24,6 +24,7 @@ copy "..\Release\FoxSDC_PackageCreatorC.exe" "CD\SDC Tools"
 copy "..\Release\FoxSDC_RedirConsole.exe" "CD\SDC Tools"
 copy "..\Registry Tricks.txt" "CD\SDC Tools"
 copy "..\Usefull EventLog Entries.txt" "CD\SDC Tools"
+copy "..\DNS Configuration.txt" "CD\SDC Tools"
 copy "..\Release\FoxSDC_RemoteConnect.exe" "CD\SDC Tools"
 copy "..\Release\FoxSDC_ManageScreen.exe" "CD\SDC Tools"
 

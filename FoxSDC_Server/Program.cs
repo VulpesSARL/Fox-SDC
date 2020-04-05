@@ -200,10 +200,13 @@ namespace FoxSDC_Server
                 WebServerHandler.RunWebServer();
                 MaintenanceTasks.StartMaintenanceTreads();
                 ReportingThread.StartReportingThreads();
+                RemoteNetworkConnectionWSCrosser.InitialInitWS();
                 Console.WriteLine("=============== Server started ===============");
                 Debug.WriteLine("=============== Server started ===============");
                 Console.WriteLine(Settings.Default.ListenOn);
                 Debug.WriteLine(Settings.Default.ListenOn);
+                Console.WriteLine(Settings.Default.WSListenOn);
+                Debug.WriteLine(Settings.Default.WSListenOn);
                 FoxEventLog.WriteEventLog("Server started", EventLogEntryType.Information);
                 ServiceRunning = true;
                 Thread tmm = new Thread(new ThreadStart(TimeoutManager));
@@ -275,6 +278,7 @@ namespace FoxSDC_Server
             FoxEventLog.WriteEventLog("Server stopping", EventLogEntryType.Information);
             Debug.WriteLine("===== Cancelling =====");
             WebServerHandler.EndWebServer();
+            RemoteNetworkConnectionWSCrosser.ShutdownWS();
             KillConnections();
             MaintenanceTasks.StopThreads();
             ReportingThread.StopThreads();

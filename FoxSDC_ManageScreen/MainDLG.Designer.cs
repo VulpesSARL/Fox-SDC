@@ -32,7 +32,11 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainDLG));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.resetConnectionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.typeClipboardAsTextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sendLayoutToRemoteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.disableInputHereToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -41,12 +45,14 @@
             this.squeezePictureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.cTRLALTDELETEToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.cTRLALTDELETEVKToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cTRLSHIFTESCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.windowsKeyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.txtStatus = new System.Windows.Forms.ToolStripTextBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.picDisplay = new System.Windows.Forms.PictureBox();
             this.timPing = new System.Windows.Forms.Timer(this.components);
-            this.cTRLALTDELETEVKToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.slowRefreshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picDisplay)).BeginInit();
@@ -56,28 +62,59 @@
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
+            this.editToolStripMenuItem,
             this.optionsToolStripMenuItem,
-            this.toolStripMenuItem1});
+            this.toolStripMenuItem1,
+            this.txtStatus});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(820, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(820, 31);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
             // fileToolStripMenuItem
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.resetConnectionToolStripMenuItem,
+            this.toolStripMenuItem2,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(45, 24);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(45, 27);
             this.fileToolStripMenuItem.Text = "&File";
+            // 
+            // resetConnectionToolStripMenuItem
+            // 
+            this.resetConnectionToolStripMenuItem.Name = "resetConnectionToolStripMenuItem";
+            this.resetConnectionToolStripMenuItem.Size = new System.Drawing.Size(200, 24);
+            this.resetConnectionToolStripMenuItem.Text = "&Reset Connection";
+            this.resetConnectionToolStripMenuItem.Click += new System.EventHandler(this.resetConnectionToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem2
+            // 
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(197, 6);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(104, 24);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(200, 24);
             this.exitToolStripMenuItem.Text = "E&xit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            // 
+            // editToolStripMenuItem
+            // 
+            this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.typeClipboardAsTextToolStripMenuItem});
+            this.editToolStripMenuItem.Name = "editToolStripMenuItem";
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(48, 27);
+            this.editToolStripMenuItem.Text = "&Edit";
+            // 
+            // typeClipboardAsTextToolStripMenuItem
+            // 
+            this.typeClipboardAsTextToolStripMenuItem.Name = "typeClipboardAsTextToolStripMenuItem";
+            this.typeClipboardAsTextToolStripMenuItem.Size = new System.Drawing.Size(233, 24);
+            this.typeClipboardAsTextToolStripMenuItem.Text = "Type Clipboard as text";
+            this.typeClipboardAsTextToolStripMenuItem.Click += new System.EventHandler(this.typeClipboardAsTextToolStripMenuItem_Click);
             // 
             // optionsToolStripMenuItem
             // 
@@ -86,9 +123,10 @@
             this.disableInputHereToolStripMenuItem,
             this.refreshScreenToolStripMenuItem,
             this.snapshotToDesktopToolStripMenuItem,
-            this.squeezePictureToolStripMenuItem});
+            this.squeezePictureToolStripMenuItem,
+            this.slowRefreshToolStripMenuItem});
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
-            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(76, 24);
+            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(76, 27);
             this.optionsToolStripMenuItem.Text = "&Options";
             this.optionsToolStripMenuItem.DropDownOpening += new System.EventHandler(this.optionsToolStripMenuItem_DropDownOpening);
             // 
@@ -135,7 +173,7 @@
             this.cTRLSHIFTESCToolStripMenuItem,
             this.windowsKeyToolStripMenuItem});
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(72, 24);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(72, 27);
             this.toolStripMenuItem1.Text = "&Macros";
             // 
             // cTRLALTDELETEToolStripMenuItem
@@ -144,6 +182,13 @@
             this.cTRLALTDELETEToolStripMenuItem.Size = new System.Drawing.Size(258, 24);
             this.cTRLALTDELETEToolStripMenuItem.Text = "&CTRL+ALT+DELETE (SAS)";
             this.cTRLALTDELETEToolStripMenuItem.Click += new System.EventHandler(this.CTRLALTDELETEToolStripMenuItem_Click);
+            // 
+            // cTRLALTDELETEVKToolStripMenuItem
+            // 
+            this.cTRLALTDELETEVKToolStripMenuItem.Name = "cTRLALTDELETEVKToolStripMenuItem";
+            this.cTRLALTDELETEVKToolStripMenuItem.Size = new System.Drawing.Size(258, 24);
+            this.cTRLALTDELETEVKToolStripMenuItem.Text = "CTRL+ALT+DELETE (&VK)";
+            this.cTRLALTDELETEVKToolStripMenuItem.Click += new System.EventHandler(this.cTRLALTDELETEVKToolStripMenuItem_Click);
             // 
             // cTRLSHIFTESCToolStripMenuItem
             // 
@@ -159,15 +204,21 @@
             this.windowsKeyToolStripMenuItem.Text = "&Windows key";
             this.windowsKeyToolStripMenuItem.Click += new System.EventHandler(this.windowsKeyToolStripMenuItem_Click);
             // 
+            // txtStatus
+            // 
+            this.txtStatus.Name = "txtStatus";
+            this.txtStatus.ReadOnly = true;
+            this.txtStatus.Size = new System.Drawing.Size(200, 27);
+            // 
             // panel1
             // 
             this.panel1.AutoScroll = true;
             this.panel1.Controls.Add(this.picDisplay);
             this.panel1.Cursor = System.Windows.Forms.Cursors.Default;
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel1.Location = new System.Drawing.Point(0, 28);
+            this.panel1.Location = new System.Drawing.Point(0, 31);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(820, 614);
+            this.panel1.Size = new System.Drawing.Size(820, 611);
             this.panel1.TabIndex = 1;
             // 
             // picDisplay
@@ -188,12 +239,12 @@
             this.timPing.Interval = 60000;
             this.timPing.Tick += new System.EventHandler(this.timPing_Tick);
             // 
-            // cTRLALTDELETEVKToolStripMenuItem
+            // slowRefreshToolStripMenuItem
             // 
-            this.cTRLALTDELETEVKToolStripMenuItem.Name = "cTRLALTDELETEVKToolStripMenuItem";
-            this.cTRLALTDELETEVKToolStripMenuItem.Size = new System.Drawing.Size(258, 24);
-            this.cTRLALTDELETEVKToolStripMenuItem.Text = "CTRL+ALT+DELETE (&VK)";
-            this.cTRLALTDELETEVKToolStripMenuItem.Click += new System.EventHandler(this.cTRLALTDELETEVKToolStripMenuItem_Click);
+            this.slowRefreshToolStripMenuItem.Name = "slowRefreshToolStripMenuItem";
+            this.slowRefreshToolStripMenuItem.Size = new System.Drawing.Size(234, 24);
+            this.slowRefreshToolStripMenuItem.Text = "&Slow refresh";
+            this.slowRefreshToolStripMenuItem.Click += new System.EventHandler(this.slowRefreshToolStripMenuItem_Click);
             // 
             // MainDLG
             // 
@@ -239,6 +290,12 @@
         private System.Windows.Forms.Timer timPing;
         private System.Windows.Forms.ToolStripMenuItem cTRLSHIFTESCToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem cTRLALTDELETEVKToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem typeClipboardAsTextToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem resetConnectionToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
+        private System.Windows.Forms.ToolStripTextBox txtStatus;
+        private System.Windows.Forms.ToolStripMenuItem slowRefreshToolStripMenuItem;
     }
 }
 

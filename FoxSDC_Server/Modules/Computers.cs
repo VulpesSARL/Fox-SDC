@@ -55,6 +55,7 @@ namespace FoxSDC_Server
             cd.SecureBootState = Convert.ToString(dr["SecureBootState"]);
             cd.SystemRoot = Convert.ToString(dr["SystemRoot"]);
             cd.SUSID = Convert.ToString(dr["SUSID"]);
+            cd.RunningInWindowsPE = dr["RunningInWindowsPE"] is DBNull ? (bool?)null : Convert.ToBoolean(dr["RunningInWindowsPE"]);
             cd.IsMeteredConnection = dr["MeteredConnection"] is DBNull ? (bool?)null : Convert.ToBoolean(dr["MeteredConnection"]);
 
             if (Settings.Default.UseContract == true)

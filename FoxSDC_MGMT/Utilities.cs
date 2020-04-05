@@ -12,7 +12,7 @@ namespace FoxSDC_MGMT
 {
     class Utilities
     {
-        public static void ConnectToScreen(IWin32Window parent, string MID)
+        public static void ConnectToScreen(IWin32Window parent, string MID, bool LegacyProtocol)
         {
             string Exec = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "FoxSDC_ManageScreen.exe");
             string SessionID = Program.net.CloneSession();
@@ -26,6 +26,8 @@ namespace FoxSDC_MGMT
                 Process p = new Process();
                 p.StartInfo.FileName = Exec;
                 p.StartInfo.Arguments = "\"" + Program.net.ConnectedURL + "\" \"" + MID + "\" \"" + SessionID + "\"";
+                if (LegacyProtocol == true)
+                    p.StartInfo.Arguments += " -legacy";
                 p.StartInfo.UseShellExecute = false;
                 p.Start();
             }

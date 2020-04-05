@@ -68,21 +68,21 @@ namespace FoxSDC_Server
                     logon.SysInfo.LegacyUCID = Consts.NullUCID;
             }
 
-            if (NullTest.Test(logon.SysInfo, "IsMeteredConnection") == false)
+            if (NullTest.Test(logon.SysInfo, "IsMeteredConnection", "RunningInWindowsPE") == false)
             {
                 Err.Error = "Invalid data";
                 Err.ErrorID = (int)ErrorFlags.InvalidData;
                 return (RESTStatus.Fail);
             }
 
-            if (logon.Password == "" && logon.Username == "")
+            if (string.IsNullOrWhiteSpace(logon.Password) == true || string.IsNullOrWhiteSpace(logon.Username) == true)
             {
                 Err.Error = "Invalid data";
                 Err.ErrorID = (int)ErrorFlags.InvalidData;
                 return (RESTStatus.Fail);
             }
 
-            if (NullTest.TestBlankString(logon.SysInfo, "IsMeteredConnection") == false)
+            if (NullTest.TestBlankString(logon.SysInfo, "IsMeteredConnection", "RunningInWindowsPE") == false)
             {
                 Err.Error = "Invalid data";
                 Err.ErrorID = (int)ErrorFlags.InvalidData;
@@ -265,6 +265,7 @@ namespace FoxSDC_Server
                     new SQLData("SystemRoot", logon.SysInfo.SystemRoot),
                     new SQLData("SUSID", logon.SysInfo.SUSID),
                     new SQLData("MeteredConnection", logon.SysInfo.IsMeteredConnection),
+                    new SQLData("RunningInWindowsPE", logon.SysInfo.RunningInWindowsPE),
                     new SQLData("ContractID", Settings.Default.UseContract == true ? (object)logon.ContractID : DBNull.Value));
 
                 Err.Error = "Not accepted (computer registered)";
@@ -393,7 +394,8 @@ namespace FoxSDC_Server
                 "Language = @Language,DisplayLanguage = @DisplayLanguage,MachineID = @MachineID,LastUpdated = getutcdate(), AgentVersion=@AgentVersion, AgentVersionID=@AgentVersionID," +
                 "RunningInHypervisor=@RunningInHypervisor, ContractID=@ContractID, IPAddress=@IPAddress,BIOSType=@BIOSType, NumberOfLogicalProcessors=@NumberOfLogicalProcessors, " +
                 "NumberOfProcessors=@NumberOfProcessors, TotalPhysicalMemory=@TotalPhysicalMemory, CPUName=@CPUName, SecureBootState=@SecureBootState, " +
-                "SystemRoot=@SystemRoot,SUSID=@SUSID,MeteredConnection=@meteredconnection " +
+                "SystemRoot=@SystemRoot,SUSID=@SUSID,MeteredConnection=@meteredconnection, " +
+                "RunningInWindowsPE=@RunningInWindowsPE " +
                 "    WHERE MachineID = @MachineID",
                 new SQLParam("@Is64Bit", logon.SysInfo.Is64Bit),
                 new SQLParam("@OSName", logon.SysInfo.OSName),
@@ -423,6 +425,7 @@ namespace FoxSDC_Server
                 new SQLParam("@SystemRoot", logon.SysInfo.SystemRoot),
                 new SQLParam("@SUSID", logon.SysInfo.SUSID),
                 new SQLParam("@meteredconnection", logon.SysInfo.IsMeteredConnection),
+                new SQLParam("@RunningInWindowsPE", logon.SysInfo.RunningInWindowsPE),
                 new SQLParam("@ContractID", Settings.Default.UseContract == true ? (object)logon.ContractID : DBNull.Value));
 
             sql.ExecSQL("UPDATE ComputerAccounts SET LastUpdated=getutcdate() WHERE MachineID=@m",

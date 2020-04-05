@@ -80,15 +80,22 @@ namespace FoxSDC_Agent
 
         public static void RegisterEventLog()
         {
-            if (EventLog.SourceExists(Title) == false)
+            try
             {
-                EventLog.CreateEventSource(Title, "Application");
-                Console.WriteLine(Title + " Created");
-                Thread.Sleep(1000);
+                if (EventLog.SourceExists(Title) == false)
+                {
+                    EventLog.CreateEventSource(Title, "Application");
+                    Console.WriteLine(Title + " Created");
+                    Thread.Sleep(1000);
+                }
+                else
+                {
+                    //Console.WriteLine(Title + " Exists");
+                }
             }
-            else
+            catch(Exception ee)
             {
-                //Console.WriteLine(Title + " Exists");
+                Debug.WriteLine(ee.ToString());
             }
         }
 

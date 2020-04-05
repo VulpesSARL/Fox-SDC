@@ -365,6 +365,19 @@ namespace FoxSDC_Common
                 return (set);
         }
 
+        public string GetWebsocketURL()
+        {
+            NetString set;
+            bool resb = SendReq<NetString>("api/client/websocketurl", Verb.GET, out set, out res);
+            if (resb == false)
+                return (null);
+            if (set == null)
+                return (null);
+            if (set.Data.EndsWith("/") == false)
+                set.Data += "/";
+            return (set.Data);
+        }
+
         public ServerSettings GetServerSettings()
         {
             ServerSettings set;
@@ -1559,6 +1572,16 @@ namespace FoxSDC_Common
             if (res != 200)
                 return (false);
             return (resb);
+        }
+
+        public RecoveryData GetRecoveryLogon(RecoveryLogon Logon)
+        {
+            RecoveryData rd;
+            bool resb = SendReq<RecoveryLogon, RecoveryData>("api/login/recovery", Verb.POST, Logon, out rd, out res);
+            if (resb == true)
+                return (rd);
+            else
+                return (null);
         }
     }
 }

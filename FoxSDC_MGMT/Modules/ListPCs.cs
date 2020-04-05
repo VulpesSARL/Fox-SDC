@@ -226,7 +226,7 @@ namespace FoxSDC_MGMT
             {
                 ComputerData cd = (ComputerData)l.Tag;
                 if (cd.Approved == true)
-                    Utilities.ConnectToScreen(this, cd.MachineID);
+                    Utilities.ConnectToScreen(this, cd.MachineID, Control.ModifierKeys == Keys.Control ? true : false);
             }
         }
 
@@ -356,10 +356,10 @@ namespace FoxSDC_MGMT
                         File.WriteAllText(TempFile, MSTSCSettings, Encoding.ASCII);
 
                         Process p = new Process();
-                        p.StartInfo.FileName = Environment.ExpandEnvironmentVariables ("%systemroot%\\system32\\mstsc.exe");
+                        p.StartInfo.FileName = Environment.ExpandEnvironmentVariables("%systemroot%\\system32\\mstsc.exe");
                         p.StartInfo.Arguments = TempFile;
                         p.StartInfo.UseShellExecute = false;
-                        p.Start();                        
+                        p.Start();
                     }
                     catch (Exception ee)
                     {

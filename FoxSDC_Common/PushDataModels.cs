@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -152,6 +153,7 @@ namespace FoxSDC_Common
     {
         public string Address;
         public int Port;
+        public string SessionID;
     }
 
     public class PushConnectNetworkResult
@@ -200,7 +202,7 @@ namespace FoxSDC_Common
         public int Delta;
         public int Flags;
     }
-       
+
     [Flags]
     public enum MouseDataFlags : int
     {
@@ -230,4 +232,55 @@ namespace FoxSDC_Common
     {
         public List<PushChatMessage> List;
     }
+
+    #region for WS
+
+    [StructLayout(LayoutKind.Sequential, Pack = 0)]
+    public struct PushScreenData2
+    {
+        public byte Header1; //0x46 'F'
+        public byte Header2; //0x52 'R'
+        public byte Header3; //0x53 'S'
+        public byte Header4; //0x1
+        public int X;
+        public int Y;
+        public int DataType;
+        public Int64 FailedCode;
+        public int CursorX;
+        public int CursorY;
+        public int BlockX;
+        public int BlockY;
+        public Int64 DataSZ;
+        public Int64 NumChangedBlocks;
+        //public byte[] Data;
+        //public List<Int64> ChangedBlocks;
+    }
+
+    public enum SendDataType : int
+    {
+        Resync = 0,
+        Keyboard = 1,
+        Mouse = 2,
+        RefreshScreen = 3,
+        DeltaScreen = 4,
+        ResetStream = 5,
+        Disconnect = 6
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 0)]
+    public struct SendDataData
+    {
+        public byte Header1; //0x46 'F'
+        public byte Header2; //0x52 'R'
+        public byte Header3; //0x53 'S'
+        public byte Header4; //0x1
+
+        public int DataType;
+        public int Flag1;
+        public int Flag2;
+        public int Flag3;
+        public int Flag4;
+    }
+
+    #endregion
 }

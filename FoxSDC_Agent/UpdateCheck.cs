@@ -111,11 +111,29 @@ namespace FoxSDC_Agent
 
                 try
                 {
-                    Redirs.MainNetRedir.TestTimeouts();
+                    Redirs.MainNetRedirLegacy.TestTimeouts();
                 }
                 catch(Exception ee)
                 {
-                    FoxEventLog.WriteEventLog("Something horribly got wrong while performing housekeeping: " + ee.ToString(), EventLogEntryType.Error);
+                    FoxEventLog.WriteEventLog("Something horribly got wrong while performing housekeeping (1): " + ee.ToString(), EventLogEntryType.Error);
+                }
+
+                try
+                {
+                    Redirs.MainNetRedirWS.TestTimeouts();
+                }
+                catch (Exception ee)
+                {
+                    FoxEventLog.WriteEventLog("Something horribly got wrong while performing housekeeping (2): " + ee.ToString(), EventLogEntryType.Error);
+                }
+
+                try
+                {
+                    Redirs.MainScreenDataWS.TestTimeouts();
+                }
+                catch (Exception ee)
+                {
+                    FoxEventLog.WriteEventLog("Something horribly got wrong while performing housekeeping (3): " + ee.ToString(), EventLogEntryType.Error);
                 }
 
                 for (int i = 0; i < 120; i++)

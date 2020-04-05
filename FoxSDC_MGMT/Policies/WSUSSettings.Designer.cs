@@ -58,6 +58,7 @@
             this.chkScheduleInstall = new System.Windows.Forms.CheckBox();
             this.chkInstallDuringMaintenance = new System.Windows.Forms.CheckBox();
             this.lstWUOptions = new System.Windows.Forms.ComboBox();
+            this.chkDisableDualScan = new System.Windows.Forms.CheckBox();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -253,6 +254,7 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.chkDisableDualScan);
             this.panel1.Controls.Add(this.lstDownloadMode);
             this.panel1.Controls.Add(this.chkDownloadMode);
             this.panel1.Controls.Add(this.txtAutoRestartMin);
@@ -281,7 +283,7 @@
             this.panel1.Controls.Add(this.txtClientTarget);
             this.panel1.Location = new System.Drawing.Point(15, 56);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(514, 376);
+            this.panel1.Size = new System.Drawing.Size(514, 407);
             this.panel1.TabIndex = 1;
             // 
             // lstDownloadMode
@@ -385,6 +387,17 @@
             this.lstWUOptions.Size = new System.Drawing.Size(221, 21);
             this.lstWUOptions.TabIndex = 1;
             // 
+            // chkDisableDualScan
+            // 
+            this.chkDisableDualScan.AutoSize = true;
+            this.chkDisableDualScan.Location = new System.Drawing.Point(14, 346);
+            this.chkDisableDualScan.Name = "chkDisableDualScan";
+            this.chkDisableDualScan.Size = new System.Drawing.Size(114, 17);
+            this.chkDisableDualScan.TabIndex = 26;
+            this.chkDisableDualScan.Text = "Disable Dual Scan";
+            this.chkDisableDualScan.ThreeState = true;
+            this.chkDisableDualScan.UseVisualStyleBackColor = true;
+            // 
             // ctlWSUSSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -435,5 +448,6 @@
         private System.Windows.Forms.TextBox txtAutoRestartMin;
         private System.Windows.Forms.ComboBox lstDownloadMode;
         private System.Windows.Forms.CheckBox chkDownloadMode;
+        private System.Windows.Forms.CheckBox chkDisableDualScan;
     }
 }

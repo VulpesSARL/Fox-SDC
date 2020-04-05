@@ -92,6 +92,7 @@ namespace FoxSDC_Common
         public bool? NoMSServer;
         public int DownloadMode;
         public bool? EnableDownloadMode;
+        public bool? DisableDualScan;
     }
 
     public class InternationalPolicy

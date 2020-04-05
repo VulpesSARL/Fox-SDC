@@ -9,7 +9,7 @@ namespace FoxSDC_Server
 {
     class DBUpdate
     {
-        public const int DBVersion = 41;
+        public const int DBVersion = 42;
         static public bool UpdateDB(SQLLib sql)
         {
             try
@@ -811,6 +811,14 @@ namespace FoxSDC_Server
                         sql.CommitTransaction();
                         FoxEventLog.WriteEventLog("Updated DB to Version " + Version.ToString(), EventLogEntryType.Information);
                         return (false);
+                    case 41:
+                        sql.BeginTransaction();
+                        sql.ExecSQL("ALTER TABLE ComputerAccounts ADD RunningInWindowsPE bit NULL");
+                        Version = 42;
+                        sql.ExecSQL("UPDATE CONFIG SET [Value]=@ver WHERE [Key]='Version'", new SQLParam("@ver", Version));
+                        sql.CommitTransaction();
+                        FoxEventLog.WriteEventLog("Updated DB to Version " + Version.ToString(), EventLogEntryType.Information);
+                        return (false);                        
                         /*case 1:
                             sql.BeginTransaction();
                             sql.ExecSQL("...............");

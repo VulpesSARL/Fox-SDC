@@ -33,7 +33,7 @@ namespace FoxSDC_MGMT
 
         void AddTab(UserControl ctrl, string TabText)
         {
-            TabPage tp = new TabPage(TabText);            
+            TabPage tp = new TabPage(TabText);
             ctrl.Dock = DockStyle.Fill;
             tp.Controls.Add(ctrl);
             tabControl1.TabPages.Add(tp);
@@ -58,6 +58,7 @@ namespace FoxSDC_MGMT
             ((PComputerData)transformeddata).IOSVerType = ((ComputerData)data).OSVerType;
             ((PComputerData)transformeddata).OSWin10Edition = Win10Version.GetWin10Version(transformeddata.OSVersion);
             ((PComputerData)transformeddata).BMeteredConnection = data.IsMeteredConnection;
+            ((PComputerData)transformeddata).RunningInWindowsPE = data.RunningInWindowsPE;
 
             PropertiesG.SelectedObject = transformeddata;
 
@@ -552,7 +553,7 @@ namespace FoxSDC_MGMT
 
         private void cmdRemoteScreen_Click(object sender, EventArgs e)
         {
-            Utilities.ConnectToScreen(this, MID);
+            Utilities.ConnectToScreen(this, MID, Control.ModifierKeys == Keys.Control ? true : false);
         }
 
         void AppendText(PushChatMessage chat)
@@ -599,6 +600,12 @@ namespace FoxSDC_MGMT
                 cmdSend_Click(sender, e);
                 e.Handled = true;
             }
+        }
+
+        private void cmdBootNext_Click(object sender, EventArgs e)
+        {
+            frmSetNextEFIBootDevice frm = new frmSetNextEFIBootDevice(MID);
+            frm.ShowDialog(this);
         }
     }
 }

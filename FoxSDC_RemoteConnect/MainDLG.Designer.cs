@@ -58,6 +58,7 @@
             this.cmdClose = new System.Windows.Forms.Button();
             this.bgwPinger = new System.ComponentModel.BackgroundWorker();
             this.timerPinger = new System.Windows.Forms.Timer(this.components);
+            this.chkUseWebSockets = new System.Windows.Forms.CheckBox();
             this.panelLogin.SuspendLayout();
             this.panelConnectData.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picStatus)).BeginInit();
@@ -148,7 +149,7 @@
             this.txtListenOn.Location = new System.Drawing.Point(82, 62);
             this.txtListenOn.Name = "txtListenOn";
             this.txtListenOn.Size = new System.Drawing.Size(100, 20);
-            this.txtListenOn.TabIndex = 1;
+            this.txtListenOn.TabIndex = 2;
             // 
             // label5
             // 
@@ -173,7 +174,7 @@
             this.txtConnectTo.Location = new System.Drawing.Point(82, 106);
             this.txtConnectTo.Name = "txtConnectTo";
             this.txtConnectTo.Size = new System.Drawing.Size(296, 20);
-            this.txtConnectTo.TabIndex = 2;
+            this.txtConnectTo.TabIndex = 3;
             // 
             // label7
             // 
@@ -189,14 +190,14 @@
             this.txtConnectPort.Location = new System.Drawing.Point(82, 132);
             this.txtConnectPort.Name = "txtConnectPort";
             this.txtConnectPort.Size = new System.Drawing.Size(100, 20);
-            this.txtConnectPort.TabIndex = 3;
+            this.txtConnectPort.TabIndex = 4;
             // 
             // cmdStart
             // 
             this.cmdStart.Location = new System.Drawing.Point(308, 158);
             this.cmdStart.Name = "cmdStart";
             this.cmdStart.Size = new System.Drawing.Size(75, 23);
-            this.cmdStart.TabIndex = 4;
+            this.cmdStart.TabIndex = 5;
             this.cmdStart.Text = "Start";
             this.cmdStart.UseVisualStyleBackColor = true;
             this.cmdStart.Click += new System.EventHandler(this.cmdStart_Click);
@@ -217,6 +218,7 @@
             // 
             // panelConnectData
             // 
+            this.panelConnectData.Controls.Add(this.chkUseWebSockets);
             this.panelConnectData.Controls.Add(this.lblPing);
             this.panelConnectData.Controls.Add(this.picStatus);
             this.panelConnectData.Controls.Add(this.label4);
@@ -321,6 +323,16 @@
             this.timerPinger.Interval = 5000;
             this.timerPinger.Tick += new System.EventHandler(this.timerPinger_Tick);
             // 
+            // chkUseWebSockets
+            // 
+            this.chkUseWebSockets.AutoSize = true;
+            this.chkUseWebSockets.Location = new System.Drawing.Point(270, 35);
+            this.chkUseWebSockets.Name = "chkUseWebSockets";
+            this.chkUseWebSockets.Size = new System.Drawing.Size(108, 17);
+            this.chkUseWebSockets.TabIndex = 1;
+            this.chkUseWebSockets.Text = "Use Websockets";
+            this.chkUseWebSockets.UseVisualStyleBackColor = true;
+            // 
             // MainDLG
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -379,6 +391,7 @@
         private System.ComponentModel.BackgroundWorker bgwPinger;
         private System.Windows.Forms.Timer timerPinger;
         private System.Windows.Forms.Label lblRXTXStat;
+        private System.Windows.Forms.CheckBox chkUseWebSockets;
     }
 }
 

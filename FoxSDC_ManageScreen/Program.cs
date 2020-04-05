@@ -18,12 +18,23 @@ namespace FoxSDC_ManageScreen
         [STAThread]
         static void Main(string[] args)
         {
-            if (args.Length != 3)
+            bool UseLegacy = false;
+
+            if (args.Length < 3)
                 return;
+            if (args.Length > 3)
+            {
+                if (args[3].ToLower() == "-legacy")
+                    UseLegacy = true;
+            }
+
+#if DEBUG
+            MessageBox.Show(null, "Attach Debugger here!", Title, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+#endif
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            maindlg = new MainDLG(args[1], args[0], args[2]);
+            maindlg = new MainDLG(args[1], args[0], args[2], UseLegacy);
 
             Application.Run(maindlg);
         }

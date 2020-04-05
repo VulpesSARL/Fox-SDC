@@ -40,12 +40,10 @@ namespace FoxSDC_Agent
             ReportingThreadHandle2 = new Thread(new ThreadStart(ReportingThread2));
             PolicyThreadHandle = new Thread(new ThreadStart(PolicyThread));
             DownloadThreadHandle = new Thread(new ThreadStart(DownloadThread));
-            LocalPackagesHandle = new Thread(new ThreadStart(LocalPackagesThread));
             ReportingThreadHandle1.Start();
             ReportingThreadHandle2.Start();
             PolicyThreadHandle.Start();
             DownloadThreadHandle.Start();
-            LocalPackagesHandle.Start();
             PushMain0.StartPushThread();
             PushMain1.StartPushThread();
             PushMain2.StartPushThread();
@@ -53,6 +51,12 @@ namespace FoxSDC_Agent
             PushMain10.StartPushThread();
             UpdateCheck.RunUpdateCheckAndHouseKeepingThread();
             DownloadSystemFSData.StartThread();
+            if (SystemInfos.SysInfo.RunningInWindowsPE == false || SystemInfos.SysInfo.RunningInWindowsPE == null)
+            {
+                LocalPackagesHandle = new Thread(new ThreadStart(LocalPackagesThread));
+                LocalPackagesHandle.Start();
+            }
+
             FoxEventLog.VerboseWriteEventLog("StartAllThreads() - DONE", System.Diagnostics.EventLogEntryType.Information);
         }
 
@@ -209,15 +213,18 @@ namespace FoxSDC_Agent
                     LockReportingUpdate2 = true;
                 }
 
-                if (StopThreads == false)
-                    if (RegistryData.DisableSMARTSync == false)
-                        SyncSMARTData.DoSyncSMART();
-                if (StopThreads == false)
-                    if (RegistryData.EnableBitlockerRKSync == true)
-                        SyncBitlockerRK.DoSyncBitlockerRK();
-                if (StopThreads == false)
-                    if (RegistryData.DisableWinLicenseSync == false)
-                        SyncWindowsLic.DoSyncWindowsLic();
+                if (SystemInfos.SysInfo.RunningInWindowsPE == null || SystemInfos.SysInfo.RunningInWindowsPE == false)
+                {
+                    if (StopThreads == false)
+                        if (RegistryData.DisableSMARTSync == false)
+                            SyncSMARTData.DoSyncSMART();
+                    if (StopThreads == false)
+                        if (RegistryData.EnableBitlockerRKSync == true)
+                            SyncBitlockerRK.DoSyncBitlockerRK();
+                    if (StopThreads == false)
+                        if (RegistryData.DisableWinLicenseSync == false)
+                            SyncWindowsLic.DoSyncWindowsLic();
+                }
 
                 Int64 Tim = RegistryData.LastSyncReportingWaitTime2;
                 if (Tim < 1)
@@ -263,41 +270,44 @@ namespace FoxSDC_Agent
                     LockReportingUpdate1 = true;
                 }
 
-                if (StopThreads == false)
-                    if (RegistryData.DisableAddRemoveProgramsSync == false)
-                        SyncAddRemovePrograms.DoSyncAddRemovePrograms();
+                if (SystemInfos.SysInfo.RunningInWindowsPE == null || SystemInfos.SysInfo.RunningInWindowsPE == false)
+                {
+                    if (StopThreads == false)
+                        if (RegistryData.DisableAddRemoveProgramsSync == false)
+                            SyncAddRemovePrograms.DoSyncAddRemovePrograms();
 
-                if (StopThreads == false)
-                    if (RegistryData.DisableDiskDataSync == false)
-                        SyncDiskData.DoSyncDiskData();
+                    if (StopThreads == false)
+                        if (RegistryData.DisableDiskDataSync == false)
+                            SyncDiskData.DoSyncDiskData();
 
-                if (StopThreads == false)
-                    if (RegistryData.DisableNetadapterSync == false)
-                        SyncNetworkAdapterConfig.DoSyncNetAdapterConfig();
+                    if (StopThreads == false)
+                        if (RegistryData.DisableNetadapterSync == false)
+                            SyncNetworkAdapterConfig.DoSyncNetAdapterConfig();
 
-                if (StopThreads == false)
-                    if (RegistryData.DisableDeviceManagerSync == false)
-                        SyncDeviceManager.DoSyncDeviceManager();
+                    if (StopThreads == false)
+                        if (RegistryData.DisableDeviceManagerSync == false)
+                            SyncDeviceManager.DoSyncDeviceManager();
 
-                if (StopThreads == false)
-                    if (RegistryData.DisableFilterDriverSync == false)
-                        SyncFilterDrivers.DoSyncFilters();
+                    if (StopThreads == false)
+                        if (RegistryData.DisableFilterDriverSync == false)
+                            SyncFilterDrivers.DoSyncFilters();
 
-                if (StopThreads == false)
-                    if (RegistryData.DisableUsersSync == false)
-                        SyncUsers.DoSyncUsers();
+                    if (StopThreads == false)
+                        if (RegistryData.DisableUsersSync == false)
+                            SyncUsers.DoSyncUsers();
 
-                if (StopThreads == false)
-                    if (RegistryData.DisableStartupSync == false)
-                        SyncStartups.DoSyncStartups();
+                    if (StopThreads == false)
+                        if (RegistryData.DisableStartupSync == false)
+                            SyncStartups.DoSyncStartups();
 
-                if (StopThreads == false)
-                    if (RegistryData.DisableSimpleTasks == false)
-                        SyncSimpleTasks.DoSyncSimpleTasks();
+                    if (StopThreads == false)
+                        if (RegistryData.DisableSimpleTasks == false)
+                            SyncSimpleTasks.DoSyncSimpleTasks();
 
-                if (StopThreads == false)
-                    if (RegistryData.DisableEventLogSync == false)
-                        SyncEventLog.DoSyncEventLog();
+                    if (StopThreads == false)
+                        if (RegistryData.DisableEventLogSync == false)
+                            SyncEventLog.DoSyncEventLog();
+                }
 
                 Int64 Tim = RegistryData.LastSyncReportingWaitTime;
                 if (Tim < 1)

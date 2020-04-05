@@ -4,7 +4,7 @@
 #include <Wtsapi32.h>
 #include <Userenv.h>
 
-bool LauchAppIntoWinLogon(WCHAR* FILE, WCHAR* ARGS)
+bool LauchAppIntoWinLogon(WCHAR* FILE, WCHAR* ARGS, int *ProcessID, const WCHAR *ProcessName)
 {
 	//Find PID of the current Winlogon.exe where the CurrentSessionID is
 	PWTS_PROCESS_INFO ProcessInfo;
@@ -19,7 +19,7 @@ bool LauchAppIntoWinLogon(WCHAR* FILE, WCHAR* ARGS)
 
 	for (DWORD CurrentProcess = 0; CurrentProcess < ProcessCount; CurrentProcess++)
 	{
-		if (_wcsicmp(ProcessInfo[CurrentProcess].pProcessName, L"winlogon.exe") == 0)
+		if (_wcsicmp(ProcessInfo[CurrentProcess].pProcessName, /*L"winlogon.exe"*/ ProcessName) == 0)
 		{
 			if (SessionId == ProcessInfo[CurrentProcess].SessionId)
 			{
@@ -100,6 +100,8 @@ bool LauchAppIntoWinLogon(WCHAR* FILE, WCHAR* ARGS)
 		CloseHandle(StolenToken);
 		return(false);
 	}
+
+	*ProcessID = processInfo.dwProcessId;
 
 	DestroyEnvironmentBlock(Environment);
 	CloseHandle(StolenToken);

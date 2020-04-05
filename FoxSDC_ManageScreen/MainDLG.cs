@@ -14,6 +14,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using WebSocketSharp;
 
 namespace FoxSDC_ManageScreen
 {
@@ -28,11 +29,17 @@ namespace FoxSDC_ManageScreen
         int SnapCounter = 0;
         bool SqueezePicture = false;
         float SqueezeRatio = 1;
-        public MainDLG(string ComputerID, string ServerURL, string SessionID)
+        bool UseLegacy = false;
+        string WSURL;
+        WebSocket ws;
+        Thread UpdateScreenThreadHandle;
+
+        public MainDLG(string ComputerID, string ServerURL, string SessionID, bool UseLegacy)
         {
             this.ComputerID = ComputerID;
             this.ServerURL = ServerURL;
             this.SessionID = SessionID;
+            this.UseLegacy = UseLegacy;
             InitializeComponent();
         }
 
@@ -92,6 +99,12 @@ namespace FoxSDC_ManageScreen
 
         private void MainDLG_Load(object sender, EventArgs e)
         {
+#if DEBUG
+            txtStatus.Visible = true;
+#else
+            txtStatus.Visible = false;
+#endif
+
             this.Text = Program.Title + " ??? ???";
             Program.Net = new FoxSDC_Common.Network();
             if (Program.Net.SetSessionID(ServerURL, SessionID) == false)
@@ -109,12 +122,301 @@ namespace FoxSDC_ManageScreen
                 return;
             }
             this.Text = Program.Title + " Server: " + Program.Net.serverinfo.Name + " Computer: " + cd.Computername;
-            Program.NetScreen = new Network();
-            Program.NetScreen.SetSessionID(Program.Net.ConnectedURL, Program.Net.CloneSession());
-            MouseEventsEnabled = true;
-            KeyboardEventsEnabled = true;
-            Thread t = new Thread(new ThreadStart(UpdateScreenThread));
-            t.Start();
+
+            Connect();
+        }
+
+        void Connect(bool Reset = false)
+        {
+            MouseEventsEnabled = false;
+            KeyboardEventsEnabled = false;
+
+#if DEBUG
+            UpdateText("Connecting");
+#endif
+
+            if (Reset == true)
+            {
+                ThreadRunning = false;
+                if (UpdateScreenThreadHandle != null)
+                {
+                    if (UpdateScreenThreadHandle.Join(10000) == false)
+                    {
+                        MessageBox.Show(this, "Thread did not close. Reset not performed", Program.Title, MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                        return;
+                    }
+
+                    try
+                    {
+                        ws.Close();
+                    }
+                    catch
+                    {
+
+                    }
+                }
+            }
+
+            try
+            {
+                if (UseLegacy == true)
+                {
+                    Program.NetScreen = new Network();
+                    Program.NetScreen.SetSessionID(Program.Net.ConnectedURL, Program.Net.CloneSession());
+                    MouseEventsEnabled = true;
+                    KeyboardEventsEnabled = true;
+                    ThreadRunning = true;
+                    UpdateScreenThreadHandle = new Thread(new ThreadStart(UpdateScreenThread));
+                    UpdateScreenThreadHandle.Start();
+                }
+                else
+                {
+                    string WSURL = Program.Net.GetWebsocketURL();
+                    PushConnectNetworkResult res = Program.Net.PushCreateWSScreenconnection(ComputerID);
+                    if (res == null)
+                        return;
+                    if (res.Result != 0)
+                        return;
+                    Debug.WriteLine("WS SOCKET: " + res.ConnectedGUID + " Create connection");
+                    this.WSURL = WSURL + "websocket/mgmt-" + Uri.EscapeUriString(res.ConnectedGUID);
+                    Debug.WriteLine("WS URL: " + this.WSURL);
+
+                    ws = new WebSocket(this.WSURL);
+                    ws.OnMessage += Ws_OnMessage;
+                    ws.SetCookie(new WebSocketSharp.Net.Cookie("MGMT-SessionID", Program.Net.Session));
+                    ws.Connect();
+
+                    SendData(SendDataType.RefreshScreen, 0, 0, 0, 0);
+
+                    ThreadRunning = true;
+                    UpdateScreenThreadHandle = new Thread(new ThreadStart(UpdateScreenThread));
+                    UpdateScreenThreadHandle.Start();
+
+                    MouseEventsEnabled = true;
+                    KeyboardEventsEnabled = true;
+                }
+            }
+            catch (Exception ee)
+            {
+                MessageBox.Show(this, "SEH: " + ee.ToString(), Program.Title, MessageBoxButtons.OK, MessageBoxIcon.Stop);
+            }
+        }
+
+        private void SendData(SendDataType Type, int F1, int F2, int F3, int F4)
+        {
+#if DEBUG
+            UpdateText("SendData");
+#endif
+
+            SendDataData s = new SendDataData();
+            s.Header1 = 0x46;
+            s.Header2 = 0x52;
+            s.Header3 = 0x53;
+            s.Header4 = 0x1;
+
+            s.DataType = (int)Type;
+            s.Flag1 = F1;
+            s.Flag2 = F2;
+            s.Flag3 = F3;
+            s.Flag4 = F4;
+
+            byte[] data = CommonUtilities.Serialize<SendDataData>(s);
+            try
+            {
+                ws.Send(data);
+            }
+            catch (Exception ee)
+            {
+                Debug.WriteLine(ee.ToString());
+            }
+        }
+
+        int RecvMode = 0;
+        List<byte> RecvBaseData = null;
+        List<byte> RecvScreenData = null;
+        List<byte> RecvBlocksData = null;
+        PushScreenData2 RecvPushScreenData;
+        int PushScreenData2SZ = Marshal.SizeOf(typeof(PushScreenData2));
+        bool Ws_OnMessageRunning = false;
+        object ScreenLocker = new object();
+        object Ws_OnMessageLocker = new object();
+
+        private void Ws_OnMessage(object sender, MessageEventArgs e)
+        {
+            lock (Ws_OnMessageLocker)
+            {
+                try
+                {
+                    lock (ScreenLocker)
+                    {
+                        Ws_OnMessageRunning = true;
+                    }
+
+                    List<byte> Recv = new List<byte>(e.RawData);
+
+                    while (Recv.Count > 0)
+                    {
+                        Recheck:
+                        switch (RecvMode)
+                        {
+                            case 0:
+#if DEBUG
+                                UpdateText("Ws_OnMessage 0");
+#endif
+                                if (RecvBaseData == null)
+                                    RecvBaseData = new List<byte>();
+                                while (Recv.Count > 0)
+                                {
+                                    RecvBaseData.Add(Recv[0]);
+                                    Recv.RemoveAt(0);
+
+                                    #region Header Test
+
+                                    if (RecvBaseData.Count == 1)
+                                    {
+                                        if (RecvBaseData[0] != 0x46)
+                                        {
+                                            RecvBaseData = null;
+                                            continue;
+                                        }
+                                    }
+
+                                    if (RecvBaseData.Count == 2)
+                                    {
+                                        if (RecvBaseData[1] != 0x52)
+                                        {
+                                            RecvBaseData = null;
+                                            continue;
+                                        }
+                                    }
+
+                                    if (RecvBaseData.Count == 3)
+                                    {
+                                        if (RecvBaseData[2] != 0x53)
+                                        {
+                                            RecvBaseData = null;
+                                            continue;
+                                        }
+                                    }
+
+                                    if (RecvBaseData.Count == 4)
+                                    {
+                                        if (RecvBaseData[3] != 0x1)
+                                        {
+                                            RecvBaseData = null;
+                                            continue;
+                                        }
+                                    }
+
+                                    #endregion
+
+                                    if (RecvBaseData.Count == PushScreenData2SZ)
+                                    {
+                                        RecvPushScreenData = CommonUtilities.Deserialize<PushScreenData2>(RecvBaseData.ToArray());
+                                        RecvMode = 1;
+
+                                        //Debug.WriteLine("Ws_OnMessage() DataSZ=" + RecvPushScreenData.DataSZ.ToString() + " NumChangedBlocks=" + RecvPushScreenData.NumChangedBlocks.ToString());
+                                        RecvScreenData = null;
+                                        RecvBlocksData = null;
+                                        goto Recheck;
+                                    }
+                                }
+                                break;
+                            case 1:
+#if DEBUG
+                                UpdateText("Ws_OnMessage 1");
+#endif
+                                if (RecvPushScreenData.DataSZ == 0)
+                                {
+                                    RecvMode = 2;
+                                    goto Recheck;
+                                }
+                                if (RecvScreenData == null)
+                                    RecvScreenData = new List<byte>();
+                                while (Recv.Count > 0)
+                                {
+                                    RecvScreenData.Add(Recv[0]);
+                                    Recv.RemoveAt(0);
+                                    if (RecvScreenData.Count == RecvPushScreenData.DataSZ)
+                                    {
+                                        RecvMode = 2;
+                                        goto Recheck;
+                                    }
+                                }
+                                break;
+                            case 2:
+#if DEBUG
+                                UpdateText("Ws_OnMessage 2");
+#endif
+                                if (RecvPushScreenData.NumChangedBlocks == 0)
+                                {
+                                    RecvMode = 3;
+                                    goto Recheck;
+                                }
+                                if (RecvBlocksData == null)
+                                    RecvBlocksData = new List<byte>();
+                                while (Recv.Count > 0)
+                                {
+                                    RecvBlocksData.Add(Recv[0]);
+                                    Recv.RemoveAt(0);
+                                    if (RecvBlocksData.Count == RecvPushScreenData.NumChangedBlocks * 8)
+                                    {
+                                        RecvMode = 3;
+                                        goto Recheck;
+                                    }
+                                }
+                                break;
+                            case 3:
+#if DEBUG
+                                UpdateText("Ws_OnMessage 3");
+#endif
+                                //Debug.WriteLine("Ws_OnMessage() Complete!");
+                                try
+                                {
+                                    PushScreenData pd = new PushScreenData();
+                                    pd.BlockX = RecvPushScreenData.BlockX;
+                                    pd.BlockY = RecvPushScreenData.BlockY;
+                                    pd.CursorX = RecvPushScreenData.CursorX;
+                                    pd.CursorY = RecvPushScreenData.CursorY;
+                                    pd.Data = RecvScreenData.ToArray();
+                                    pd.DataType = RecvPushScreenData.DataType;
+                                    pd.FailedCode = RecvPushScreenData.FailedCode;
+                                    pd.X = RecvPushScreenData.X;
+                                    pd.Y = RecvPushScreenData.Y;
+                                    if (RecvBlocksData != null && RecvBlocksData.Count > 0)
+                                    {
+                                        pd.ChangedBlocks = new List<long>();
+                                        for (int i = 0; i < RecvBlocksData.Count; i += 8)
+                                        {
+                                            pd.ChangedBlocks.Add(BitConverter.ToInt64(RecvBlocksData.ToArray(), i));
+                                        }
+                                    }
+                                    UpdateScreen(pd);
+                                }
+                                catch (Exception ee)
+                                {
+                                    Debug.WriteLine(ee.ToString());
+                                }
+                                RecvMode = 0;
+                                RecvBaseData = null;
+                                RecvScreenData = null;
+                                RecvBlocksData = null;
+                                break;
+                        }
+                    }
+                }
+                catch (Exception ee)
+                {
+                    Debug.WriteLine(ee.ToString());
+                }
+                finally
+                {
+                    lock (ScreenLocker)
+                    {
+                        Ws_OnMessageRunning = false;
+                    }
+                }
+            }
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -122,17 +424,73 @@ namespace FoxSDC_ManageScreen
             this.Close();
         }
 
+        delegate void DUpdateText(string Text);
+
+#if DEBUG
+        void UpdateText(string Text)
+        {
+            if (this.InvokeRequired == true)
+            {
+                this.Invoke(new DUpdateText(UpdateText), Text);
+                return;
+            }
+            try
+            {
+                txtStatus.Text = Text;
+                Application.DoEvents();
+            }
+            catch
+            {
+
+            }
+        }
+#endif
+
         bool ThreadRunning = true;
         void UpdateScreenThread()
         {
             do
             {
-                UpdateScreen();
-                Thread.Sleep(100);
+                if (UseLegacy == true)
+                {
+                    UpdateScreenLegacy();
+                }
+                else
+                {
+                    lock (ScreenLocker)
+                    {
+                        if (Ws_OnMessageRunning == false)
+                        {
+                            if (RecvBaseData == null && RecvMode == 0)
+                            {
+                                if (ScreenData == null)
+                                    SendData(SendDataType.RefreshScreen, 0, 0, 0, 0);
+                                else
+                                    SendData(SendDataType.DeltaScreen, 0, 0, 0, 0);
+#if DEBUG
+                                UpdateText("Send Update");
+#endif
+                            }
+#if DEBUG
+                            else
+                            {
+                                UpdateText("RecvBaseData LOCKED (RecvMode: " + RecvMode.ToString() + ")");
+                            }
+#endif
+                        }
+#if DEBUG
+                        else
+                        {
+                            UpdateText("Ws_OnMessageRunning LOCKED (RecvMode: " + RecvMode.ToString() + ")");
+                        }
+#endif
+                    }
+                }
+                Thread.Sleep(slowRefreshToolStripMenuItem.Checked == true ? 5000 : 100);
             } while (ThreadRunning == true);
         }
 
-        void UpdateScreen()
+        void UpdateScreenLegacy()
         {
             PushScreenData screen;
             if (ScreenData == null)
@@ -143,10 +501,30 @@ namespace FoxSDC_ManageScreen
             {
                 screen = Program.NetScreen.PushGetScreenDataDelta(ComputerID);
             }
+            UpdateScreen(screen);
+        }
+
+        delegate void UpdateScreenDG(PushScreenData screen);
+
+        void UpdateScreen(PushScreenData screen)
+        {
+            if (this.InvokeRequired == true)
+            {
+                this.BeginInvoke(new UpdateScreenDG(UpdateScreen), screen);
+                return;
+            }
+
             if (screen == null)
                 return;
             if (screen.X == 0 || screen.Y == 0)
                 return;
+            if (screen.FailedCode != 0)
+                return;
+            if (screen.Data == null)
+                return;
+            if (screen.ChangedBlocks == null && screen.DataType == 1)
+                return;
+
             try
             {
                 switch (screen.DataType)
@@ -162,7 +540,7 @@ namespace FoxSDC_ManageScreen
                         }
                     case 1:
                         {
-                            if (screen.ChangedBlocks.Count == 0)
+                            if (screen.ChangedBlocks == null || screen.ChangedBlocks.Count == 0)
                                 return;
                             Bitmap bmpdelta = new Bitmap(new MemoryStream(screen.Data));
                             bmpdelta.RotateFlip(RotateFlipType.RotateNoneFlipY);
@@ -215,7 +593,14 @@ namespace FoxSDC_ManageScreen
             if (disableInputHereToolStripMenuItem.Checked == true)
                 return;
             LastButtons = e.Button;
-            Program.Net.PushSetMouse(ComputerID, (int)(e.X / SqueezeRatio), (int)(e.Y / SqueezeRatio), e.Delta, ConvertButtons(e.Button));
+            if (UseLegacy == true)
+            {
+                Program.Net.PushSetMouse(ComputerID, (int)(e.X / SqueezeRatio), (int)(e.Y / SqueezeRatio), e.Delta, ConvertButtons(e.Button));
+            }
+            else
+            {
+                SendData(SendDataType.Mouse, (int)(e.X / SqueezeRatio), (int)(e.Y / SqueezeRatio), e.Delta, ConvertButtons(e.Button));
+            }
         }
 
         private void picDisplay_MouseUp(object sender, MouseEventArgs e)
@@ -225,7 +610,14 @@ namespace FoxSDC_ManageScreen
             if (disableInputHereToolStripMenuItem.Checked == true)
                 return;
             LastButtons |= ~e.Button;
-            Program.Net.PushSetMouse(ComputerID, (int)(e.X / SqueezeRatio), (int)(e.Y / SqueezeRatio), e.Delta, ConvertButtons(LastButtons));
+            if (UseLegacy == true)
+            {
+                Program.Net.PushSetMouse(ComputerID, (int)(e.X / SqueezeRatio), (int)(e.Y / SqueezeRatio), e.Delta, ConvertButtons(LastButtons));
+            }
+            else
+            {
+                SendData(SendDataType.Mouse, (int)(e.X / SqueezeRatio), (int)(e.Y / SqueezeRatio), e.Delta, ConvertButtons(LastButtons));
+            }
         }
 
         private void PicDisplay_MouseWheel(object sender, MouseEventArgs e)
@@ -235,7 +627,14 @@ namespace FoxSDC_ManageScreen
             if (disableInputHereToolStripMenuItem.Checked == true)
                 return;
             LastButtons = e.Button;
-            Program.Net.PushSetMouse(ComputerID, (int)(e.X / SqueezeRatio), (int)(e.Y / SqueezeRatio), e.Delta, ConvertButtons(e.Button));
+            if (UseLegacy == true)
+            {
+                Program.Net.PushSetMouse(ComputerID, (int)(e.X / SqueezeRatio), (int)(e.Y / SqueezeRatio), e.Delta, ConvertButtons(e.Button));
+            }
+            else
+            {
+                SendData(SendDataType.Mouse, (int)(e.X / SqueezeRatio), (int)(e.Y / SqueezeRatio), e.Delta, ConvertButtons(e.Button));
+            }
         }
 
         private void picDisplay_MouseMove(object sender, MouseEventArgs e)
@@ -245,7 +644,14 @@ namespace FoxSDC_ManageScreen
             if (disableInputHereToolStripMenuItem.Checked == true)
                 return;
             LastButtons = e.Button;
-            Program.Net.PushSetMouse(ComputerID, (int)(e.X / SqueezeRatio), (int)(e.Y / SqueezeRatio), e.Delta, ConvertButtons(e.Button));
+            if (UseLegacy == true)
+            {
+                Program.Net.PushSetMouse(ComputerID, (int)(e.X / SqueezeRatio), (int)(e.Y / SqueezeRatio), e.Delta, ConvertButtons(e.Button));
+            }
+            else
+            {
+                SendData(SendDataType.Mouse, (int)(e.X / SqueezeRatio), (int)(e.Y / SqueezeRatio), e.Delta, ConvertButtons(e.Button));
+            }
         }
 
         private void MainDLG_KeyDown(object sender, KeyEventArgs e)
@@ -256,7 +662,14 @@ namespace FoxSDC_ManageScreen
                 return;
             e.Handled = true;
             e.SuppressKeyPress = true;
-            Program.Net.PushSetKeyboard(ComputerID, (int)e.KeyCode, 0, 0);
+            if (UseLegacy == true)
+            {
+                Program.Net.PushSetKeyboard(ComputerID, (int)e.KeyCode, 0, 0);
+            }
+            else
+            {
+                SendData(SendDataType.Keyboard, (int)e.KeyCode, 0, 0, 0);
+            }
         }
 
         private void MainDLG_KeyUp(object sender, KeyEventArgs e)
@@ -267,7 +680,14 @@ namespace FoxSDC_ManageScreen
                 return;
             e.Handled = true;
             e.SuppressKeyPress = true;
-            Program.Net.PushSetKeyboard(ComputerID, (int)e.KeyCode, 0, 0x2);
+            if (UseLegacy == true)
+            {
+                Program.Net.PushSetKeyboard(ComputerID, (int)e.KeyCode, 0, 0x2);
+            }
+            else
+            {
+                SendData(SendDataType.Keyboard, (int)e.KeyCode, 0, 0x2, 0);
+            }
         }
 
         private void CTRLALTDELETEToolStripMenuItem_Click(object sender, EventArgs e)
@@ -278,7 +698,14 @@ namespace FoxSDC_ManageScreen
             if (disableInputHereToolStripMenuItem.Checked == true)
                 return;
 
-            Program.Net.PushSetKeyboard(ComputerID, 0xFFFFFFF, 0xFFFFFFF, 0xFFFFFFF);
+            if (UseLegacy == true)
+            {
+                Program.Net.PushSetKeyboard(ComputerID, 0xFFFFFFF, 0xFFFFFFF, 0xFFFFFFF);
+            }
+            else
+            {
+                SendData(SendDataType.Keyboard, 0xFFFFFFF, 0xFFFFFFF, 0xFFFFFFF, 0);
+            }
         }
 
         private void windowsKeyToolStripMenuItem_Click(object sender, EventArgs e)
@@ -289,13 +716,30 @@ namespace FoxSDC_ManageScreen
             if (disableInputHereToolStripMenuItem.Checked == true)
                 return;
 
-            Program.Net.PushSetKeyboard(ComputerID, (int)(Keys.LWin), 0, 0);
-            Program.Net.PushSetKeyboard(ComputerID, (int)(Keys.LWin), 0, 0x2);
+            if (UseLegacy == true)
+            {
+                Program.Net.PushSetKeyboard(ComputerID, (int)(Keys.LWin), 0, 0);
+                Program.Net.PushSetKeyboard(ComputerID, (int)(Keys.LWin), 0, 0x2);
+            }
+            else
+            {
+                SendData(SendDataType.Keyboard, (int)(Keys.LWin), 0, 0, 0);
+                SendData(SendDataType.Keyboard, (int)(Keys.LWin), 0, 0x2, 0);
+            }
         }
 
         private void MainDLG_FormClosing(object sender, FormClosingEventArgs e)
         {
             ThreadRunning = false;
+            try
+            {
+                SendData(SendDataType.Disconnect, 0, 0, 0, 0);
+                Thread.Sleep(1000);
+            }
+            catch
+            {
+
+            }
         }
 
         private void sendLayoutToRemoteToolStripMenuItem_Click(object sender, EventArgs e)
@@ -307,7 +751,14 @@ namespace FoxSDC_ManageScreen
                 return;
 
             InputLanguage lang = InputLanguage.CurrentInputLanguage;
-            Program.Net.PushSetKeyboard(ComputerID, 0xFFFFFFF, 0xFFFFFFE, (lang.Handle.ToInt32() & 0x7FFF0000) >> 16);
+            if (UseLegacy == true)
+            {
+                Program.Net.PushSetKeyboard(ComputerID, 0xFFFFFFF, 0xFFFFFFE, (lang.Handle.ToInt32() & 0x7FFF0000) >> 16);
+            }
+            else
+            {
+                SendData(SendDataType.Keyboard, 0xFFFFFFF, 0xFFFFFFE, (lang.Handle.ToInt32() & 0x7FFF0000) >> 16, 0);
+            }
         }
 
         private void optionsToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
@@ -324,6 +775,17 @@ namespace FoxSDC_ManageScreen
         private void refreshScreenToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ScreenData = null;
+            if (UseLegacy == false)
+            {
+                lock (Ws_OnMessageLocker)
+                {
+                    RecvMode = 0;
+                    RecvBaseData = null;
+                    RecvScreenData = null;
+                    RecvBlocksData = null;
+                    SendData(SendDataType.ResetStream, 0, 0, 0, 0);
+                }
+            }
         }
 
         private void snapshotToDesktopToolStripMenuItem_Click(object sender, EventArgs e)
@@ -365,13 +827,26 @@ namespace FoxSDC_ManageScreen
             if (disableInputHereToolStripMenuItem.Checked == true)
                 return;
 
-            Program.Net.PushSetKeyboard(ComputerID, (int)(Keys.LControlKey), 0, 0);
-            Program.Net.PushSetKeyboard(ComputerID, (int)(Keys.LShiftKey), 0, 0);
-            Program.Net.PushSetKeyboard(ComputerID, (int)(Keys.Escape), 0, 0);
+            if (UseLegacy == true)
+            {
+                Program.Net.PushSetKeyboard(ComputerID, (int)(Keys.LControlKey), 0, 0);
+                Program.Net.PushSetKeyboard(ComputerID, (int)(Keys.LShiftKey), 0, 0);
+                Program.Net.PushSetKeyboard(ComputerID, (int)(Keys.Escape), 0, 0);
 
-            Program.Net.PushSetKeyboard(ComputerID, (int)(Keys.Escape), 0, 0x2);
-            Program.Net.PushSetKeyboard(ComputerID, (int)(Keys.LShiftKey), 0, 0x2);
-            Program.Net.PushSetKeyboard(ComputerID, (int)(Keys.LControlKey), 0, 0x2);
+                Program.Net.PushSetKeyboard(ComputerID, (int)(Keys.Escape), 0, 0x2);
+                Program.Net.PushSetKeyboard(ComputerID, (int)(Keys.LShiftKey), 0, 0x2);
+                Program.Net.PushSetKeyboard(ComputerID, (int)(Keys.LControlKey), 0, 0x2);
+            }
+            else
+            {
+                SendData(SendDataType.Keyboard, (int)(Keys.LControlKey), 0, 0, 0);
+                SendData(SendDataType.Keyboard, (int)(Keys.LShiftKey), 0, 0, 0);
+                SendData(SendDataType.Keyboard, (int)(Keys.Escape), 0, 0, 0);
+
+                SendData(SendDataType.Keyboard, (int)(Keys.Escape), 0, 0x2, 0);
+                SendData(SendDataType.Keyboard, (int)(Keys.LShiftKey), 0, 0x2, 0);
+                SendData(SendDataType.Keyboard, (int)(Keys.LControlKey), 0, 0x2, 0);
+            }
         }
 
         private void cTRLALTDELETEVKToolStripMenuItem_Click(object sender, EventArgs e)
@@ -382,13 +857,63 @@ namespace FoxSDC_ManageScreen
             if (disableInputHereToolStripMenuItem.Checked == true)
                 return;
 
-            Program.Net.PushSetKeyboard(ComputerID, (int)(Keys.LControlKey), 0, 0);
-            Program.Net.PushSetKeyboard(ComputerID, (int)(Keys.Alt), 0, 0);
-            Program.Net.PushSetKeyboard(ComputerID, (int)(Keys.Delete), 0, 0);
+            if (UseLegacy == true)
+            {
+                Program.Net.PushSetKeyboard(ComputerID, (int)(Keys.LControlKey), 0, 0);
+                Program.Net.PushSetKeyboard(ComputerID, (int)(Keys.Alt), 0, 0);
+                Program.Net.PushSetKeyboard(ComputerID, (int)(Keys.Delete), 0, 0);
 
-            Program.Net.PushSetKeyboard(ComputerID, (int)(Keys.Delete), 0, 0x2);
-            Program.Net.PushSetKeyboard(ComputerID, (int)(Keys.Alt), 0, 0x2);
-            Program.Net.PushSetKeyboard(ComputerID, (int)(Keys.LControlKey), 0, 0x2);
+                Program.Net.PushSetKeyboard(ComputerID, (int)(Keys.Delete), 0, 0x2);
+                Program.Net.PushSetKeyboard(ComputerID, (int)(Keys.Alt), 0, 0x2);
+                Program.Net.PushSetKeyboard(ComputerID, (int)(Keys.LControlKey), 0, 0x2);
+            }
+            else
+            {
+                SendData(SendDataType.Keyboard, (int)(Keys.LControlKey), 0, 0, 0);
+                SendData(SendDataType.Keyboard, (int)(Keys.Alt), 0, 0, 0);
+                SendData(SendDataType.Keyboard, (int)(Keys.Delete), 0, 0, 0);
+
+                SendData(SendDataType.Keyboard, (int)(Keys.Delete), 0, 0x2, 0);
+                SendData(SendDataType.Keyboard, (int)(Keys.Alt), 0, 0x2, 0);
+                SendData(SendDataType.Keyboard, (int)(Keys.LControlKey), 0, 0x2, 0);
+            }
+        }
+
+        private void typeClipboardAsTextToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string ClipbaordText = "";
+            try
+            {
+                ClipbaordText = Clipboard.GetText(TextDataFormat.Text);
+            }
+            catch
+            {
+                return;
+            }
+
+            foreach (char c in ClipbaordText)
+            {
+                if (UseLegacy == true)
+                {
+                    Program.Net.PushSetKeyboard(ComputerID, 0xFFFFFFF, 0xFFFFFFD, c);
+                }
+                else
+                {
+                    SendData(SendDataType.Keyboard, 0xFFFFFFF, 0xFFFFFFD, c, 0);
+                }
+            }
+        }
+
+        private void resetConnectionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show(this, "Do you want to reset the connection?", Program.Title, MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) != DialogResult.Yes)
+                return;
+            Connect(true);
+        }
+
+        private void slowRefreshToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            slowRefreshToolStripMenuItem.Checked = !slowRefreshToolStripMenuItem.Checked;
         }
     }
 }

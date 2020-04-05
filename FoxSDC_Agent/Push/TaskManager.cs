@@ -144,13 +144,24 @@ namespace FoxSDC_Agent.Push
             }
 
             Res.Result = 0;
+#if !DEBUG || DEBUGSERVICE
+            int ProcessID;
+#endif
 
             switch (req.Option)
             {
                 case PushRunTaskOption.ActualUser:
 #if !DEBUG || DEBUGSERVICE
-                    if (ProgramAgent.CPP.StartAppAsUser(req.Executable, req.Args, req.SessionID) == false)
-                        Res.Result = ProgramAgent.CPP.WGetLastError();
+                    if (SystemInfos.SysInfo.RunningInWindowsPE == true)
+                    {
+                        if (ProgramAgent.CPP.StartAppInWinLogon(req.Executable, req.Args, out ProcessID) == false)
+                            Res.Result = ProgramAgent.CPP.WGetLastError();
+                    }
+                    else
+                    {
+                        if (ProgramAgent.CPP.StartAppAsUser(req.Executable, req.Args, req.SessionID) == false)
+                            Res.Result = ProgramAgent.CPP.WGetLastError();
+                    }
 #else
                     //Crude: since we cannot use WTSQueryUserToken function as normal user / nor admin user
                     try

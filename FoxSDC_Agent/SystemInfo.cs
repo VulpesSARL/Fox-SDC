@@ -393,12 +393,13 @@ namespace FoxSDC_Agent
             }
 
             SysInfo = new BaseSystemInfo();
+            SysInfo.RunningInWindowsPE = WindowsPE.IsRunningInWindowsPE;
             SysInfo.ComputerModel = GetComputerModel();
             SysInfo.ComputerName = SystemInformation.ComputerName;
             SysInfo.CPU = GetCPU().ToString();
             SysInfo.MachineID = RegistryData.MachineID;
             SysInfo.IsTSE = IsSystemTSE();
-            SysInfo.OSName = GetWindowsProduct();
+            SysInfo.OSName = SysInfo.RunningInWindowsPE == true ? "Windows PE / MiniNT" : GetWindowsProduct();
             SysInfo.OSSuite = GetOSSuite().ToString();
             SysInfo.OSVerBuild = Environment.OSVersion.Version.Build;
             SysInfo.OSVerMaj = Environment.OSVersion.Version.Major;
@@ -413,6 +414,7 @@ namespace FoxSDC_Agent
             SysInfo.SecureBootState = GetSecureBootState();
             SysInfo.SystemRoot = Environment.GetFolderPath(Environment.SpecialFolder.Windows);
             SysInfo.SUSID = GetSUSID();
+
             try
             {
                 SysInfo.IsMeteredConnection = MeteredConnection.IsMeteredConnection();

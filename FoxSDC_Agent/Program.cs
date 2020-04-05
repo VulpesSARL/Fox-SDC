@@ -173,7 +173,7 @@ namespace FoxSDC_Agent
 #endif
             FoxEventLog.RegisterEventLog();
 
-            if (UsePipeAction == false && UseScreenAction == false) //Pipe Actions can also be run in user-space ...
+            if (UsePipeAction == false && UseScreenAction == false && UseDNSAutoConfig == false && UseLoginRecovery == false) //Pipe Actions can also be run in user-space ...
             {
                 if (IsSystemUser() != true)
                 {
@@ -200,6 +200,104 @@ namespace FoxSDC_Agent
                 return;
             }
 #endif
+            if (UseDNSAutoConfig == true)
+            {
+                List<List<string>> Query = CPP.DNSQueryTXT("sdc-contract.my-vulpes-config.lu");
+
+                string ContractID = null;
+                string ContractPassword = null;
+                string UseOnPrem = null;
+                string OnPremURL = null;
+
+                foreach (List<string> Q in Query)
+                {
+                    if (Q == null)
+                        continue;
+
+                    foreach (string QR in Q)
+                    {
+                        if (string.IsNullOrWhiteSpace(QR) == true)
+                            continue;
+                        if (QR.ToLower().StartsWith("contractid=") == true)
+                            ContractID = QR.Substring(11).Trim();
+                        if (QR.ToLower().StartsWith("contractpassword=") == true)
+                            ContractPassword = QR.Substring(17).Trim();
+                        if (QR.ToLower().StartsWith("useonprem=") == true)
+                            UseOnPrem = QR.Substring(10).Trim();
+                        if (QR.ToLower().StartsWith("onpremurl=") == true)
+                            OnPremURL = QR.Substring(10).Trim();
+                    }
+                }
+
+                using (RegistryKey k = Registry.LocalMachine.CreateSubKey("SOFTWARE\\Fox\\SDC"))
+                {
+                    if (string.IsNullOrWhiteSpace(ContractID) == false && string.IsNullOrWhiteSpace(ContractPassword) == false)
+                    {
+                        k.SetValue("ContractID", ContractID, RegistryValueKind.String);
+                        k.SetValue("ContractPassword", ContractPassword, RegistryValueKind.String);
+                    }
+
+                    int UseOnPremInt;
+                    if (int.TryParse(UseOnPrem, out UseOnPremInt) == true)
+                    {
+                        if (UseOnPremInt == 1 && string.IsNullOrWhiteSpace(OnPremURL) == false)
+                        {
+                            k.SetValue("UseOnPremServer", 1, RegistryValueKind.DWord);
+                            k.SetValue("Server", OnPremURL, RegistryValueKind.String);
+                        }
+                        else
+                        {
+                            k.SetValue("UseOnPremServer", 0, RegistryValueKind.DWord);
+                        }
+                    }
+                    else
+                    {
+                        k.SetValue("UseOnPremServer", 0, RegistryValueKind.DWord);
+                    }
+                }
+
+                return;
+            }
+
+            if (UseLoginRecovery == true)
+            {
+                if (SystemInfos.CollectSystemInfo() != 0)
+                    return;
+
+#if !DEBUG
+                if (SystemInfos.SysInfo.RunningInWindowsPE == false || SystemInfos.SysInfo.RunningInWindowsPE == null)
+                    return;
+#endif
+
+                RecoveryLogon reclogon = new RecoveryLogon();
+                reclogon.UCID = SystemInfos.SysInfo.UCID;
+                reclogon.ContractID = SystemInfos.ContractID;
+                reclogon.ContractPassword = SystemInfos.ContractPassword;
+
+                string Check = SystemInfos.SysInfo.CPUName.Trim();
+                Check += SystemInfos.SysInfo.ComputerModel == "" ? "N/A" : SystemInfos.SysInfo.ComputerModel.Trim();
+                Check += SystemInfos.SysInfo.BIOS == "" ? "N/A" : SystemInfos.SysInfo.BIOS.Trim();
+
+                reclogon.MoreMachineHash = MD5Utilities.CalcMD5(Check);
+                Network net = Utilities.NoConnectNetwork();
+
+                RecoveryData rd = net.GetRecoveryLogon(reclogon);
+                if (rd == null)
+                    return;
+                if (rd.Worked == false)
+                    return;
+
+                string Registry = "Windows Registry Editor Version 5.00\r\n\r\n[HKEY_LOCAL_MACHINE\\SOFTWARE\\Fox\\SDC]\r\n\"ID\"=\"" + rd.MachineID + "\"\r\n\"PassID\"=\"" + rd.MachinePassword + "\"";
+                try
+                {
+                    File.WriteAllText(Environment.ExpandEnvironmentVariables("%SYSTEMROOT%\\Fox SDC MachinePW.reg"), Registry, Encoding.Unicode);
+                }
+                catch
+                {
+
+                }
+                return;
+            }
 
             if (UsePipeAction == false && UseScreenAction == false)
             {
@@ -373,7 +471,15 @@ namespace FoxSDC_Agent
 
         public static bool UsePipeAction = false;
         public static bool UseScreenAction = false;
+        public static bool UseDNSAutoConfig = false;
+        public static bool UseLoginRecovery = false;
         public static string PipeGUID = "";
+
+        public static string GetWSUrl(Network net)
+        {
+            string WS = net.GetWebsocketURL();
+            return (WS);
+        }
 
         static int Main(string[] args)
         {
@@ -427,6 +533,20 @@ namespace FoxSDC_Agent
                         return (-1);
                     PipeGUID = args[i + 1];
                     UseScreenAction = true;
+                    i++;
+                    SMain();
+                    return (0);
+                }
+                if (args[i].ToLower() == "-autodnsconfig")
+                {
+                    UseDNSAutoConfig = true;
+                    i++;
+                    SMain();
+                    return (0);
+                }
+                if (args[i].ToLower() == "-recovercreds")
+                {
+                    UseLoginRecovery = true;
                     i++;
                     SMain();
                     return (0);

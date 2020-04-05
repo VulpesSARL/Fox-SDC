@@ -610,6 +610,9 @@ namespace FoxSDC_Agent.PolicyObjects
 
         public bool FinaliseApplyPolicy()
         {
+            if (SystemInfos.SysInfo.RunningInWindowsPE == true)
+                return (true);
+
             Merge();
             ApplyPolicy(RunningPolicy);
 
@@ -618,6 +621,9 @@ namespace FoxSDC_Agent.PolicyObjects
 
         public bool FinaliseApplyPolicyUserPart()
         {
+            if (SystemInfos.SysInfo.RunningInWindowsPE == true)
+                return (true);
+
             Merge();
             ApplyUserPolicy(RunningPolicy);
 

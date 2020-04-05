@@ -108,6 +108,7 @@
             this.panel5 = new System.Windows.Forms.Panel();
             this.cmdClose = new System.Windows.Forms.Button();
             this.timChat = new System.Windows.Forms.Timer(this.components);
+            this.cmdBootNext = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -402,6 +403,7 @@
             // 
             // panel2
             // 
+            this.panel2.Controls.Add(this.cmdBootNext);
             this.panel2.Controls.Add(this.cmdFRestart);
             this.panel2.Controls.Add(this.cmdRestart);
             this.panel2.Controls.Add(this.cmdRun);
@@ -439,7 +441,7 @@
             this.cmdRun.Location = new System.Drawing.Point(356, 3);
             this.cmdRun.Name = "cmdRun";
             this.cmdRun.Size = new System.Drawing.Size(75, 23);
-            this.cmdRun.TabIndex = 4;
+            this.cmdRun.TabIndex = 3;
             this.cmdRun.Text = "&Run";
             this.cmdRun.UseVisualStyleBackColor = true;
             this.cmdRun.Click += new System.EventHandler(this.cmdRun_Click);
@@ -449,7 +451,7 @@
             this.cmdKill.Location = new System.Drawing.Point(275, 3);
             this.cmdKill.Name = "cmdKill";
             this.cmdKill.Size = new System.Drawing.Size(75, 23);
-            this.cmdKill.TabIndex = 3;
+            this.cmdKill.TabIndex = 2;
             this.cmdKill.Text = "&Kill";
             this.cmdKill.UseVisualStyleBackColor = true;
             this.cmdKill.Click += new System.EventHandler(this.cmdKill_Click);
@@ -460,7 +462,7 @@
             this.chkAutoRefreshTasks.Location = new System.Drawing.Point(113, 7);
             this.chkAutoRefreshTasks.Name = "chkAutoRefreshTasks";
             this.chkAutoRefreshTasks.Size = new System.Drawing.Size(108, 17);
-            this.chkAutoRefreshTasks.TabIndex = 2;
+            this.chkAutoRefreshTasks.TabIndex = 1;
             this.chkAutoRefreshTasks.Text = "&Automatic refresh";
             this.chkAutoRefreshTasks.UseVisualStyleBackColor = true;
             this.chkAutoRefreshTasks.CheckedChanged += new System.EventHandler(this.chkAutoRefreshTasks_CheckedChanged);
@@ -470,7 +472,7 @@
             this.cmdRefreshTasks.Location = new System.Drawing.Point(5, 3);
             this.cmdRefreshTasks.Name = "cmdRefreshTasks";
             this.cmdRefreshTasks.Size = new System.Drawing.Size(75, 23);
-            this.cmdRefreshTasks.TabIndex = 1;
+            this.cmdRefreshTasks.TabIndex = 0;
             this.cmdRefreshTasks.Text = "&Refresh";
             this.cmdRefreshTasks.UseVisualStyleBackColor = true;
             this.cmdRefreshTasks.Click += new System.EventHandler(this.cmdRefreshTasks_Click);
@@ -841,6 +843,16 @@
             this.timChat.Interval = 1000;
             this.timChat.Tick += new System.EventHandler(this.timChat_Tick);
             // 
+            // cmdBootNext
+            // 
+            this.cmdBootNext.Location = new System.Drawing.Point(484, 3);
+            this.cmdBootNext.Name = "cmdBootNext";
+            this.cmdBootNext.Size = new System.Drawing.Size(75, 23);
+            this.cmdBootNext.TabIndex = 4;
+            this.cmdBootNext.Text = "BootNext";
+            this.cmdBootNext.UseVisualStyleBackColor = true;
+            this.cmdBootNext.Click += new System.EventHandler(this.cmdBootNext_Click);
+            // 
             // frmComputerInfo
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -967,5 +979,6 @@
         private System.Windows.Forms.Panel panel7;
         private System.Windows.Forms.Button cmdSend;
         private System.Windows.Forms.Timer timChat;
+        private System.Windows.Forms.Button cmdBootNext;
     }
 }

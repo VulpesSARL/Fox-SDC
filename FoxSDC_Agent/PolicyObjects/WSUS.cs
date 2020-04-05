@@ -50,7 +50,7 @@ namespace FoxSDC_Agent.PolicyObjects
             {
                 ActivePolicies.Add(a);
             }
-            
+
             rm.Clear();
             ToAdd.Clear();
             ToRemove.Clear();
@@ -110,7 +110,9 @@ namespace FoxSDC_Agent.PolicyObjects
                     if (p.EnableDownloadMode == true)
                         RunningPolicy.DownloadMode = p.DownloadMode;
                     if (p.EnableDownloadMode != null)
-                        RunningPolicy.EnableDownloadMode = p.EnableDownloadMode;                    
+                        RunningPolicy.EnableDownloadMode = p.EnableDownloadMode;
+                    if (p.DisableDualScan != null)
+                        RunningPolicy.DisableDualScan = p.DisableDualScan;
                     if (p.DontAutoRestartDuringActiveHours == true)
                     {
                         RunningPolicy.ActiveHoursFrom = p.ActiveHoursFrom;
@@ -251,6 +253,14 @@ namespace FoxSDC_Agent.PolicyObjects
                                 regWU.DeleteValue("ActiveHoursEnd", false);
                             }
                         }
+                        if (p.DisableDualScan != null)
+                        {
+                            regWU.SetValue("DisableDualScan", p.DisableDualScan == true ? 1 : 0, RegistryValueKind.DWord);
+                        }
+                        else
+                        {
+                            regWU.DeleteValue("DisableDualScan", false);
+                        }
                     }
                 }
             }
@@ -263,6 +273,9 @@ namespace FoxSDC_Agent.PolicyObjects
 
         public bool FinaliseApplyPolicy()
         {
+            if (SystemInfos.SysInfo.RunningInWindowsPE == true)
+                return(true);
+
             Merge();
             ApplyPolicy(RunningPolicy);
 
@@ -275,6 +288,9 @@ namespace FoxSDC_Agent.PolicyObjects
 
         public bool FinaliseUninstallProgramm()
         {
+            if (SystemInfos.SysInfo.RunningInWindowsPE == true)
+                return(true);
+
             Merge();
             if (RunningPolicy.ConfigureWSUS != null)
             {

@@ -23,6 +23,9 @@ namespace FoxSDC_Server
             public static string DataPath;
             public static string EXEPath;
             public static string URLPart;
+            public static string WSListenOn;
+            public static string WSSSLCert;
+            public static string WSPublishURL;
             public static bool CensorSQLInformations;
             public static bool CensorLicInformations;
 
@@ -53,6 +56,10 @@ namespace FoxSDC_Server
                 DBType = reg.GetValue("DBType", "").ToString();
                 DBLocalPath = reg.GetValue("DBLocalPath", "").ToString();
                 ListenOn = reg.GetValue("ListenOn", "").ToString();
+                WSListenOn = reg.GetValue("WSListenOn", "").ToString();
+                WSSSLCert = reg.GetValue("WSSSLCert", "").ToString();
+                WSPublishURL = reg.GetValue("WSPublishURL", "").ToString();
+
                 DataPath = reg.GetValue("DataPath", "").ToString();
                 string o = reg.GetValue("UseContract", "0").ToString();
                 int i;
@@ -80,9 +87,16 @@ namespace FoxSDC_Server
                     ListenOnTest = ListenOnTest.Replace("://*", "://localhost");
 
                 Uri uri = new Uri(ListenOnTest);
-
                 URLPart = uri.AbsolutePath;
 
+                ListenOnTest = WSListenOn;
+                if (ListenOnTest.Contains("://+"))
+                    ListenOnTest = ListenOnTest.Replace("://+", "://localhost");
+                if (ListenOnTest.Contains("://*"))
+                    ListenOnTest = ListenOnTest.Replace("://*", "://localhost");
+                uri = new Uri(ListenOnTest);
+
+                uri = new Uri(WSPublishURL);
                 reg.Close();
 
                 EXEPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);

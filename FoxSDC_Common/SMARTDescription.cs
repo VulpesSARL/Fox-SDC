@@ -189,7 +189,7 @@ namespace FoxSDC_Common
             {0xE3,new SMARTDescriptionClass (){  Ideal= SMARTDescriptionEnum.LowIdeal, Description="Torque Amplification Count"} },
             {0xE4,new SMARTDescriptionClass (){  Ideal= SMARTDescriptionEnum.LowIdeal, Description="Power-Off Retract Cycle"} },
             {0xE6,new SMARTDescriptionClass (){  Ideal= SMARTDescriptionEnum.NA, Description="GMR Head Amplitude (HDD) / Drive Life Protection Status (SSD)"} },
-            {0xE7,new SMARTDescriptionClass (){  Ideal= SMARTDescriptionEnum.NA, Description="Life Left"} },
+            {0xE7,new SMARTDescriptionClass (){  Ideal= SMARTDescriptionEnum.Critical, Description="Life Left"} },
             {0xE8,new SMARTDescriptionClass (){  Ideal= SMARTDescriptionEnum.NA, Description="Endurance Remaining"} },
             {0xE9,new SMARTDescriptionClass (){  Ideal= SMARTDescriptionEnum.NA, Description="Power-On Hours (HDD) / Media Wearout Indicator (SSD)"} },
             {0xF0,new SMARTDescriptionClass (){  Ideal= SMARTDescriptionEnum.NA, Description="Head Flying Hours"} },

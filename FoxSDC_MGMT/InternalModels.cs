@@ -259,6 +259,9 @@ namespace FoxSDC_MGMT
         [CategoryAttribute("Identification"), ReadOnlyAttribute(true), Browsable(true)]
         public string SUSID { get => _SUSID; set => _SUSID = value; }
 
+        [CategoryAttribute("Operating System"), ReadOnlyAttribute(true), Browsable(true)]
+        public bool? RunningInWindowsPE { get => _RunningInWindowsPE; set => _RunningInWindowsPE = value; }
+
         string _SUSID;
         string _BIOSType;
         int _NumberOfLogicalProcessors;
@@ -267,6 +270,7 @@ namespace FoxSDC_MGMT
         string _CPUName;
         string _SecureBootState;
         string _SystemRoot;
+        bool? _RunningInWindowsPE;
         public bool? BMeteredConnection;
     }
 

@@ -46,6 +46,34 @@ namespace FoxSDC_Agent
             return (ss);
         }
 
+        public static Network NoConnectNetwork()
+        {
+            if (SystemInfos.ServerURL == ProgramAgent.VulpesURL)
+            {
+                if (SystemInfos.ContractID == "" || SystemInfos.ContractPassword == "")
+                {
+                    FoxEventLog.VerboseWriteEventLog("Missing contract data for Vulpes Server (" + ProgramAgent.VulpesURL + ")", System.Diagnostics.EventLogEntryType.Error);
+                    return (null);
+                }
+            }
+
+            Network net = new Network();
+
+            try
+            {
+                ServerInfo = null;
+                URL = SystemInfos.ServerURL;
+                if (net.Connect(SystemInfos.ServerURL) == false)
+                    return (null);
+            }
+            catch
+            {
+
+            }
+
+            return (net);
+        }
+
         public static Network ConnectNetwork(int MessageChannel)
         {
             if (SystemInfos.ServerURL == ProgramAgent.VulpesURL)

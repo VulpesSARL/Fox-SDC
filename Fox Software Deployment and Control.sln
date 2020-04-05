@@ -66,6 +66,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		INSTALL\collect.cmd = INSTALL\collect.cmd
 		LICENSE = LICENSE
 		README.md = README.md
+		DNS Configuration.txt = DNS Configuration.txt
 		INSTALL\initvars.cmd = INSTALL\initvars.cmd
 		Registry Tricks.txt = Registry Tricks.txt
 		INSTALL\SDCA.foxps = INSTALL\SDCA.foxps
