@@ -1,7 +1,8 @@
 # Fox Software Deployment and Control
 
-Fox Software Deployment and Control is a progam for Software Deployment & Controling (including computer inventory)
-See [here](https://vulpes.lu/#!/sdconprem) for more information about the product
+Fox Software Deployment and Control is a progam for Software Deployment, Controling (including computer inventory) and Remote-Support.
+
+
 
 ### Prerequisites
 
