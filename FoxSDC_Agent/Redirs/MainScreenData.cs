@@ -38,6 +38,8 @@ namespace FoxSDC_Agent.Redirs
         bool Ping();
         [OperationContract]
         bool CloseSession();
+        [OperationContract]
+        NetBool SetScreen(int ScreenNumber);
     }
 
     /// <summary>
@@ -75,6 +77,10 @@ namespace FoxSDC_Agent.Redirs
         {
             return (Channel.SetMousePosition2(X, Y, Delta, Flags));
         }
+        public NetBool SetScreen(int ScreenNumber)
+        {
+            return (Channel.SetScreen(ScreenNumber));
+        }
         public NetBool SetKeyboard(string keyboardd)
         {
             return (Channel.SetKeyboard(keyboardd));
@@ -108,6 +114,14 @@ namespace FoxSDC_Agent.Redirs
         public bool Ping()
         {
             return (true);
+        }
+
+        public NetBool SetScreen(int ScreenNumber)
+        {
+            NetBool nb = new NetBool();
+            nb.Data = true;
+            ProgramAgent.CPP.SetScreenNumber(ScreenNumber);
+            return (nb);
         }
 
         public PushScreenData GetDeltaScreen()
@@ -740,6 +754,15 @@ namespace FoxSDC_Agent.Redirs
                 return (new NetBool() { Data = false });
             }
             return (b);
+        }
+
+        static public NetBool SetScreen(int ScreenNumber)
+        {
+            if (CheckConnection() == false)
+                return (new NetBool() { Data = false });
+
+            Pipe.Pipe1.SetScreen(ScreenNumber);
+            return (new NetBool() { Data = true });
         }
 
         static public PushScreenData GetFullscreen()

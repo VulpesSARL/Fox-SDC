@@ -6,7 +6,7 @@
     "Script": "using FoxSDC_Common;\r\nusing System;\r\nusing System.Collections.Generic;\r\nusing System.Text;\r\nusing System.Reflection;\r\nusing System.IO;\r\n\r\nnamespace FoxSDC_Package\r\n{\r\n    public class PackageScriptTemplate : PKGScript\r\n    {\r\n        PKGInstallState State = PKGInstallState.NotSet;\r\n\r\n        public PKGStatus CheckInstallationStatus(PKGRunningPackageData Package, PKGInstallState state)\r\n        {\r\n            State = state;\r\n            Package.ErrorText = \"\";\r\n\r\n            Package.SetInstallPath(Package.ApplicationPath);\r\n\r\n            return (PKGStatus.Success);\r\n        }\r\n\r\n        public PKGStatus PreInstall(PKGRunningPackageData Package)\r\n        {\r\n            Package.ErrorText = \"\";\r\n            return (PKGStatus.Success);\r\n        }\r\n\r\n        public PKGStatus PostInstall(PKGRunningPackageData Package)\r\n        {\r\n            Package.ErrorText = \"\";\r\n            return (PKGStatus.Success);\r\n        }\r\n\r\n        public PKGStatus Rollback(PKGRunningPackageData Package)\r\n        {\r\n            Package.ErrorText = \"\";\r\n            return (PKGStatus.Success);            \r\n        }\r\n\r\n        public List<string> GetDependencies(PKGRunningPackageData Package)\r\n        {\r\n            return (new List<string>());\r\n        }\r\n\r\n        public PKGStatus ApplyUserSettings(PKGRunningPackageData Package)\r\n        {\r\n            Package.ErrorText = \"\";\r\n            return (PKGStatus.Success);\r\n        }\r\n    }\r\n}\r\n",
     "Outputfile": "SDCA.foxpkg",
     "NoReceipt": true,
-    "VersionID": 20040249,
+    "VersionID": 20042713,
     "Files": [
         {
             "ID": "",

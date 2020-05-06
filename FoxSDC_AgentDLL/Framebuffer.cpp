@@ -3,10 +3,35 @@
 #include <Windows.h>
 #include <WtsApi32.h>
 
-void FinalCapture(int *x, int *y, void **data, bool *failed, int *failedstep, int *datasz, int *curx, int *cury, int *GL);
+void FinalCapture(int *x, int *y, void **data, bool *failed, int *failedstep, int *datasz, int *curx, int *cury, int *GL, int ScreenNumber, int *ScreenTop, int *ScreenLeft);
 
+struct CaptureData
+{
+	int MonitorNumber;
+	int MonitorCount;
+	HDC MonitorDC;
+	RECT MonitorRect;
+	void **data;
+	int *datasz;
+	int *GL;
+	bool *failed;
+	int *failedstep;
+	int ResX;
+	int ResY;
+	int *x;
+	int *y;
+	int *ScreenTop;
+	int *ScreenLeft;
+};
 
-void CreateScreenshot(int *x, int *y, void **data, bool *failed, int *failedstep, int *datasz, int *curx, int *cury, int *GL)
+BOOL MonitorenumprocCount(HMONITOR Arg1, HDC Arg2, LPRECT Arg3, LPARAM Arg4)
+{
+	CaptureData *C = (CaptureData*)(void*)Arg4;
+	C->MonitorCount++;
+	return(TRUE);
+}
+
+void CreateScreenshot(int *x, int *y, void **data, bool *failed, int *failedstep, int *datasz, int *curx, int *cury, int *GL, int ScreenNumber, int *ScreenTop, int *ScreenLeft)
 {
 	*failed = false;
 	*failedstep = 0;
@@ -32,8 +57,15 @@ void CreateScreenshot(int *x, int *y, void **data, bool *failed, int *failedstep
 				{
 					SetThreadDesktop(Desk);
 
-					FinalCapture(x, y, data, failed, failedstep, datasz, curx, cury, GL);
+					CaptureData C;
+					memset(&C, 0, sizeof(C));
 
+					EnumDisplayMonitors(NULL, NULL, (MONITORENUMPROC)MonitorenumprocCount, (LPARAM)&C);
+
+					if (ScreenNumber >= C.MonitorCount)
+						ScreenNumber = 0;
+
+					FinalCapture(x, y, data, failed, failedstep, datasz, curx, cury, GL, ScreenNumber, ScreenTop, ScreenLeft);
 					SetThreadDesktop(oldDesktop);
 					CloseDesktop(Desk);
 				}
@@ -69,39 +101,46 @@ void CreateScreenshot(int *x, int *y, void **data, bool *failed, int *failedstep
 	}
 }
 
-void FinalCapture(int *x, int *y, void **data, bool *failed, int *failedstep, int *datasz, int *curx, int *cury, int *GL)
+BOOL Monitorenumproc(HMONITOR Arg1, HDC Arg2, LPRECT Arg3, LPARAM Arg4)
 {
-	HWND DesktopWindow = GetDesktopWindow();
-	HDC Desktop = GetDC(DesktopWindow);
-	if (Desktop != NULL)
+	CaptureData *C = (CaptureData*)(void*)Arg4;
+
+	if (C->MonitorNumber == C->MonitorCount)
 	{
-		POINT CursorPos;
-		CursorPos.x = 0;
-		CursorPos.y = 0;
-		GetCursorPos(&CursorPos);
+		C->MonitorDC = Arg2;
+		C->MonitorRect.bottom = Arg3->bottom;
+		C->MonitorRect.left = Arg3->left;
+		C->MonitorRect.right = Arg3->right;
+		C->MonitorRect.top = Arg3->top;
+		if (C->MonitorRect.right > C->MonitorRect.left)
+		{
+			C->ResX = C->MonitorRect.right - C->MonitorRect.left;
+			C->ResY = C->MonitorRect.bottom - C->MonitorRect.top;
+		}
+		else
+		{
+			C->ResX = C->MonitorRect.left - C->MonitorRect.right;
+			C->ResY = C->MonitorRect.top - C->MonitorRect.bottom;
+		}
+		*C->ScreenTop = C->MonitorRect.top;
+		*C->ScreenLeft = C->MonitorRect.left;
 
-		*curx = CursorPos.x;
-		*cury = CursorPos.y;
-
-		int ResX = GetSystemMetrics(SM_CXVIRTUALSCREEN);
-		int ResY = GetSystemMetrics(SM_CYVIRTUALSCREEN);
-
-		HDC MemDesktop = CreateCompatibleDC(Desktop);
+		HDC MemDesktop = CreateCompatibleDC(C->MonitorDC);
 		if (MemDesktop != NULL)
 		{
-			HBITMAP tmpbitmap = CreateCompatibleBitmap(Desktop, ResX, ResY);
+			HBITMAP tmpbitmap = CreateCompatibleBitmap(C->MonitorDC, C->ResX, C->ResY);
 			if (tmpbitmap != NULL)
 			{
 				HBITMAP bitmap = (HBITMAP)SelectObject(MemDesktop, tmpbitmap);
 				if (bitmap != NULL)
 				{
-					BitBlt(MemDesktop, 0, 0, ResX, ResY, Desktop, 0, 0, CAPTUREBLT | SRCCOPY);
+					BitBlt(MemDesktop, 0, 0, C->ResX, C->ResY, C->MonitorDC, C->MonitorRect.left, C->MonitorRect.top, CAPTUREBLT | SRCCOPY);
 
 					BITMAPINFOHEADER bi;
 
 					bi.biSize = sizeof(BITMAPINFOHEADER);
-					bi.biWidth = ResX;
-					bi.biHeight = ResY;
+					bi.biWidth = C->ResX;
+					bi.biHeight = C->ResY;
 					bi.biPlanes = 1;
 					bi.biBitCount = 32;
 					bi.biCompression = BI_RGB;
@@ -111,51 +150,102 @@ void FinalCapture(int *x, int *y, void **data, bool *failed, int *failedstep, in
 					bi.biClrUsed = 0;
 					bi.biClrImportant = 0;
 
-					DWORD dwBmpSize = ((ResX * bi.biBitCount + 31) / 32) * 4 * ResY;
+					DWORD dwBmpSize = ((C->ResX * bi.biBitCount + 31) / 32) * 4 * C->ResY;
 
-					*datasz = dwBmpSize;
-					*data = malloc(dwBmpSize);
-					if (*data != NULL)
+					*C->datasz = dwBmpSize;
+					*C->data = malloc(dwBmpSize);
+					if (*C->data != NULL)
 					{
 						HANDLE hDIB = GlobalAlloc(GHND, dwBmpSize);
 
 						char *lpbitmap = (char*)GlobalLock(hDIB);
 
-						GetDIBits(Desktop, tmpbitmap, 0, ResY, lpbitmap, (BITMAPINFO *)&bi, DIB_RGB_COLORS);
+						GetDIBits(C->MonitorDC, tmpbitmap, 0, C->ResY, lpbitmap, (BITMAPINFO *)&bi, DIB_RGB_COLORS);
 
-						memcpy(*data, lpbitmap, dwBmpSize);
+						memcpy(*C->data, lpbitmap, dwBmpSize);
 
 						GlobalFree(hDIB);
 
-						*x = ResX;
-						*y = ResY;
+						*C->x = C->ResX;
+						*C->y = C->ResY;
+
+						*C->failed = false;
+						*C->failedstep = 0;
+						*C->GL = 0;
 					}
 
 					DeleteObject(bitmap);
 				}
 				else
 				{
-					*failed = true;
-					*failedstep = 23;
-					*GL = GetLastError();
+					*C->failed = true;
+					*C->failedstep = 23;
+					*C->GL = GetLastError();
 				}
 				DeleteObject(tmpbitmap);
 			}
 			else
 			{
-				*failed = true;
-				*failedstep = 22;
-				*GL = GetLastError();
+				*C->failed = true;
+				*C->failedstep = 22;
+				*C->GL = GetLastError();
 			}
 			DeleteDC(MemDesktop);
 		}
 		else
 		{
-			*failed = true;
-			*failedstep = 21;
-			*GL = GetLastError();
+			*C->failed = true;
+			*C->failedstep = 21;
+			*C->GL = GetLastError();
 		}
-		DeleteDC(Desktop);
+		DeleteDC(C->MonitorDC);
+
+		return(FALSE);
+	}
+	else
+	{
+		C->MonitorCount++;
+		return(TRUE);
+	}
+}
+
+
+void FinalCapture(int *x, int *y, void **data, bool *failed, int *failedstep, int *datasz, int *curx, int *cury, int *GL, int ScreenNumber, int *ScreenTop, int *ScreenLeft)
+{
+	CaptureData C;
+	memset(&C, 0, sizeof(C));
+	C.MonitorNumber = ScreenNumber;
+	C.data = data;
+	C.datasz = datasz;
+	C.failed = failed;
+	C.failedstep = failedstep;
+	C.GL = GL;
+	C.x = x;
+	C.y = y;
+	C.ScreenLeft = ScreenLeft;
+	C.ScreenTop = ScreenTop;
+
+	*C.failed = true;
+	*C.failedstep = 3000;
+	*C.GL = 0;
+
+	HDC Desktop = GetDC(GetDesktopWindow());
+	if (Desktop != NULL)
+	{
+		if (EnumDisplayMonitors(GetDC(NULL), NULL, (MONITORENUMPROC)Monitorenumproc, (LPARAM)&C) != 0)
+		{
+			*failed = true;
+			*failedstep = 30;
+			return;
+		}
+
+		POINT CursorPos;
+		CursorPos.x = 0;
+		CursorPos.y = 0;
+		GetCursorPos(&CursorPos);
+
+		*curx = CursorPos.x - *C.ScreenLeft;
+		*cury = CursorPos.y - *C.ScreenTop;
 	}
 	else
 	{

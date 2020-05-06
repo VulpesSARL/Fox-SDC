@@ -65,6 +65,7 @@ namespace FoxSDC_Agent
             {
                 Debug.WriteLine(ee.ToString());
                 FoxEventLog.WriteEventLog("Cannot load FoxSDC_AgentDLL<xx>.DLL", System.Diagnostics.EventLogEntryType.Error);
+                FoxEventLog.VerboseWriteEventLog("Cannot load FoxSDC_AgentDLL<xx>.DLL - SEH: " + ee.ToString(), System.Diagnostics.EventLogEntryType.Error);
                 return (false);
             }
             return (true);
@@ -202,60 +203,69 @@ namespace FoxSDC_Agent
 #endif
             if (UseDNSAutoConfig == true)
             {
-                List<List<string>> Query = CPP.DNSQueryTXT("sdc-contract.my-vulpes-config.lu");
-
-                string ContractID = null;
-                string ContractPassword = null;
-                string UseOnPrem = null;
-                string OnPremURL = null;
-
-                foreach (List<string> Q in Query)
+                try
                 {
-                    if (Q == null)
-                        continue;
+                    List<List<string>> Query = CPP.DNSQueryTXT("sdc-contract.my-vulpes-config.lu");
 
-                    foreach (string QR in Q)
+                    if (Query == null)
+                        return;
+
+                    string ContractID = null;
+                    string ContractPassword = null;
+                    string UseOnPrem = null;
+                    string OnPremURL = null;
+
+                    foreach (List<string> Q in Query)
                     {
-                        if (string.IsNullOrWhiteSpace(QR) == true)
+                        if (Q == null)
                             continue;
-                        if (QR.ToLower().StartsWith("contractid=") == true)
-                            ContractID = QR.Substring(11).Trim();
-                        if (QR.ToLower().StartsWith("contractpassword=") == true)
-                            ContractPassword = QR.Substring(17).Trim();
-                        if (QR.ToLower().StartsWith("useonprem=") == true)
-                            UseOnPrem = QR.Substring(10).Trim();
-                        if (QR.ToLower().StartsWith("onpremurl=") == true)
-                            OnPremURL = QR.Substring(10).Trim();
-                    }
-                }
 
-                using (RegistryKey k = Registry.LocalMachine.CreateSubKey("SOFTWARE\\Fox\\SDC"))
-                {
-                    if (string.IsNullOrWhiteSpace(ContractID) == false && string.IsNullOrWhiteSpace(ContractPassword) == false)
-                    {
-                        k.SetValue("ContractID", ContractID, RegistryValueKind.String);
-                        k.SetValue("ContractPassword", ContractPassword, RegistryValueKind.String);
-                    }
-
-                    int UseOnPremInt;
-                    if (int.TryParse(UseOnPrem, out UseOnPremInt) == true)
-                    {
-                        if (UseOnPremInt == 1 && string.IsNullOrWhiteSpace(OnPremURL) == false)
+                        foreach (string QR in Q)
                         {
-                            k.SetValue("UseOnPremServer", 1, RegistryValueKind.DWord);
-                            k.SetValue("Server", OnPremURL, RegistryValueKind.String);
+                            if (string.IsNullOrWhiteSpace(QR) == true)
+                                continue;
+                            if (QR.ToLower().StartsWith("contractid=") == true)
+                                ContractID = QR.Substring(11).Trim();
+                            if (QR.ToLower().StartsWith("contractpassword=") == true)
+                                ContractPassword = QR.Substring(17).Trim();
+                            if (QR.ToLower().StartsWith("useonprem=") == true)
+                                UseOnPrem = QR.Substring(10).Trim();
+                            if (QR.ToLower().StartsWith("onpremurl=") == true)
+                                OnPremURL = QR.Substring(10).Trim();
+                        }
+                    }
+
+                    using (RegistryKey k = Registry.LocalMachine.CreateSubKey("SOFTWARE\\Fox\\SDC"))
+                    {
+                        if (string.IsNullOrWhiteSpace(ContractID) == false && string.IsNullOrWhiteSpace(ContractPassword) == false)
+                        {
+                            k.SetValue("ContractID", ContractID, RegistryValueKind.String);
+                            k.SetValue("ContractPassword", ContractPassword, RegistryValueKind.String);
+                        }
+
+                        int UseOnPremInt;
+                        if (int.TryParse(UseOnPrem, out UseOnPremInt) == true)
+                        {
+                            if (UseOnPremInt == 1 && string.IsNullOrWhiteSpace(OnPremURL) == false)
+                            {
+                                k.SetValue("UseOnPremServer", 1, RegistryValueKind.DWord);
+                                k.SetValue("Server", OnPremURL, RegistryValueKind.String);
+                            }
+                            else
+                            {
+                                k.SetValue("UseOnPremServer", 0, RegistryValueKind.DWord);
+                            }
                         }
                         else
                         {
                             k.SetValue("UseOnPremServer", 0, RegistryValueKind.DWord);
                         }
                     }
-                    else
-                    {
-                        k.SetValue("UseOnPremServer", 0, RegistryValueKind.DWord);
-                    }
                 }
-
+                catch (Exception ee)
+                {
+                    Debug.WriteLine(ee.ToString());
+                }
                 return;
             }
 

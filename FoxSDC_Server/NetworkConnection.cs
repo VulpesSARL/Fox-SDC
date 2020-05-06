@@ -27,19 +27,11 @@ namespace FoxSDC_Server
         public string Error;
         public ErrorFlags ErrorID;
         public Int64 Permissions = 0;
-        //public NameValueCollection QueryString;
         public bool Inited = false;
         public DateTime LastUsed = DateTime.Now;
         public bool FromClone = false;
         public string IPAddress = "";
         public Int64? PushChannel = null;
-        /// <summary>
-        /// send from server to client
-        /// </summary>
-        //public DownloadRunner Download = null;
-        /// <summary>
-        /// get from client to server
-        /// </summary>
         public UploadRunner Upload = null;
         public ReaderWriterLockSlim RWLock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
         public bool IsLDAP = false;

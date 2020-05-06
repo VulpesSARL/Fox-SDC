@@ -44,6 +44,29 @@ namespace FoxSDC_Agent_UI
             timer.Interval = 1000;
             timer.Enabled = true;
             timer.Tick += Timer_Tick;
+
+            if (Environment.OSVersion.Version.Major == 6)
+            {
+                if (Environment.OSVersion.Version.Minor <= 2)
+                {
+                    //older version of Windows
+                    frmNotes frm = new frmNotes(
+                        @"Astellung vum Support vu Windows 7 & Windows 8.0
+
+Vulpes stellt deemnächst de Support vu Windows 7 a Windows 8.0 iwwert den Software Deployment and Control Programm an. Kontaktéier Vulpes, ob en Update op Windows 10 gemeet ka ginn. Wann der do näischt maacht, wäert de Programm einfach säint Déngscht astellen oder desinstalléiert sech automatesch.
+
+Discontinuation supporting Windows 7 & Windows 8.0
+
+Vulpes will discontinue to support Windows 7 & Windows 8.0 trough Software Deployment and Control Application. Please contact Vulpes if there’s a possibility to update to Windows 10. If you do nothing, the Program will stop running or uninstalls itself automatically.
+
+Einstellung des Supports für Windows 7 & Windows 8.0
+
+Vulpes stellt demnächst den Support für Windows 7 & Windows 8.0 über das Software Deployment and Control Programm ein. Bitte kontaktieren Sie Vulpes ob es eine Möglichkeit besteht ein Update auf Windows 10 durchzuführen. Falls Sie nichts unternehmen, wird das Programm den Dienst einstellen oder deinstalliert sich selbst.",
+                        "OldOSVersion");
+                    if (frm.ShouldShowThis() == true)
+                        frm.Show();
+                }
+            }
         }
 
         private void Timer_Tick(object sender, EventArgs e)

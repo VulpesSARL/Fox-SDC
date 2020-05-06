@@ -32,6 +32,7 @@ namespace FoxSDC_Common
         bool GetEFIBootDevices(out Dictionary<int, string> Dict);
         bool SetEFINextBootDevice(int ID);
         List<List<string>> DNSQueryTXT(string Name);
+        void SetScreenNumber(int ScreenNumber);
     }
 
     public class CPPFrameBufferData

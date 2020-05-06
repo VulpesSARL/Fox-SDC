@@ -200,6 +200,9 @@ namespace FoxSDC_Agent.Redirs
                                 case (int)SendDataType.Mouse:
                                     Redirs.MainScreenSystem.SetMousePosition(ddd.Flag1, ddd.Flag2, ddd.Flag3, ddd.Flag4);
                                     break;
+                                case (int)SendDataType.SetScreen:
+                                    Redirs.MainScreenSystem.SetScreen(ddd.Flag1);
+                                    break;
                                 case (int)SendDataType.DeltaScreen:
                                     {
                                         RWLck.EnterReadLock();

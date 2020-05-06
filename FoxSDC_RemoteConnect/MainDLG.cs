@@ -93,7 +93,8 @@ namespace FoxSDC_RemoteConnect
                     return;
                 }
                 MID = Program.MachineID;
-                LSTComputerData c = new LSTComputerData("<<MID given>>", "", Program.MachineID);
+                ComputerData d = Program.net.GetComputerDetail(MID);
+                LSTComputerData c = new LSTComputerData("<<MID>> " + d.Computername, "", Program.MachineID);
                 lstComputer.Items.Add(c);
                 lstComputer.SelectedItem = c;
                 txtListenOn.Text = Program.LocalPort.ToString();

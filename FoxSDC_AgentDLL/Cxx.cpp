@@ -19,6 +19,7 @@ using namespace FoxSDC_Common;
 
 extern BOOL GetFirmwareType_CXX(PFIRMWARE_TYPE firmwaretype);
 extern VOID SendSAS(BOOL AsUser);
+extern BOOL SetFirmwareEnvironmentVariableEx_CXX(LPCWSTR lpName, LPCWSTR lpGuid, PVOID pValue, DWORD nSize, DWORD dwAttributes);
 
 bool LauchApp(WCHAR* FILE, WCHAR* ARGS);
 bool LauchApp(WCHAR* FILE, WCHAR* ARGS, DWORD SessionID, DWORD *PID);
@@ -26,7 +27,7 @@ bool LauchAppWait(WCHAR* FILE, WCHAR* ARGS, DWORD SessionID);
 bool LauchAppIntoWinLogon(WCHAR* FILE, WCHAR* ARGS, int *ProcessID, const WCHAR *ProcessName);
 bool CSetToken(LPWSTR NAME);
 BOOL VerifyEmbeddedSignature(LPCWSTR pwszSourceFile);
-void CreateScreenshot(int *x, int *y, void **data, bool *failed, int *failedstep, int *datasz, int *curx, int *cury, int *GL);
+void CreateScreenshot(int *x, int *y, void **data, bool *failed, int *failedstep, int *datasz, int *curx, int *cury, int *GL, int ScreenNumber, int *ScreenTop, int *ScreenLeft);
 void DbgPrintf(char *format, ...);
 
 void WriteEventLogVerbose(WCHAR* Blahblah)
@@ -328,6 +329,11 @@ namespace Fox
 			return(r);
 		}
 
+		virtual void SetScreenNumber(int ScreenNumber)
+		{
+			this->ScreenNumber = ScreenNumber;
+		}
+
 		virtual CPPFrameBufferData^ GetFrameBufferData()
 		{
 			CPPFrameBufferData^ fbuff = gcnew CPPFrameBufferData();
@@ -342,7 +348,14 @@ namespace Fox
 			int cury;
 			int GL;
 
-			CreateScreenshot(&x, &y, &screendata, &failed, &failedat, &datasz, &curx, &cury, &GL);
+			int ScreenT;
+			int ScreenL;
+
+			CreateScreenshot(&x, &y, &screendata, &failed, &failedat, &datasz,
+				&curx, &cury, &GL, ScreenNumber, &ScreenT, &ScreenL);
+
+			ScreenTop = ScreenT + (0 - GetSystemMetrics(SM_YVIRTUALSCREEN));
+			ScreenLeft = ScreenL + (0 - GetSystemMetrics(SM_XVIRTUALSCREEN));
 
 			fbuff->X = x;
 			fbuff->Y = y;
@@ -388,7 +401,6 @@ namespace Fox
 						{
 							SetThreadDesktop(Desk);
 
-
 							INPUT input;
 							memset(&input, 0, sizeof(input));
 
@@ -396,6 +408,9 @@ namespace Fox
 
 							int ResX = GetSystemMetrics(SM_CXVIRTUALSCREEN);
 							int ResY = GetSystemMetrics(SM_CYVIRTUALSCREEN);
+
+							X += ScreenLeft;
+							Y += ScreenTop;
 
 							input.mi.dx = (LONG)(((double)65535 / (double)ResX)*(double)X);
 							input.mi.dy = (LONG)(((double)65535 / (double)ResY)*(double)Y);
@@ -598,7 +613,7 @@ namespace Fox
 					if (res == 0)
 						return(false);
 
-					if (SetFirmwareEnvironmentVariableEx(L"BootNext", EFI_SPACE_GUID, &NextBootDevice, sizeof(NextBootDevice), 0x7) == 0)
+					if (SetFirmwareEnvironmentVariableEx_CXX(L"BootNext", EFI_SPACE_GUID, &NextBootDevice, sizeof(NextBootDevice), 0x7) == 0)
 						return(false);
 					else
 						return(true);
@@ -682,6 +697,10 @@ namespace Fox
 
 	private:
 		DWORD LastMouseEvent = 0;
+		int ScreenNumber = 0;
+
+		int ScreenLeft = 0;
+		int ScreenTop = 0;
 
 		virtual int TestButtons(int FoxMouseFlag, int FoxMouseButton, int WindowsFlagSET, int WindowsFlagUNSET) sealed
 		{

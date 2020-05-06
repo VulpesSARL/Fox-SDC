@@ -43,6 +43,7 @@
             this.refreshScreenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.snapshotToDesktopToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.squeezePictureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.slowRefreshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.cTRLALTDELETEToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cTRLALTDELETEVKToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -52,7 +53,16 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.picDisplay = new System.Windows.Forms.PictureBox();
             this.timPing = new System.Windows.Forms.Timer(this.components);
-            this.slowRefreshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.screenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem5 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem6 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem7 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem8 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem9 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem10 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem11 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem12 = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picDisplay)).BeginInit();
@@ -65,6 +75,7 @@
             this.editToolStripMenuItem,
             this.optionsToolStripMenuItem,
             this.toolStripMenuItem1,
+            this.screenToolStripMenuItem,
             this.txtStatus});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
@@ -165,6 +176,13 @@
             this.squeezePictureToolStripMenuItem.Text = "S&queeze picture";
             this.squeezePictureToolStripMenuItem.Click += new System.EventHandler(this.squeezePictureToolStripMenuItem_Click);
             // 
+            // slowRefreshToolStripMenuItem
+            // 
+            this.slowRefreshToolStripMenuItem.Name = "slowRefreshToolStripMenuItem";
+            this.slowRefreshToolStripMenuItem.Size = new System.Drawing.Size(234, 24);
+            this.slowRefreshToolStripMenuItem.Text = "&Slow refresh";
+            this.slowRefreshToolStripMenuItem.Click += new System.EventHandler(this.slowRefreshToolStripMenuItem_Click);
+            // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -239,12 +257,84 @@
             this.timPing.Interval = 60000;
             this.timPing.Tick += new System.EventHandler(this.timPing_Tick);
             // 
-            // slowRefreshToolStripMenuItem
+            // screenToolStripMenuItem
             // 
-            this.slowRefreshToolStripMenuItem.Name = "slowRefreshToolStripMenuItem";
-            this.slowRefreshToolStripMenuItem.Size = new System.Drawing.Size(234, 24);
-            this.slowRefreshToolStripMenuItem.Text = "&Slow refresh";
-            this.slowRefreshToolStripMenuItem.Click += new System.EventHandler(this.slowRefreshToolStripMenuItem_Click);
+            this.screenToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItem4,
+            this.toolStripMenuItem5,
+            this.toolStripMenuItem6,
+            this.toolStripMenuItem7,
+            this.toolStripMenuItem8,
+            this.toolStripMenuItem9,
+            this.toolStripMenuItem10,
+            this.toolStripMenuItem11,
+            this.toolStripMenuItem12});
+            this.screenToolStripMenuItem.Name = "screenToolStripMenuItem";
+            this.screenToolStripMenuItem.Size = new System.Drawing.Size(67, 27);
+            this.screenToolStripMenuItem.Text = "&Screen";
+            // 
+            // toolStripMenuItem4
+            // 
+            this.toolStripMenuItem4.Name = "toolStripMenuItem4";
+            this.toolStripMenuItem4.Size = new System.Drawing.Size(180, 24);
+            this.toolStripMenuItem4.Text = "&1";
+            this.toolStripMenuItem4.Click += new System.EventHandler(this.toolStripMenuItem4_Click);
+            // 
+            // toolStripMenuItem5
+            // 
+            this.toolStripMenuItem5.Name = "toolStripMenuItem5";
+            this.toolStripMenuItem5.Size = new System.Drawing.Size(180, 24);
+            this.toolStripMenuItem5.Text = "&2";
+            this.toolStripMenuItem5.Click += new System.EventHandler(this.toolStripMenuItem5_Click);
+            // 
+            // toolStripMenuItem6
+            // 
+            this.toolStripMenuItem6.Name = "toolStripMenuItem6";
+            this.toolStripMenuItem6.Size = new System.Drawing.Size(180, 24);
+            this.toolStripMenuItem6.Text = "&3";
+            this.toolStripMenuItem6.Click += new System.EventHandler(this.toolStripMenuItem6_Click);
+            // 
+            // toolStripMenuItem7
+            // 
+            this.toolStripMenuItem7.Name = "toolStripMenuItem7";
+            this.toolStripMenuItem7.Size = new System.Drawing.Size(180, 24);
+            this.toolStripMenuItem7.Text = "&4";
+            this.toolStripMenuItem7.Click += new System.EventHandler(this.toolStripMenuItem7_Click);
+            // 
+            // toolStripMenuItem8
+            // 
+            this.toolStripMenuItem8.Name = "toolStripMenuItem8";
+            this.toolStripMenuItem8.Size = new System.Drawing.Size(180, 24);
+            this.toolStripMenuItem8.Text = "&5";
+            this.toolStripMenuItem8.Click += new System.EventHandler(this.toolStripMenuItem8_Click);
+            // 
+            // toolStripMenuItem9
+            // 
+            this.toolStripMenuItem9.Name = "toolStripMenuItem9";
+            this.toolStripMenuItem9.Size = new System.Drawing.Size(180, 24);
+            this.toolStripMenuItem9.Text = "&6";
+            this.toolStripMenuItem9.Click += new System.EventHandler(this.toolStripMenuItem9_Click);
+            // 
+            // toolStripMenuItem10
+            // 
+            this.toolStripMenuItem10.Name = "toolStripMenuItem10";
+            this.toolStripMenuItem10.Size = new System.Drawing.Size(180, 24);
+            this.toolStripMenuItem10.Text = "&7";
+            this.toolStripMenuItem10.Click += new System.EventHandler(this.toolStripMenuItem10_Click);
+            // 
+            // toolStripMenuItem11
+            // 
+            this.toolStripMenuItem11.Name = "toolStripMenuItem11";
+            this.toolStripMenuItem11.Size = new System.Drawing.Size(180, 24);
+            this.toolStripMenuItem11.Text = "&8";
+            this.toolStripMenuItem11.Click += new System.EventHandler(this.toolStripMenuItem11_Click);
+            // 
+            // toolStripMenuItem12
+            // 
+            this.toolStripMenuItem12.Name = "toolStripMenuItem12";
+            this.toolStripMenuItem12.Size = new System.Drawing.Size(180, 24);
+            this.toolStripMenuItem12.Text = "&9";
+            this.toolStripMenuItem12.Click += new System.EventHandler(this.toolStripMenuItem12_Click);
             // 
             // MainDLG
             // 
@@ -296,6 +386,16 @@
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
         private System.Windows.Forms.ToolStripTextBox txtStatus;
         private System.Windows.Forms.ToolStripMenuItem slowRefreshToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem screenToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem4;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem5;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem6;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem7;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem8;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem9;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem10;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem11;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem12;
     }
 }
 

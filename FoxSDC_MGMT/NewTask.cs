@@ -134,6 +134,7 @@ namespace FoxSDC_MGMT
             lstRunAs.Items.Add("Run as actual user in session");
             lstRunAs.Items.Add("Run as different user in session");
             lstRunAs.Items.Add("Redirect console to here");
+            lstRunAs.Items.Add("Steal Winlogon Token");
             lstRunAs.SelectedIndex = 0;
             if (SystemRoot.EndsWith("\\") == false)
                 SystemRoot += "\\";

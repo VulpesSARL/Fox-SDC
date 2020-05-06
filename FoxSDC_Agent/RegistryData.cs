@@ -617,6 +617,37 @@ namespace FoxSDC_Agent
             }
         }
 
+        public static bool DangerousFunctions
+        {
+            get
+            {
+                try
+                {
+                    RegistryKey k = Registry.LocalMachine.OpenSubKey("SOFTWARE\\Fox\\SDC");
+                    if (k == null)
+                        return (false);
+                    object v = k.GetValue("Geféierlech Funktioune", null);
+                    if (v == null)
+                    {
+                        k.Close();
+                        return (false);
+                    }
+                    int i;
+                    if (int.TryParse(v.ToString(), out i) == false)
+                    {
+                        k.Close();
+                        return (false);
+                    }
+                    k.Close();
+                    return (i == 1 ? true : false);
+                }
+                catch
+                {
+                    return (false);
+                }
+            }
+        }
+
 
         public static bool UseOnPrem
         {

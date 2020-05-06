@@ -93,6 +93,12 @@
     <Compile Include="NT3Icon.Designer.cs">
       <DependentUpon>NT3Icon.cs</DependentUpon>
     </Compile>
+    <Compile Include="Notes.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Notes.Designer.cs">
+      <DependentUpon>Notes.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RegistryData.cs" />
@@ -123,6 +129,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="NT3Icon.resx">
       <DependentUpon>NT3Icon.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Notes.resx">
+      <DependentUpon>Notes.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -162,6 +171,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Fox.ico" />
+    <None Include="Resources\MSGBOX03.png" />
     <None Include="Resources\Logo Alone Square 32 32.png" />
     <None Include="Resources\yip.bin" />
     <None Include="Resources\YIP.wav" />

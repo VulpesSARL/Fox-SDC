@@ -6,9 +6,11 @@
 
 typedef BOOL(*FoxGetFirmwareType_)(PFIRMWARE_TYPE firmwaretype);
 typedef VOID(*SendSAS_)(BOOL AsUser);
+typedef BOOL(*FoxSetFirmwareEnvironmentVariableEx_)(LPCWSTR lpName, LPCWSTR lpGuid, PVOID pValue, DWORD nSize, DWORD dwAttributes);
 
 FoxGetFirmwareType_ FoxGetFirmwareType;
 SendSAS_ SASFn;
+FoxSetFirmwareEnvironmentVariableEx_ FoxSetFirmwareEnvironmentVariableEx;
 HMODULE Kernel32;
 HMODULE SAS;
 
@@ -23,9 +25,19 @@ VOID DummySendSAS(BOOL AsUser)
 
 }
 
+BOOL DummySetFirmwareEnviVarEx(LPCWSTR lpName, LPCWSTR lpGuid, PVOID pValue, DWORD nSize, DWORD dwAttributes)
+{
+	return(false);
+}
+
 BOOL GetFirmwareType_CXX(PFIRMWARE_TYPE firmwaretype)
 {
 	return (FoxGetFirmwareType(firmwaretype));
+}
+
+BOOL SetFirmwareEnvironmentVariableEx_CXX(LPCWSTR lpName, LPCWSTR lpGuid, PVOID pValue, DWORD nSize, DWORD dwAttributes)
+{
+	return(FoxSetFirmwareEnvironmentVariableEx(lpName, lpGuid, pValue, nSize, dwAttributes));
 }
 
 VOID SendSAS(BOOL AsUser)
@@ -41,12 +53,16 @@ void InitDLLWin8Plus()
 	if (Kernel32 == NULL)
 	{
 		FoxGetFirmwareType = &DummyGetFirmwareType;
+		FoxSetFirmwareEnvironmentVariableEx = &DummySetFirmwareEnviVarEx;
 	}
 	else
 	{
 		FoxGetFirmwareType = (FoxGetFirmwareType_)GetProcAddress(Kernel32, "GetFirmwareType");
 		if (FoxGetFirmwareType == NULL)
 			FoxGetFirmwareType = &DummyGetFirmwareType;
+		FoxSetFirmwareEnvironmentVariableEx = (FoxSetFirmwareEnvironmentVariableEx_)GetProcAddress(Kernel32, "SetFirmwareEnvironmentVariableExW");
+		if (FoxSetFirmwareEnvironmentVariableEx == NULL)
+			FoxSetFirmwareEnvironmentVariableEx = &DummySetFirmwareEnviVarEx;
 	}
 
 

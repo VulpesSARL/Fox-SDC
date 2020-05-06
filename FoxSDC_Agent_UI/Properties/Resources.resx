@@ -121,16 +121,19 @@
   <data name="yip1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\yip.bin;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="TEFI_Chimes" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\TEFI Chimes.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="LogoAloneSquare256256" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Logo Alone Square 256 256.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="LogoAloneSquare3232" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Logo Alone Square 32 32.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="YIP" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\YIP.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="LogoAloneSquare3232" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Logo Alone Square 32 32.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="TEFI_Chimes" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\TEFI Chimes.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="MSGBOX031" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\MSGBOX03.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

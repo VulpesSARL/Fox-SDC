@@ -188,11 +188,23 @@ namespace FoxSDC_Agent.Push
                     else
                         Res.Result = 0;
                     break;
+                case PushRunTaskOption.StealWinlogonToken:
+#if !DEBUG || DEBUGSERVICE
+                    if (RegistryData.DangerousFunctions == true)
+                    {
+                        if (ProgramAgent.CPP.StartAppInWinLogon(req.Executable, req.Args, out ProcessID) == false)
+                            Res.Result = ProgramAgent.CPP.WGetLastError();
+                    }
+                    else
+                    {
+                        Res.Result = 0x8000FFFF;
+                    }
+#endif
+                    break;
             }
 
 
             return (Res);
         }
-
     }
 }

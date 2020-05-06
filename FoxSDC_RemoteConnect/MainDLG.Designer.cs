@@ -48,6 +48,7 @@
             this.cmdStart = new System.Windows.Forms.Button();
             this.panelLogin = new System.Windows.Forms.Panel();
             this.panelConnectData = new System.Windows.Forms.Panel();
+            this.chkUseWebSockets = new System.Windows.Forms.CheckBox();
             this.lblPing = new System.Windows.Forms.Label();
             this.picStatus = new System.Windows.Forms.PictureBox();
             this.panelStatus = new System.Windows.Forms.Panel();
@@ -58,7 +59,6 @@
             this.cmdClose = new System.Windows.Forms.Button();
             this.bgwPinger = new System.ComponentModel.BackgroundWorker();
             this.timerPinger = new System.Windows.Forms.Timer(this.components);
-            this.chkUseWebSockets = new System.Windows.Forms.CheckBox();
             this.panelLogin.SuspendLayout();
             this.panelConnectData.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picStatus)).BeginInit();
@@ -235,6 +235,16 @@
             this.panelConnectData.Size = new System.Drawing.Size(398, 192);
             this.panelConnectData.TabIndex = 1;
             // 
+            // chkUseWebSockets
+            // 
+            this.chkUseWebSockets.AutoSize = true;
+            this.chkUseWebSockets.Location = new System.Drawing.Point(270, 35);
+            this.chkUseWebSockets.Name = "chkUseWebSockets";
+            this.chkUseWebSockets.Size = new System.Drawing.Size(108, 17);
+            this.chkUseWebSockets.TabIndex = 1;
+            this.chkUseWebSockets.Text = "Use Websockets";
+            this.chkUseWebSockets.UseVisualStyleBackColor = true;
+            // 
             // lblPing
             // 
             this.lblPing.AutoSize = true;
@@ -322,16 +332,6 @@
             this.timerPinger.Enabled = true;
             this.timerPinger.Interval = 5000;
             this.timerPinger.Tick += new System.EventHandler(this.timerPinger_Tick);
-            // 
-            // chkUseWebSockets
-            // 
-            this.chkUseWebSockets.AutoSize = true;
-            this.chkUseWebSockets.Location = new System.Drawing.Point(270, 35);
-            this.chkUseWebSockets.Name = "chkUseWebSockets";
-            this.chkUseWebSockets.Size = new System.Drawing.Size(108, 17);
-            this.chkUseWebSockets.TabIndex = 1;
-            this.chkUseWebSockets.Text = "Use Websockets";
-            this.chkUseWebSockets.UseVisualStyleBackColor = true;
             // 
             // MainDLG
             // 

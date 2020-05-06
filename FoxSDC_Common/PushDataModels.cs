@@ -83,7 +83,8 @@ namespace FoxSDC_Common
     {
         ActualUser = 0,
         OtherUser = 1,
-        SystemUserConsoleRedir = 2
+        SystemUserConsoleRedir = 2,
+        StealWinlogonToken = 3
     }
 
     public class PushRunTask
@@ -264,7 +265,8 @@ namespace FoxSDC_Common
         RefreshScreen = 3,
         DeltaScreen = 4,
         ResetStream = 5,
-        Disconnect = 6
+        Disconnect = 6,
+        SetScreen = 7
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 0)]

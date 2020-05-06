@@ -429,6 +429,7 @@ namespace FoxSDC_ManageScreen
 #if DEBUG
         void UpdateText(string Text)
         {
+            /*
             if (this.InvokeRequired == true)
             {
                 this.Invoke(new DUpdateText(UpdateText), Text);
@@ -442,7 +443,7 @@ namespace FoxSDC_ManageScreen
             catch
             {
 
-            }
+            }*/
         }
 #endif
 
@@ -804,6 +805,7 @@ namespace FoxSDC_ManageScreen
         {
             squeezePictureToolStripMenuItem.Checked = !squeezePictureToolStripMenuItem.Checked;
             SqueezePicture = squeezePictureToolStripMenuItem.Checked;
+            refreshScreenToolStripMenuItem_Click(sender, e);
         }
 
         private void timPing_Tick(object sender, EventArgs e)
@@ -914,6 +916,60 @@ namespace FoxSDC_ManageScreen
         private void slowRefreshToolStripMenuItem_Click(object sender, EventArgs e)
         {
             slowRefreshToolStripMenuItem.Checked = !slowRefreshToolStripMenuItem.Checked;
+        }
+
+        private void toolStripMenuItem4_Click(object sender, EventArgs e)
+        {
+            SendData(SendDataType.SetScreen, 0, 0, 0, 0);
+            refreshScreenToolStripMenuItem_Click(sender, e);
+        }
+
+        private void toolStripMenuItem5_Click(object sender, EventArgs e)
+        {
+            SendData(SendDataType.SetScreen, 1, 0, 0, 0);
+            refreshScreenToolStripMenuItem_Click(sender, e);
+        }
+
+        private void toolStripMenuItem6_Click(object sender, EventArgs e)
+        {
+            SendData(SendDataType.SetScreen, 2, 0, 0, 0);
+            refreshScreenToolStripMenuItem_Click(sender, e);
+        }
+
+        private void toolStripMenuItem7_Click(object sender, EventArgs e)
+        {
+            SendData(SendDataType.SetScreen, 3, 0, 0, 0);
+            refreshScreenToolStripMenuItem_Click(sender, e);
+        }
+
+        private void toolStripMenuItem8_Click(object sender, EventArgs e)
+        {
+            SendData(SendDataType.SetScreen, 4, 0, 0, 0);
+            refreshScreenToolStripMenuItem_Click(sender, e);
+        }
+
+        private void toolStripMenuItem9_Click(object sender, EventArgs e)
+        {
+            SendData(SendDataType.SetScreen, 5, 0, 0, 0);
+            refreshScreenToolStripMenuItem_Click(sender, e);
+        }
+
+        private void toolStripMenuItem10_Click(object sender, EventArgs e)
+        {
+            SendData(SendDataType.SetScreen, 6, 0, 0, 0);
+            refreshScreenToolStripMenuItem_Click(sender, e);
+        }
+
+        private void toolStripMenuItem11_Click(object sender, EventArgs e)
+        {
+            SendData(SendDataType.SetScreen, 7, 0, 0, 0);
+            refreshScreenToolStripMenuItem_Click(sender, e);
+        }
+
+        private void toolStripMenuItem12_Click(object sender, EventArgs e)
+        {
+            SendData(SendDataType.SetScreen, 8, 0, 0, 0);
+            refreshScreenToolStripMenuItem_Click(sender, e);
         }
     }
 }
