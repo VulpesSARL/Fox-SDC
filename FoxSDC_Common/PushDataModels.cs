@@ -196,14 +196,6 @@ namespace FoxSDC_Common
         public int BlockY;
     }
 
-    public class PushMouseData
-    {
-        public int X;
-        public int Y;
-        public int Delta;
-        public int Flags;
-    }
-
     [Flags]
     public enum MouseDataFlags : int
     {
@@ -212,13 +204,6 @@ namespace FoxSDC_Common
         RightButton = 0x4,
         XButton1 = 0x8,
         XButton2 = 0x10
-    }
-
-    public class PushKeyboardData
-    {
-        public int VirtualKey;
-        public int ScanCode;
-        public int Flags;
     }
 
     public class PushChatMessage

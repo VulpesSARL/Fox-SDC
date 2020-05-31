@@ -306,6 +306,11 @@ namespace FoxSDC_Agent.PolicyObjects
                     RunningPolicy.EnablePaperSize = p.EnablePaperSize;
                 if (p.EnablePaperSize == true)
                     RunningPolicy.PaperSize = p.PaperSize;
+
+                if (p.EnableTimeSeparator != null)
+                    RunningPolicy.EnableTimeSeparator = p.EnableTimeSeparator;
+                if (p.EnableTimeSeparator == true)
+                    RunningPolicy.TimeSeparator = p.TimeSeparator;
             }
         }
 
@@ -316,296 +321,268 @@ namespace FoxSDC_Agent.PolicyObjects
                 try
                 {
                     CultureInfo c = new CultureInfo(p.MainSystemLocale);
-                    RegistryKey RK = Registry.LocalMachine.OpenSubKey("SYSTEM\\CurrentControlSet\\Control\\Nls\\Language", true);
-                    if (RK == null)
+                    using (RegistryKey RK = Registry.LocalMachine.OpenSubKey("SYSTEM\\CurrentControlSet\\Control\\Nls\\Language", true))
                     {
-                        FoxEventLog.WriteEventLog("Cannot open SYSTEM\\CurrentControlSet\\Control\\Nls\\Language - Registry broken?", System.Diagnostics.EventLogEntryType.Error);
-                    }
-                    else
-                    {
-                        RK.SetValue("Default", p.MainSystemLocale.ToString("X4"), RegistryValueKind.String);
-                        RK.Close();
-                    }
-
-                    RK = Registry.LocalMachine.OpenSubKey("SYSTEM\\CurrentControlSet\\Control\\Nls\\Locale", true);
-                    if (RK == null)
-                    {
-                        FoxEventLog.WriteEventLog("Cannot open SYSTEM\\CurrentControlSet\\Control\\Nls\\Locale - Registry broken?", System.Diagnostics.EventLogEntryType.Error);
-                    }
-                    else
-                    {
-                        RK.SetValue(null, p.MainSystemLocale.ToString("X8"), RegistryValueKind.String);
-                        RK.Close();
-                    }
-                }
-                catch
-                {
-                    FoxEventLog.WriteEventLog("Cannot apply System Locale for ID " + p.MainSystemLocale, System.Diagnostics.EventLogEntryType.Warning);
-                }
-            }
-
-            if (p.EnableTimeZone == true)
-            {
-                RegistryKey RK = Registry.LocalMachine.OpenSubKey("SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Time Zones", false);
-                if (RK == null)
-                {
-                    FoxEventLog.WriteEventLog("Cannot read SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Time Zones - Registry broken?", System.Diagnostics.EventLogEntryType.Error);
-                }
-                else
-                {
-                    RegistryKey RK2 = RK.OpenSubKey(p.TimeZone, false);
-                    if (RK2 == null)
-                    {
-                        FoxEventLog.WriteEventLog("Cannot find informations about TimeZone " + p.TimeZone, System.Diagnostics.EventLogEntryType.Warning);
-                    }
-                    else
-                    {
-                        object TZIo = RK2.GetValue("TZI", null);
-                        if (!(TZIo is byte[]))
+                        if (RK == null)
                         {
-                            FoxEventLog.WriteEventLog("Faulty TZI in TimeZone " + p.TimeZone, System.Diagnostics.EventLogEntryType.Warning);
+                            FoxEventLog.WriteEventLog("Cannot open SYSTEM\\CurrentControlSet\\Control\\Nls\\Language - Registry broken?", System.Diagnostics.EventLogEntryType.Error);
                         }
                         else
                         {
-                            REG_TZI_FORMAT TZI = ClassCopy.CopyClassDatafromBinary<REG_TZI_FORMAT>((byte[])TZIo);
-
-                            RegistryKey RKD = Registry.LocalMachine.OpenSubKey("SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation", true);
-                            if (RKD == null)
-                            {
-                                FoxEventLog.WriteEventLog("Cannot open SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation - Registry broken?", System.Diagnostics.EventLogEntryType.Error);
-                            }
-                            else
-                            {
-                                RKD.SetValue("Bias", TZI.BIAS, RegistryValueKind.DWord);
-                                RKD.SetValue("DaylightBias", TZI.DaylightBias, RegistryValueKind.DWord);
-                                if (p.AutoDST == true)
-                                    RKD.SetValue("DynamicDaylightTimeDisabled", 0, RegistryValueKind.DWord);
-                                else
-                                    RKD.SetValue("DynamicDaylightTimeDisabled", 1, RegistryValueKind.DWord);
-                                RKD.SetValue("DaylightStart", ClassCopy.CopyClassDataGetBytes(TZI.DaylightDate), RegistryValueKind.Binary);
-                                RKD.SetValue("StandardStart", ClassCopy.CopyClassDataGetBytes(TZI.StandardDate), RegistryValueKind.Binary);
-                                RKD.SetValue("TimeZoneKeyName", p.TimeZone);
-                                RKD.Close();
-
-                                if (string.IsNullOrWhiteSpace(Convert.ToString(RK2.GetValue("MUI_Dlt", ""))) == false)
-                                {
-                                    RKD.SetValue("DaylightName", Convert.ToString(RK2.GetValue("MUI_Dlt", "")).Trim(), RegistryValueKind.String);
-                                }
-                                if (string.IsNullOrWhiteSpace(Convert.ToString(RK2.GetValue("MUI_Std", ""))) == false)
-                                {
-                                    RKD.SetValue("StandardName", Convert.ToString(RK2.GetValue("MUI_Std", "")).Trim(), RegistryValueKind.String);
-                                }
-
-
-                                RKD.Close();
-                            }
+                            RK.SetValue("Default", p.MainSystemLocale.ToString("X4"), RegistryValueKind.String);
                         }
-                        RK2.Close();
                     }
-                    RK.Close();
+
+                    using (RegistryKey RK = Registry.LocalMachine.OpenSubKey("SYSTEM\\CurrentControlSet\\Control\\Nls\\Locale", true))
+                    {
+                        if (RK == null)
+                        {
+                            FoxEventLog.WriteEventLog("Cannot open SYSTEM\\CurrentControlSet\\Control\\Nls\\Locale - Registry broken?", System.Diagnostics.EventLogEntryType.Error);
+                        }
+                        else
+                        {
+                            RK.SetValue(null, p.MainSystemLocale.ToString("X8"), RegistryValueKind.String);
+                        }
+                    }
+                }
+                catch (Exception ee)
+                {
+                    FoxEventLog.WriteEventLog("Cannot apply System Locale for ID " + p.MainSystemLocale + "\n" + ee.ToString(), System.Diagnostics.EventLogEntryType.Error);
+                }
+            }
+
+            if (p.EnableTimeZone == true && string.IsNullOrWhiteSpace(p.TimeZone) == false)
+            {
+                try
+                {
+                    bool? res = ProgramAgent.CPP.ApplyTimeZone(p.TimeZone);
+                    if (res == false)
+                    {
+                        FoxEventLog.WriteEventLog("Cannot apply System Timezone for ID " + p.TimeZone + "\nCannot apply TZ " + p.TimeZone + " - 0x" + ProgramAgent.CPP.WGetLastError().ToString("X"), System.Diagnostics.EventLogEntryType.Warning);
+                    }
+                    if (res == null)
+                    {
+                        FoxEventLog.WriteEventLog("Cannot apply System Timezone for ID " + p.TimeZone + "\nCannot find TZ " + p.TimeZone, System.Diagnostics.EventLogEntryType.Warning);
+                    }
+                }
+                catch (Exception ee)
+                {
+                    FoxEventLog.WriteEventLog("Cannot apply System Timezone for ID " + p.TimeZone + "\n" + ee.ToString(), System.Diagnostics.EventLogEntryType.Error);
                 }
             }
         }
 
         void ApplyUserPolicy(InternationalPolicy p)
         {
-            RegistryKey intluser = Registry.CurrentUser.OpenSubKey("Control Panel\\International", true);
-            if (intluser == null)
+            try
             {
-                FoxEventLog.WriteEventLog("Cannot open HKCU\\Control Panel\\International - Registry broken?", System.Diagnostics.EventLogEntryType.Error);
-                return;
-            }
-
-            if (p.EnableMainLocation == true)
-            {
-                RegistryKey k = intluser.CreateSubKey("Geo");
-                k.SetValue("Nation", p.MainLocation, RegistryValueKind.String);
-                k.Close();
-            }
-
-            if (p.EnableDate2DigitYear == true)
-            {
-                RegistryKey k = intluser.CreateSubKey("Calendars\\TwoDigitYearMax");
-                k.SetValue("1", p.Date2DigitYear, RegistryValueKind.String);
-                k.SetValue("10", p.Date2DigitYear, RegistryValueKind.String);
-                k.SetValue("11", p.Date2DigitYear, RegistryValueKind.String);
-                k.SetValue("12", p.Date2DigitYear, RegistryValueKind.String);
-                k.SetValue("2", p.Date2DigitYear, RegistryValueKind.String);
-                k.SetValue("9", p.Date2DigitYear, RegistryValueKind.String);
-                k.Close();
-            }
-
-            if (p.EnableMainFormat == true)
-            {
-                try
+                using (RegistryKey intluser = Registry.CurrentUser.OpenSubKey("Control Panel\\International", true))
                 {
-                    CultureInfo c = new CultureInfo(p.MainFormat);
-                    RegionInfo regi = new RegionInfo(p.MainFormat);
+                    if (intluser == null)
+                    {
+                        FoxEventLog.WriteEventLog("Cannot open HKCU\\Control Panel\\International - Registry broken?", System.Diagnostics.EventLogEntryType.Error);
+                        return;
+                    }
 
-                    intluser.SetValue("sLanguage", c.ThreeLetterWindowsLanguageName, RegistryValueKind.String);
-                    intluser.SetValue("sCountry", regi.NativeName, RegistryValueKind.String);
-                    intluser.SetValue("LocaleName", c.IetfLanguageTag, RegistryValueKind.String);
-                    intluser.SetValue("Locale", p.MainFormat.ToString("X8"));
+                    if (p.EnableMainLocation == true)
+                    {
+                        using (RegistryKey k = intluser.CreateSubKey("Geo"))
+                        {
+                            k.SetValue("Nation", p.MainLocation, RegistryValueKind.String);
+                        }
+                    }
 
-                    Console.WriteLine(c.ThreeLetterWindowsLanguageName); //ENG
-                    Console.WriteLine(c.IetfLanguageTag); //en-GB
-                    Console.WriteLine(regi.NativeName); //United Kingdom
-                }
-                catch
-                {
-                    FoxEventLog.WriteEventLog("Cannot apply main region settings for ID " + p.MainFormat, System.Diagnostics.EventLogEntryType.Warning);
+                    if (p.EnableDate2DigitYear == true)
+                    {
+                        using (RegistryKey k = intluser.CreateSubKey("Calendars\\TwoDigitYearMax"))
+                        {
+                            k.SetValue("1", p.Date2DigitYear, RegistryValueKind.String);
+                            k.SetValue("10", p.Date2DigitYear, RegistryValueKind.String);
+                            k.SetValue("11", p.Date2DigitYear, RegistryValueKind.String);
+                            k.SetValue("12", p.Date2DigitYear, RegistryValueKind.String);
+                            k.SetValue("2", p.Date2DigitYear, RegistryValueKind.String);
+                            k.SetValue("9", p.Date2DigitYear, RegistryValueKind.String);
+                        }
+                    }
+
+                    if (p.EnableMainFormat == true)
+                    {
+                        try
+                        {
+                            CultureInfo c = new CultureInfo(p.MainFormat);
+                            RegionInfo regi = new RegionInfo(p.MainFormat);
+
+                            intluser.SetValue("sLanguage", c.ThreeLetterWindowsLanguageName, RegistryValueKind.String);
+                            intluser.SetValue("sCountry", regi.NativeName, RegistryValueKind.String);
+                            intluser.SetValue("LocaleName", c.IetfLanguageTag, RegistryValueKind.String);
+                            intluser.SetValue("Locale", p.MainFormat.ToString("X8"));
+
+                            Console.WriteLine(c.ThreeLetterWindowsLanguageName); //ENG
+                            Console.WriteLine(c.IetfLanguageTag); //en-GB
+                            Console.WriteLine(regi.NativeName); //United Kingdom
+                        }
+                        catch
+                        {
+                            FoxEventLog.WriteEventLog("Cannot apply main region settings for ID " + p.MainFormat, System.Diagnostics.EventLogEntryType.Warning);
+                        }
+                    }
+
+                    if (p.EnableCurrCurrencySymbol == true)
+                        intluser.SetValue("sCurrency", p.CurrCurrencySymbol, RegistryValueKind.String);
+
+                    if (p.EnableCurrDecimalSymbol == true)
+                        intluser.SetValue("sMonDecimalSep", p.CurrDecimalSymbol, RegistryValueKind.String);
+
+                    if (p.EnableCurrDigitGrouping == true)
+                    {
+                        switch (p.CurrDigitGrouping)
+                        {
+                            case 0:
+                                intluser.SetValue("sMonGrouping", "0", RegistryValueKind.String);
+                                break;
+                            case 1:
+                                intluser.SetValue("sMonGrouping", "3;0", RegistryValueKind.String);
+                                break;
+                            case 2:
+                                intluser.SetValue("sMonGrouping", "3;0;0", RegistryValueKind.String);
+                                break;
+                            case 3:
+                                intluser.SetValue("sMonGrouping", "3;2;0", RegistryValueKind.String);
+                                break;
+                            default:
+                                FoxEventLog.WriteEventLog("Invalid policy value in Intl Policy \"CurrDigitGrouping\"", System.Diagnostics.EventLogEntryType.Warning);
+                                break;
+                        }
+                    }
+
+                    if (p.EnableCurrDigitGroupingSymbol == true)
+                        intluser.SetValue("sMonThousandSep", p.CurrDigitGroupingSymbol, RegistryValueKind.String);
+
+                    if (p.EnableCurrNegativeFormat == true)
+                        intluser.SetValue("iNegCurr", p.CurrNegativeFormat, RegistryValueKind.String);
+
+                    if (p.EnableCurrNumDigitsAfterDec == true)
+                        intluser.SetValue("iCurrDigits", p.CurrNumDigitsAfterDec, RegistryValueKind.String);
+
+                    if (p.EnableCurrPositiveFormat == true)
+                        intluser.SetValue("iCurrency", p.CurrPositiveFormat, RegistryValueKind.String);
+
+                    if (p.EnableDate1stDayOfWeek == true)
+                        intluser.SetValue("iFirstDayOfWeek", p.Date1stDayOfWeek, RegistryValueKind.String);
+
+                    if (p.EnableDateFirstWeekOfYear == true)
+                        intluser.SetValue("iFirstWeekOfYear", p.DateFirstWeekOfYear, RegistryValueKind.String);
+
+                    if (p.EnableDateFormat == true)
+                        intluser.SetValue("iDate", p.DateFormat, RegistryValueKind.String);
+
+                    if (p.EnableDateLongDate == true)
+                        intluser.SetValue("sLongDate", p.DateLongDate, RegistryValueKind.String);
+
+                    if (p.EnableDateSeparator == true)
+                        intluser.SetValue("sDate", p.DateSeparator, RegistryValueKind.String);
+
+                    if (p.EnableDateShortDate == true)
+                        intluser.SetValue("sShortDate", p.DateShortDate, RegistryValueKind.String);
+
+                    if (p.EnableNumDecimalSymbol == true)
+                        intluser.SetValue("sDecimal", p.NumDecimalSymbol, RegistryValueKind.String);
+
+                    if (p.EnableNumDigitGrouping == true)
+                    {
+                        switch (p.NumDigitGrouping)
+                        {
+                            case 0:
+                                intluser.SetValue("sGrouping", "0", RegistryValueKind.String);
+                                break;
+                            case 1:
+                                intluser.SetValue("sGrouping", "3;0", RegistryValueKind.String);
+                                break;
+                            case 2:
+                                intluser.SetValue("sGrouping", "3;0;0", RegistryValueKind.String);
+                                break;
+                            case 3:
+                                intluser.SetValue("sGrouping", "3;2;0", RegistryValueKind.String);
+                                break;
+                            default:
+                                FoxEventLog.WriteEventLog("Invalid policy value in Intl Policy \"NumDigitGrouping\"", System.Diagnostics.EventLogEntryType.Warning);
+                                break;
+                        }
+                    }
+
+                    if (p.EnableNumDigitGroupingSymbol == true)
+                        intluser.SetValue("sThousand", p.NumDigitGroupingSymbol, RegistryValueKind.String);
+
+
+                    if (p.EnableNumDisplayLeading0 == true)
+                        intluser.SetValue("iLZero", p.NumDisplayLeading0, RegistryValueKind.String);
+
+                    if (p.EnableNumListSeparator == true)
+                        intluser.SetValue("sList", p.NumListSeparator, RegistryValueKind.String);
+
+                    if (p.EnableNumMeasurement == true)
+                        intluser.SetValue("iMeasure", p.NumMeasurement, RegistryValueKind.String);
+
+                    if (p.EnableNumNegativeNumberFormat == true)
+                        intluser.SetValue("iNegNumber", p.NumNegativeNumberFormat, RegistryValueKind.String);
+
+                    if (p.EnableNumNegativeSignSymbol == true)
+                        intluser.SetValue("sNegativeSign", p.NumNegativeSignSymbol, RegistryValueKind.String);
+
+                    if (p.EnableNumNumOfDigitsAfterDec == true)
+                        intluser.SetValue("iDigits", p.NumNumOfDigitsAfterDec, RegistryValueKind.String);
+
+                    if (p.EnableNumPositiveSignSymbol == true)
+                        intluser.SetValue("sPositiveSign", p.NumPositiveSignSymbol, RegistryValueKind.String);
+
+                    if (p.EnableNumStdDigits == true)
+                    {
+                        switch (p.NumStdDigits)
+                        {
+                            case 0:
+                                intluser.SetValue("sNativeDigits", "0123456789", RegistryValueKind.String);
+                                break;
+                            default:
+                                FoxEventLog.WriteEventLog("Invalid policy value in Intl Policy \"NumStdDigits\"", System.Diagnostics.EventLogEntryType.Warning);
+                                break;
+                        }
+                    }
+
+                    if (p.EnableNumUseNativeDigits == true)
+                        intluser.SetValue("NumShape", p.NumUseNativeDigits, RegistryValueKind.String);
+
+                    if (p.EnablePaperSize == true)
+                        intluser.SetValue("iPaperSize", p.PaperSize, RegistryValueKind.String);
+
+                    if (p.EnableTelephoneIDN == true)
+                        intluser.SetValue("iCountry", p.TelephoneIDN, RegistryValueKind.String);
+
+                    if (p.EnableTime24Hour == true)
+                        intluser.SetValue("iTime", p.Time24Hour, RegistryValueKind.String);
+
+                    if (p.EnableTimeAM == true)
+                        intluser.SetValue("s1159", p.TimeAM, RegistryValueKind.String);
+
+                    if (p.EnableTimePM == true)
+                        intluser.SetValue("s2359", p.TimePM, RegistryValueKind.String);
+
+                    if (p.EnableTimeLongTime == true)
+                        intluser.SetValue("sTimeFormat", p.TimeLongTime, RegistryValueKind.String);
+
+                    if (p.EnableTimeShortPrefix0Hour == true)
+                        intluser.SetValue("iTLZero", p.TimeShortTimePrefix0Hour, RegistryValueKind.String);
+
+                    if (p.EnableTimeShortTime == true)
+                        intluser.SetValue("sShortTime", p.TimeShortTime, RegistryValueKind.String);
+
+                    if (p.EnableTimeSeparator == true)
+                        intluser.SetValue("sTime", p.TimeSeparator, RegistryValueKind.String);
                 }
             }
-
-            if (p.EnableCurrCurrencySymbol == true)
-                intluser.SetValue("sCurrency", p.CurrCurrencySymbol, RegistryValueKind.String);
-
-            if (p.EnableCurrDecimalSymbol == true)
-                intluser.SetValue("sMonDecimalSep", p.CurrDecimalSymbol, RegistryValueKind.String);
-
-            if (p.EnableCurrDigitGrouping == true)
+            catch (Exception ee)
             {
-                switch (p.CurrDigitGrouping)
-                {
-                    case 0:
-                        intluser.SetValue("sMonGrouping", "0", RegistryValueKind.String);
-                        break;
-                    case 1:
-                        intluser.SetValue("sMonGrouping", "3;0", RegistryValueKind.String);
-                        break;
-                    case 2:
-                        intluser.SetValue("sMonGrouping", "3;0;0", RegistryValueKind.String);
-                        break;
-                    case 3:
-                        intluser.SetValue("sMonGrouping", "3;2;0", RegistryValueKind.String);
-                        break;
-                    default:
-                        FoxEventLog.WriteEventLog("Invalid policy value in Intl Policy \"CurrDigitGrouping\"", System.Diagnostics.EventLogEntryType.Warning);
-                        break;
-                }
+                FoxEventLog.WriteEventLog("Cannot apply User Intl Settings for ID " + p.ID + "\n" + ee.ToString(), System.Diagnostics.EventLogEntryType.Error);
             }
-
-            if (p.EnableCurrDigitGroupingSymbol == true)
-                intluser.SetValue("sMonThousandSep", p.CurrDigitGroupingSymbol, RegistryValueKind.String);
-
-            if (p.EnableCurrNegativeFormat == true)
-                intluser.SetValue("iNegCurr", p.CurrNegativeFormat, RegistryValueKind.String);
-
-            if (p.EnableCurrNumDigitsAfterDec == true)
-                intluser.SetValue("iCurrDigits", p.CurrNumDigitsAfterDec, RegistryValueKind.String);
-
-            if (p.EnableCurrPositiveFormat == true)
-                intluser.SetValue("iCurrency", p.CurrPositiveFormat, RegistryValueKind.String);
-
-            if (p.EnableDate1stDayOfWeek == true)
-                intluser.SetValue("iFirstDayOfWeek", p.Date1stDayOfWeek, RegistryValueKind.String);
-
-            if (p.EnableDateFirstWeekOfYear == true)
-                intluser.SetValue("iFirstWeekOfYear", p.DateFirstWeekOfYear, RegistryValueKind.String);
-
-            if (p.EnableDateFormat == true)
-                intluser.SetValue("iDate", p.DateFormat, RegistryValueKind.String);
-
-            if (p.EnableDateLongDate == true)
-                intluser.SetValue("sLongDate", p.DateLongDate, RegistryValueKind.String);
-
-            if (p.EnableDateSeparator == true)
-                intluser.SetValue("sDate", p.DateSeparator, RegistryValueKind.String);
-
-            if (p.EnableDateShortDate == true)
-                intluser.SetValue("sShortDate", p.DateShortDate, RegistryValueKind.String);
-
-            if (p.EnableNumDecimalSymbol == true)
-                intluser.SetValue("sDecimal", p.NumDecimalSymbol, RegistryValueKind.String);
-
-            if (p.EnableNumDigitGrouping == true)
-            {
-                switch (p.NumDigitGrouping)
-                {
-                    case 0:
-                        intluser.SetValue("sGrouping", "0", RegistryValueKind.String);
-                        break;
-                    case 1:
-                        intluser.SetValue("sGrouping", "3;0", RegistryValueKind.String);
-                        break;
-                    case 2:
-                        intluser.SetValue("sGrouping", "3;0;0", RegistryValueKind.String);
-                        break;
-                    case 3:
-                        intluser.SetValue("sGrouping", "3;2;0", RegistryValueKind.String);
-                        break;
-                    default:
-                        FoxEventLog.WriteEventLog("Invalid policy value in Intl Policy \"NumDigitGrouping\"", System.Diagnostics.EventLogEntryType.Warning);
-                        break;
-                }
-            }
-
-            if (p.EnableNumDigitGroupingSymbol == true)
-                intluser.SetValue("sThousand", p.NumDigitGroupingSymbol, RegistryValueKind.String);
-
-
-            if (p.EnableNumDisplayLeading0 == true)
-                intluser.SetValue("iLZero", p.NumDisplayLeading0, RegistryValueKind.String);
-
-            if (p.EnableNumListSeparator == true)
-                intluser.SetValue("sList", p.NumListSeparator, RegistryValueKind.String);
-
-            if (p.EnableNumMeasurement == true)
-                intluser.SetValue("iMeasure", p.NumMeasurement, RegistryValueKind.String);
-
-            if (p.EnableNumNegativeNumberFormat == true)
-                intluser.SetValue("iNegNumber", p.NumNegativeNumberFormat, RegistryValueKind.String);
-
-            if (p.EnableNumNegativeSignSymbol == true)
-                intluser.SetValue("sNegativeSign", p.NumNegativeSignSymbol, RegistryValueKind.String);
-
-            if (p.EnableNumNumOfDigitsAfterDec == true)
-                intluser.SetValue("iDigits", p.NumNumOfDigitsAfterDec, RegistryValueKind.String);
-
-            if (p.EnableNumPositiveSignSymbol == true)
-                intluser.SetValue("sPositiveSign", p.NumPositiveSignSymbol, RegistryValueKind.String);
-
-            if (p.EnableNumStdDigits == true)
-            {
-                switch (p.NumStdDigits)
-                {
-                    case 0:
-                        intluser.SetValue("sNativeDigits", "0123456789", RegistryValueKind.String);
-                        break;
-                    default:
-                        FoxEventLog.WriteEventLog("Invalid policy value in Intl Policy \"NumStdDigits\"", System.Diagnostics.EventLogEntryType.Warning);
-                        break;
-                }
-            }
-
-            if (p.EnableNumUseNativeDigits == true)
-                intluser.SetValue("NumShape", p.NumUseNativeDigits, RegistryValueKind.String);
-
-            if (p.EnablePaperSize == true)
-                intluser.SetValue("iPaperSize", p.PaperSize, RegistryValueKind.String);
-
-            if (p.EnableTelephoneIDN == true)
-                intluser.SetValue("iCountry", p.TelephoneIDN, RegistryValueKind.String);
-
-            if (p.EnableTime24Hour == true)
-                intluser.SetValue("iTime", p.Time24Hour, RegistryValueKind.String);
-
-            if (p.EnableTimeAM == true)
-                intluser.SetValue("s1159", p.TimeAM, RegistryValueKind.String);
-
-            if (p.EnableTimePM == true)
-                intluser.SetValue("s2359", p.TimePM, RegistryValueKind.String);
-
-            if (p.EnableTimeLongTime == true)
-                intluser.SetValue("sTimeFormat", p.TimeLongTime, RegistryValueKind.String);
-
-            if (p.EnableTimeShortPrefix0Hour == true)
-                intluser.SetValue("iTLZero", p.TimeShortTimePrefix0Hour, RegistryValueKind.String);
-
-            if (p.EnableTimeShortTime == true)
-                intluser.SetValue("sTime", p.TimeShortTime, RegistryValueKind.String);
-
-            intluser.Close();
         }
 
         public bool FinaliseApplyPolicy()

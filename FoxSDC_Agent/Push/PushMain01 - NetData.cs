@@ -54,19 +54,7 @@ namespace FoxSDC_Agent.Push
                 {
                     case "ping":
                         t.net.ResponsePushData1("ok", t.p.Action, 1, t.p.ReplyID);
-                        break;
-                    case "netdata":
-                        t.net.ResponsePushData1(NetRedirPLegacy.SendData(t.p.AdditionalData1, t.net), t.p.Action, 1, t.p.ReplyID);
-                        break;
-                    case "netdatapull":
-                        t.net.ResponsePushData1(NetRedirPLegacy.PullNetData(t.p.AdditionalData1, t.net), t.p.Action, 1, t.p.ReplyID);
-                        break;
-                    case "netcreatedata":
-                        t.net.ResponsePushData1(NetRedirPLegacy.StartNet(t.p.AdditionalData1, t.net), t.p.Action, 1, t.p.ReplyID);
-                        break;
-                    case "netclosedata":
-                        t.net.ResponsePushData1(NetRedirPLegacy.CloseConnection(t.p.AdditionalData1, t.net), t.p.Action, 1, t.p.ReplyID);
-                        break;
+                        break;                 
                     case "netcreatedata2":
                         t.net.ResponsePushData1(NetRedirPWS.StartNet(t.p.AdditionalData1, t.net), t.p.Action, 1, t.p.ReplyID);
                         break;

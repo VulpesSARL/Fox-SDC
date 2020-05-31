@@ -29,17 +29,15 @@ namespace FoxSDC_ManageScreen
         int SnapCounter = 0;
         bool SqueezePicture = false;
         float SqueezeRatio = 1;
-        bool UseLegacy = false;
         string WSURL;
         WebSocket ws;
         Thread UpdateScreenThreadHandle;
 
-        public MainDLG(string ComputerID, string ServerURL, string SessionID, bool UseLegacy)
+        public MainDLG(string ComputerID, string ServerURL, string SessionID)
         {
             this.ComputerID = ComputerID;
             this.ServerURL = ServerURL;
             this.SessionID = SessionID;
-            this.UseLegacy = UseLegacy;
             InitializeComponent();
         }
 
@@ -159,42 +157,29 @@ namespace FoxSDC_ManageScreen
 
             try
             {
-                if (UseLegacy == true)
-                {
-                    Program.NetScreen = new Network();
-                    Program.NetScreen.SetSessionID(Program.Net.ConnectedURL, Program.Net.CloneSession());
-                    MouseEventsEnabled = true;
-                    KeyboardEventsEnabled = true;
-                    ThreadRunning = true;
-                    UpdateScreenThreadHandle = new Thread(new ThreadStart(UpdateScreenThread));
-                    UpdateScreenThreadHandle.Start();
-                }
-                else
-                {
-                    string WSURL = Program.Net.GetWebsocketURL();
-                    PushConnectNetworkResult res = Program.Net.PushCreateWSScreenconnection(ComputerID);
-                    if (res == null)
-                        return;
-                    if (res.Result != 0)
-                        return;
-                    Debug.WriteLine("WS SOCKET: " + res.ConnectedGUID + " Create connection");
-                    this.WSURL = WSURL + "websocket/mgmt-" + Uri.EscapeUriString(res.ConnectedGUID);
-                    Debug.WriteLine("WS URL: " + this.WSURL);
+                string WSURL = Program.Net.GetWebsocketURL();
+                PushConnectNetworkResult res = Program.Net.PushCreateWSScreenconnection(ComputerID);
+                if (res == null)
+                    return;
+                if (res.Result != 0)
+                    return;
+                Debug.WriteLine("WS SOCKET: " + res.ConnectedGUID + " Create connection");
+                this.WSURL = WSURL + "websocket/mgmt-" + Uri.EscapeUriString(res.ConnectedGUID);
+                Debug.WriteLine("WS URL: " + this.WSURL);
 
-                    ws = new WebSocket(this.WSURL);
-                    ws.OnMessage += Ws_OnMessage;
-                    ws.SetCookie(new WebSocketSharp.Net.Cookie("MGMT-SessionID", Program.Net.Session));
-                    ws.Connect();
+                ws = new WebSocket(this.WSURL);
+                ws.OnMessage += Ws_OnMessage;
+                ws.SetCookie(new WebSocketSharp.Net.Cookie("MGMT-SessionID", Program.Net.Session));
+                ws.Connect();
 
-                    SendData(SendDataType.RefreshScreen, 0, 0, 0, 0);
+                SendData(SendDataType.RefreshScreen, 0, 0, 0, 0);
 
-                    ThreadRunning = true;
-                    UpdateScreenThreadHandle = new Thread(new ThreadStart(UpdateScreenThread));
-                    UpdateScreenThreadHandle.Start();
+                ThreadRunning = true;
+                UpdateScreenThreadHandle = new Thread(new ThreadStart(UpdateScreenThread));
+                UpdateScreenThreadHandle.Start();
 
-                    MouseEventsEnabled = true;
-                    KeyboardEventsEnabled = true;
-                }
+                MouseEventsEnabled = true;
+                KeyboardEventsEnabled = true;
             }
             catch (Exception ee)
             {
@@ -452,57 +437,36 @@ namespace FoxSDC_ManageScreen
         {
             do
             {
-                if (UseLegacy == true)
+                lock (ScreenLocker)
                 {
-                    UpdateScreenLegacy();
-                }
-                else
-                {
-                    lock (ScreenLocker)
+                    if (Ws_OnMessageRunning == false)
                     {
-                        if (Ws_OnMessageRunning == false)
+                        if (RecvBaseData == null && RecvMode == 0)
                         {
-                            if (RecvBaseData == null && RecvMode == 0)
-                            {
-                                if (ScreenData == null)
-                                    SendData(SendDataType.RefreshScreen, 0, 0, 0, 0);
-                                else
-                                    SendData(SendDataType.DeltaScreen, 0, 0, 0, 0);
-#if DEBUG
-                                UpdateText("Send Update");
-#endif
-                            }
-#if DEBUG
+                            if (ScreenData == null)
+                                SendData(SendDataType.RefreshScreen, 0, 0, 0, 0);
                             else
-                            {
-                                UpdateText("RecvBaseData LOCKED (RecvMode: " + RecvMode.ToString() + ")");
-                            }
+                                SendData(SendDataType.DeltaScreen, 0, 0, 0, 0);
+#if DEBUG
+                            UpdateText("Send Update");
 #endif
                         }
 #if DEBUG
                         else
                         {
-                            UpdateText("Ws_OnMessageRunning LOCKED (RecvMode: " + RecvMode.ToString() + ")");
+                            UpdateText("RecvBaseData LOCKED (RecvMode: " + RecvMode.ToString() + ")");
                         }
 #endif
                     }
+#if DEBUG
+                    else
+                    {
+                        UpdateText("Ws_OnMessageRunning LOCKED (RecvMode: " + RecvMode.ToString() + ")");
+                    }
+#endif
                 }
                 Thread.Sleep(slowRefreshToolStripMenuItem.Checked == true ? 5000 : 100);
             } while (ThreadRunning == true);
-        }
-
-        void UpdateScreenLegacy()
-        {
-            PushScreenData screen;
-            if (ScreenData == null)
-            {
-                screen = Program.NetScreen.PushGetScreenDataFull(ComputerID);
-            }
-            else
-            {
-                screen = Program.NetScreen.PushGetScreenDataDelta(ComputerID);
-            }
-            UpdateScreen(screen);
         }
 
         delegate void UpdateScreenDG(PushScreenData screen);
@@ -594,14 +558,7 @@ namespace FoxSDC_ManageScreen
             if (disableInputHereToolStripMenuItem.Checked == true)
                 return;
             LastButtons = e.Button;
-            if (UseLegacy == true)
-            {
-                Program.Net.PushSetMouse(ComputerID, (int)(e.X / SqueezeRatio), (int)(e.Y / SqueezeRatio), e.Delta, ConvertButtons(e.Button));
-            }
-            else
-            {
-                SendData(SendDataType.Mouse, (int)(e.X / SqueezeRatio), (int)(e.Y / SqueezeRatio), e.Delta, ConvertButtons(e.Button));
-            }
+            SendData(SendDataType.Mouse, (int)(e.X / SqueezeRatio), (int)(e.Y / SqueezeRatio), e.Delta, ConvertButtons(e.Button));
         }
 
         private void picDisplay_MouseUp(object sender, MouseEventArgs e)
@@ -611,14 +568,7 @@ namespace FoxSDC_ManageScreen
             if (disableInputHereToolStripMenuItem.Checked == true)
                 return;
             LastButtons |= ~e.Button;
-            if (UseLegacy == true)
-            {
-                Program.Net.PushSetMouse(ComputerID, (int)(e.X / SqueezeRatio), (int)(e.Y / SqueezeRatio), e.Delta, ConvertButtons(LastButtons));
-            }
-            else
-            {
-                SendData(SendDataType.Mouse, (int)(e.X / SqueezeRatio), (int)(e.Y / SqueezeRatio), e.Delta, ConvertButtons(LastButtons));
-            }
+            SendData(SendDataType.Mouse, (int)(e.X / SqueezeRatio), (int)(e.Y / SqueezeRatio), e.Delta, ConvertButtons(LastButtons));
         }
 
         private void PicDisplay_MouseWheel(object sender, MouseEventArgs e)
@@ -628,14 +578,7 @@ namespace FoxSDC_ManageScreen
             if (disableInputHereToolStripMenuItem.Checked == true)
                 return;
             LastButtons = e.Button;
-            if (UseLegacy == true)
-            {
-                Program.Net.PushSetMouse(ComputerID, (int)(e.X / SqueezeRatio), (int)(e.Y / SqueezeRatio), e.Delta, ConvertButtons(e.Button));
-            }
-            else
-            {
-                SendData(SendDataType.Mouse, (int)(e.X / SqueezeRatio), (int)(e.Y / SqueezeRatio), e.Delta, ConvertButtons(e.Button));
-            }
+            SendData(SendDataType.Mouse, (int)(e.X / SqueezeRatio), (int)(e.Y / SqueezeRatio), e.Delta, ConvertButtons(e.Button));
         }
 
         private void picDisplay_MouseMove(object sender, MouseEventArgs e)
@@ -645,14 +588,7 @@ namespace FoxSDC_ManageScreen
             if (disableInputHereToolStripMenuItem.Checked == true)
                 return;
             LastButtons = e.Button;
-            if (UseLegacy == true)
-            {
-                Program.Net.PushSetMouse(ComputerID, (int)(e.X / SqueezeRatio), (int)(e.Y / SqueezeRatio), e.Delta, ConvertButtons(e.Button));
-            }
-            else
-            {
-                SendData(SendDataType.Mouse, (int)(e.X / SqueezeRatio), (int)(e.Y / SqueezeRatio), e.Delta, ConvertButtons(e.Button));
-            }
+            SendData(SendDataType.Mouse, (int)(e.X / SqueezeRatio), (int)(e.Y / SqueezeRatio), e.Delta, ConvertButtons(e.Button));
         }
 
         private void MainDLG_KeyDown(object sender, KeyEventArgs e)
@@ -663,14 +599,7 @@ namespace FoxSDC_ManageScreen
                 return;
             e.Handled = true;
             e.SuppressKeyPress = true;
-            if (UseLegacy == true)
-            {
-                Program.Net.PushSetKeyboard(ComputerID, (int)e.KeyCode, 0, 0);
-            }
-            else
-            {
-                SendData(SendDataType.Keyboard, (int)e.KeyCode, 0, 0, 0);
-            }
+            SendData(SendDataType.Keyboard, (int)e.KeyCode, 0, 0, 0);
         }
 
         private void MainDLG_KeyUp(object sender, KeyEventArgs e)
@@ -681,14 +610,7 @@ namespace FoxSDC_ManageScreen
                 return;
             e.Handled = true;
             e.SuppressKeyPress = true;
-            if (UseLegacy == true)
-            {
-                Program.Net.PushSetKeyboard(ComputerID, (int)e.KeyCode, 0, 0x2);
-            }
-            else
-            {
-                SendData(SendDataType.Keyboard, (int)e.KeyCode, 0, 0x2, 0);
-            }
+            SendData(SendDataType.Keyboard, (int)e.KeyCode, 0, 0x2, 0);
         }
 
         private void CTRLALTDELETEToolStripMenuItem_Click(object sender, EventArgs e)
@@ -699,14 +621,7 @@ namespace FoxSDC_ManageScreen
             if (disableInputHereToolStripMenuItem.Checked == true)
                 return;
 
-            if (UseLegacy == true)
-            {
-                Program.Net.PushSetKeyboard(ComputerID, 0xFFFFFFF, 0xFFFFFFF, 0xFFFFFFF);
-            }
-            else
-            {
-                SendData(SendDataType.Keyboard, 0xFFFFFFF, 0xFFFFFFF, 0xFFFFFFF, 0);
-            }
+            SendData(SendDataType.Keyboard, 0xFFFFFFF, 0xFFFFFFF, 0xFFFFFFF, 0);
         }
 
         private void windowsKeyToolStripMenuItem_Click(object sender, EventArgs e)
@@ -717,16 +632,8 @@ namespace FoxSDC_ManageScreen
             if (disableInputHereToolStripMenuItem.Checked == true)
                 return;
 
-            if (UseLegacy == true)
-            {
-                Program.Net.PushSetKeyboard(ComputerID, (int)(Keys.LWin), 0, 0);
-                Program.Net.PushSetKeyboard(ComputerID, (int)(Keys.LWin), 0, 0x2);
-            }
-            else
-            {
-                SendData(SendDataType.Keyboard, (int)(Keys.LWin), 0, 0, 0);
-                SendData(SendDataType.Keyboard, (int)(Keys.LWin), 0, 0x2, 0);
-            }
+            SendData(SendDataType.Keyboard, (int)(Keys.LWin), 0, 0, 0);
+            SendData(SendDataType.Keyboard, (int)(Keys.LWin), 0, 0x2, 0);
         }
 
         private void MainDLG_FormClosing(object sender, FormClosingEventArgs e)
@@ -752,14 +659,7 @@ namespace FoxSDC_ManageScreen
                 return;
 
             InputLanguage lang = InputLanguage.CurrentInputLanguage;
-            if (UseLegacy == true)
-            {
-                Program.Net.PushSetKeyboard(ComputerID, 0xFFFFFFF, 0xFFFFFFE, (lang.Handle.ToInt32() & 0x7FFF0000) >> 16);
-            }
-            else
-            {
-                SendData(SendDataType.Keyboard, 0xFFFFFFF, 0xFFFFFFE, (lang.Handle.ToInt32() & 0x7FFF0000) >> 16, 0);
-            }
+            SendData(SendDataType.Keyboard, 0xFFFFFFF, 0xFFFFFFE, (lang.Handle.ToInt32() & 0x7FFF0000) >> 16, 0);
         }
 
         private void optionsToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
@@ -776,16 +676,13 @@ namespace FoxSDC_ManageScreen
         private void refreshScreenToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ScreenData = null;
-            if (UseLegacy == false)
+            lock (Ws_OnMessageLocker)
             {
-                lock (Ws_OnMessageLocker)
-                {
-                    RecvMode = 0;
-                    RecvBaseData = null;
-                    RecvScreenData = null;
-                    RecvBlocksData = null;
-                    SendData(SendDataType.ResetStream, 0, 0, 0, 0);
-                }
+                RecvMode = 0;
+                RecvBaseData = null;
+                RecvScreenData = null;
+                RecvBlocksData = null;
+                SendData(SendDataType.ResetStream, 0, 0, 0, 0);
             }
         }
 
@@ -829,26 +726,13 @@ namespace FoxSDC_ManageScreen
             if (disableInputHereToolStripMenuItem.Checked == true)
                 return;
 
-            if (UseLegacy == true)
-            {
-                Program.Net.PushSetKeyboard(ComputerID, (int)(Keys.LControlKey), 0, 0);
-                Program.Net.PushSetKeyboard(ComputerID, (int)(Keys.LShiftKey), 0, 0);
-                Program.Net.PushSetKeyboard(ComputerID, (int)(Keys.Escape), 0, 0);
+            SendData(SendDataType.Keyboard, (int)(Keys.LControlKey), 0, 0, 0);
+            SendData(SendDataType.Keyboard, (int)(Keys.LShiftKey), 0, 0, 0);
+            SendData(SendDataType.Keyboard, (int)(Keys.Escape), 0, 0, 0);
 
-                Program.Net.PushSetKeyboard(ComputerID, (int)(Keys.Escape), 0, 0x2);
-                Program.Net.PushSetKeyboard(ComputerID, (int)(Keys.LShiftKey), 0, 0x2);
-                Program.Net.PushSetKeyboard(ComputerID, (int)(Keys.LControlKey), 0, 0x2);
-            }
-            else
-            {
-                SendData(SendDataType.Keyboard, (int)(Keys.LControlKey), 0, 0, 0);
-                SendData(SendDataType.Keyboard, (int)(Keys.LShiftKey), 0, 0, 0);
-                SendData(SendDataType.Keyboard, (int)(Keys.Escape), 0, 0, 0);
-
-                SendData(SendDataType.Keyboard, (int)(Keys.Escape), 0, 0x2, 0);
-                SendData(SendDataType.Keyboard, (int)(Keys.LShiftKey), 0, 0x2, 0);
-                SendData(SendDataType.Keyboard, (int)(Keys.LControlKey), 0, 0x2, 0);
-            }
+            SendData(SendDataType.Keyboard, (int)(Keys.Escape), 0, 0x2, 0);
+            SendData(SendDataType.Keyboard, (int)(Keys.LShiftKey), 0, 0x2, 0);
+            SendData(SendDataType.Keyboard, (int)(Keys.LControlKey), 0, 0x2, 0);
         }
 
         private void cTRLALTDELETEVKToolStripMenuItem_Click(object sender, EventArgs e)
@@ -859,26 +743,13 @@ namespace FoxSDC_ManageScreen
             if (disableInputHereToolStripMenuItem.Checked == true)
                 return;
 
-            if (UseLegacy == true)
-            {
-                Program.Net.PushSetKeyboard(ComputerID, (int)(Keys.LControlKey), 0, 0);
-                Program.Net.PushSetKeyboard(ComputerID, (int)(Keys.Alt), 0, 0);
-                Program.Net.PushSetKeyboard(ComputerID, (int)(Keys.Delete), 0, 0);
+            SendData(SendDataType.Keyboard, (int)(Keys.LControlKey), 0, 0, 0);
+            SendData(SendDataType.Keyboard, (int)(Keys.Alt), 0, 0, 0);
+            SendData(SendDataType.Keyboard, (int)(Keys.Delete), 0, 0, 0);
 
-                Program.Net.PushSetKeyboard(ComputerID, (int)(Keys.Delete), 0, 0x2);
-                Program.Net.PushSetKeyboard(ComputerID, (int)(Keys.Alt), 0, 0x2);
-                Program.Net.PushSetKeyboard(ComputerID, (int)(Keys.LControlKey), 0, 0x2);
-            }
-            else
-            {
-                SendData(SendDataType.Keyboard, (int)(Keys.LControlKey), 0, 0, 0);
-                SendData(SendDataType.Keyboard, (int)(Keys.Alt), 0, 0, 0);
-                SendData(SendDataType.Keyboard, (int)(Keys.Delete), 0, 0, 0);
-
-                SendData(SendDataType.Keyboard, (int)(Keys.Delete), 0, 0x2, 0);
-                SendData(SendDataType.Keyboard, (int)(Keys.Alt), 0, 0x2, 0);
-                SendData(SendDataType.Keyboard, (int)(Keys.LControlKey), 0, 0x2, 0);
-            }
+            SendData(SendDataType.Keyboard, (int)(Keys.Delete), 0, 0x2, 0);
+            SendData(SendDataType.Keyboard, (int)(Keys.Alt), 0, 0x2, 0);
+            SendData(SendDataType.Keyboard, (int)(Keys.LControlKey), 0, 0x2, 0);
         }
 
         private void typeClipboardAsTextToolStripMenuItem_Click(object sender, EventArgs e)
@@ -895,14 +766,7 @@ namespace FoxSDC_ManageScreen
 
             foreach (char c in ClipbaordText)
             {
-                if (UseLegacy == true)
-                {
-                    Program.Net.PushSetKeyboard(ComputerID, 0xFFFFFFF, 0xFFFFFFD, c);
-                }
-                else
-                {
-                    SendData(SendDataType.Keyboard, 0xFFFFFFF, 0xFFFFFFD, c, 0);
-                }
+                SendData(SendDataType.Keyboard, 0xFFFFFFF, 0xFFFFFFD, c, 0);
             }
         }
 

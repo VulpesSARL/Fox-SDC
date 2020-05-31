@@ -1144,16 +1144,7 @@ namespace FoxSDC_Common
                 return (null);
             return (pd);
         }
-
-        public PushDataRoot GetPushData3()
-        {
-            PushDataRoot pd;
-            bool resb = SendReq<PushDataRoot>("api/httppush/3service", Verb.GET, out pd, out res, true);
-            if (pd == null)
-                return (null);
-            return (pd);
-        }
-
+        
         public PushDataRoot GetPushData10()
         {
             PushDataRoot pd;
@@ -1185,19 +1176,7 @@ namespace FoxSDC_Common
             resp.Channel = Channel;
             bool resb = SendReq<PushDataResponse>("api/httppush/r3sponse", Verb.POST, resp, out res);
             return (resb);
-        }
-
-        public bool ResponsePushData3(object data, string Action, Int64 Channel, string ReplyID)
-        {
-            PushDataResponse resp = new PushDataResponse();
-            resp.TimeStampCheck = DateTime.UtcNow;
-            resp.ReplyID = ReplyID;
-            resp.Data = data;
-            resp.Action = Action;
-            resp.Channel = Channel;
-            bool resb = SendReq<PushDataResponse>("api/httppush/r4sponse", Verb.POST, resp, out res);
-            return (resb);
-        }
+        }      
 
         public bool ResponsePushData10(object data, string Action, Int64 Channel, string ReplyID)
         {
@@ -1582,6 +1561,30 @@ namespace FoxSDC_Common
                 return (rd);
             else
                 return (null);
+        }
+
+        public PushConnectNetworkResult CreateWSServerPortMappingConnection(Int64 ID)
+        {
+            PushConnectNetworkResult pres;
+            NetInt64 str = new NetInt64() { Data = ID };
+            bool resb = SendReq<NetInt64, PushConnectNetworkResult>("api/agent/wsserverportmappingconnect", Verb.POST, str, out pres, out res, true);
+            if (resb == false)
+                return (null);
+            if (pres == null)
+                return (null);
+            else
+                return (pres);
+        }
+
+        public PushConnectNetworkResult CloseWSServerPortMappingConnection(string ConnectionGUID)
+        {
+            PushConnectNetworkResult b;
+            bool resb = SendReq<NetString, PushConnectNetworkResult>("api/agent/wsserverportmappingclose", Verb.POST, new NetString() { Data = ConnectionGUID }, out b, out res, true);
+            if (resb == false)
+                return (null);
+            if (b == null)
+                return (null);
+            return (b);
         }
     }
 }

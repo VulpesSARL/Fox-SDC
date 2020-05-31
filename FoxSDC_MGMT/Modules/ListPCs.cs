@@ -286,24 +286,6 @@ namespace FoxSDC_MGMT
             }
         }
 
-        bool PortAvailable(int Port)
-        {
-            IPGlobalProperties ipGlobalProperties = IPGlobalProperties.GetIPGlobalProperties();
-            IPEndPoint[] tcpConnInfoArray = ipGlobalProperties.GetActiveTcpListeners();
-
-            bool isAvailable = true;
-
-            foreach (IPEndPoint tcpi in tcpConnInfoArray)
-            {
-                if (tcpi.Port == Port)
-                {
-                    isAvailable = false;
-                    break;
-                }
-            }
-            return (isAvailable);
-        }
-
         private void openRemoteDesktopConnectionToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (LstOnly == true)
@@ -317,7 +299,7 @@ namespace FoxSDC_MGMT
                 if (cd.Approved == true)
                 {
                     int Port = 9999;
-                    while (PortAvailable(Port) == false)
+                    while (NetworkUtilities.PortAvailable(Port) == false)
                     {
                         Port++;
                     }

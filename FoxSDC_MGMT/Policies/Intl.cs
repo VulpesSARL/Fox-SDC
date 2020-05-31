@@ -598,6 +598,7 @@ namespace FoxSDC_MGMT.Policies
             IntlSettings.EnableDateFirstWeekOfYear = C(chkDateFirstWeekOfYear.CheckState);
             IntlSettings.EnableDateSeparator = C(chkDateSeparator.CheckState);
             IntlSettings.EnablePaperSize = C(chkPaperSize.CheckState);
+            IntlSettings.EnableTimeSeparator = C(chkTimeSeparator.CheckState);
 
             IntlSettings.CurrDigitGrouping = lstCurrDigitGroup.SelectedIndex;
             IntlSettings.CurrNegativeFormat = lstCurrNegFormat.SelectedIndex;
@@ -631,6 +632,7 @@ namespace FoxSDC_MGMT.Policies
             IntlSettings.TimeShortTimePrefix0Hour = lstTimeShortPrefix0Hour.SelectedIndex;
             IntlSettings.DateFirstWeekOfYear = lstDateFirstWeekOfYear.SelectedIndex;
             IntlSettings.DateSeparator = txtDateSeparator.Text;
+            IntlSettings.TimeSeparator = txtTimeSeparator.Text;
 
             int y;
             if (int.TryParse(txtDate2DigitYearTo.Text, out y) == false)
@@ -699,6 +701,7 @@ namespace FoxSDC_MGMT.Policies
                 IntlSettings.DateFirstWeekOfYear = 1;
                 IntlSettings.Time24Hour = 1;
                 IntlSettings.DateFormat = 1;
+                IntlSettings.TimeSeparator = ":";
             }
 
             return (true);
@@ -886,6 +889,7 @@ namespace FoxSDC_MGMT.Policies
             lstDateFirstWeekOfYear.Enabled = chkDateFirstWeekOfYear.CheckState == CheckState.Checked ? true : false;
             txtDateSeparator.Enabled = chkDateSeparator.CheckState == CheckState.Checked ? true : false;
             lstPaperSize.Enabled = chkPaperSize.CheckState == CheckState.Checked ? true : false;
+            txtTimeSeparator.Enabled = chkTimeSeparator.CheckState == CheckState.Checked ? true : false;
         }
 
         void LoadSettings()
@@ -933,6 +937,7 @@ namespace FoxSDC_MGMT.Policies
             chkDateFirstWeekOfYear.CheckState = C(IntlSettings.EnableDateFirstWeekOfYear);
             chkDateSeparator.CheckState = C(IntlSettings.EnableDateSeparator);
             chkPaperSize.CheckState = C(IntlSettings.EnablePaperSize);
+            chkTimeSeparator.CheckState = C(IntlSettings.EnableTimeSeparator);
 
             lstCurrDigitGroup.SelectedIndex = IntlSettings.CurrDigitGrouping;
             lstCurrNegFormat.SelectedIndex = IntlSettings.CurrNegativeFormat;
@@ -967,6 +972,7 @@ namespace FoxSDC_MGMT.Policies
             txtTimeShortTime.Text = IntlSettings.TimeShortTime;
             lstDateFirstWeekOfYear.SelectedIndex = IntlSettings.DateFirstWeekOfYear;
             txtDateSeparator.Text = IntlSettings.DateSeparator;
+            txtTimeSeparator.Text = IntlSettings.TimeSeparator;
 
             lstKeybLayout1.SelectedIndex = FindKeyboard(IntlSettings.KeyboardLayout1);
             lstKeybLayout2.SelectedIndex = FindKeyboard(IntlSettings.KeyboardLayout2);

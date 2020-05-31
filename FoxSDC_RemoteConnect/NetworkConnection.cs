@@ -31,13 +31,6 @@ namespace FoxSDC_RemoteConnect
             public string URL;
         }
 
-        bool UseWebSockets = false;
-
-        public NetworkConnection(bool UseWebSockets)
-        {
-            this.UseWebSockets = UseWebSockets;
-        }
-
         Network net;
         string MachineID;
         int LocalPort;
@@ -76,165 +69,79 @@ namespace FoxSDC_RemoteConnect
 
         void RunningConnectionAccepterAndGetter(object s)
         {
-            if (UseWebSockets == false)
+            #region Websockets
+            NetworkConnectionThreadPasser p = (NetworkConnectionThreadPasser)s;
+
+            WSURL = p.net.GetWebsocketURL();
+
+            PushConnectNetworkResult res = p.net.PushConnectToRemote2(MachineID, RemoteAddress, RemotePort);
+            if (res == null)
             {
-                #region Legacy
-                NetworkConnectionThreadPasser p = (NetworkConnectionThreadPasser)s;
+                OnStatusEvent(StatusID.RemoteConnectionError);
+                p.sock.Close();
+                return;
+            }
 
-                PushConnectNetworkResult res = p.net.PushConnectToRemote(MachineID, RemoteAddress, RemotePort);
-                if (res == null)
+            if (res.Result != 0)
+            {
+                OnStatusEvent(StatusID.RemoteConnectionStatusError);
+                p.sock.Close();
+                return;
+            }
+
+            Debug.WriteLine("WS SOCKET: " + res.ConnectedGUID + " Create connection");
+            p.URL = WSURL + "websocket/mgmt-" + Uri.EscapeUriString(res.ConnectedGUID);
+            Debug.WriteLine("WS URL: " + p.URL);
+
+            Connections.Add(p);
+            p.ws = new WebSocket(p.URL);
+            p.ws.OnMessage += Ws_OnMessage;
+            p.ws.SetCookie(new WebSocketSharp.Net.Cookie("MGMT-SessionID", net.Session));
+            p.ws.Connect();
+
+            OnStatusEvent(StatusID.Success);
+
+            while (p.sock.Connected == true && StopThread == false)
+            {
+                int av = p.sock.Available;
+                if (av == 0)
                 {
-                    OnStatusEvent(StatusID.RemoteConnectionError);
-                    p.sock.Close();
-                    return;
+                    Thread.Sleep(10);
+                    continue;
+                }
+                byte[] data = new byte[av];
+                int av2 = p.sock.Receive(data);
+                if (av2 == 0)
+                {
+                    Thread.Sleep(10);
+                    continue;
+                }
+                if (av != av2)
+                {
+                    byte[] data2 = new byte[av2];
+                    for (int i = 0; i < av2; i++)
+                        data2[i] = data[i];
+                    data = data2;
                 }
 
-                if (res.Result != 0)
-                {
-                    OnStatusEvent(StatusID.RemoteConnectionStatusError);
-                    p.sock.Close();
-                    return;
-                }
-
-                Debug.WriteLine("SOCKET: " + res.ConnectedGUID + " Create connection");
-
-                NetworkConnectionThreadPasser p2 = new NetworkConnectionThreadPasser();
-                p2.GUID = res.ConnectedGUID;
-                p2.net = p.net.CloneElement();
-                p2.sock = p.sock;
-                Thread t = new Thread(new ParameterizedThreadStart(RunningConnectionAccepterSender));
-                t.Start(p2);
-                bool Errror = false;
-
-                Int64 Sequence = 0;
-
-                while (p.sock.Connected == true && StopThread == false)
-                {
-                    int av = p.sock.Available;
-                    if (av == 0)
-                    {
-                        Thread.Sleep(10);
-                        continue;
-                    }
-                    byte[] data = new byte[av];
-                    int av2 = p.sock.Receive(data);
-                    if (av2 == 0)
-                    {
-                        Thread.Sleep(10);
-                        continue;
-                    }
-                    if (av != av2)
-                    {
-                        byte[] data2 = new byte[av2];
-                        for (int i = 0; i < av2; i++)
-                            data2[i] = data[i];
-                        data = data2;
-                    }
-
-                    OnRXTXEvent(null, true, 0, data.LongLength);
-                    PushConnectNetworkResult resi = p.net.PushConnectionToRemoteData(MachineID, res.ConnectedGUID, data, Sequence);
-                    Sequence++;
-                    if (resi == null || resi.Result != 0)
-                    {
-                        p.sock.Close();
-                        p.net.PushConnectionToRemoteClose(MachineID, res.ConnectedGUID);
-                        OnStatusEvent(StatusID.ConnectionSendError);
-                        Errror = true;
-                        break;
-                    }
-                    OnRXTXEvent(null, false, 0, 0);
-                }
-                OnRXTXEvent(null, false, 0, 0);
-                p.net.PushConnectionToRemoteClose(MachineID, res.ConnectedGUID);
+                OnRXTXEvent(null, true, 0, data.LongLength);
                 try
                 {
-                    p.sock.Close();
+                    p.ws.Send(data);
                 }
-                catch
+                catch (Exception ee)
                 {
-
-                }
-                Debug.WriteLine("SOCKET: " + res.ConnectedGUID + " Close connection");
-                if (Errror == false)
-                    OnStatusEvent(StatusID.Success);
-                #endregion
-            }
-            else
-            {
-                #region Websockets
-                NetworkConnectionThreadPasser p = (NetworkConnectionThreadPasser)s;
-
-                WSURL = p.net.GetWebsocketURL();
-
-                PushConnectNetworkResult res = p.net.PushConnectToRemote2(MachineID, RemoteAddress, RemotePort);
-                if (res == null)
-                {
-                    OnStatusEvent(StatusID.RemoteConnectionError);
-                    p.sock.Close();
-                    return;
-                }
-
-                if (res.Result != 0)
-                {
+                    Debug.WriteLine(ee.ToString());
                     OnStatusEvent(StatusID.RemoteConnectionStatusError);
-                    p.sock.Close();
+                    CloseAll(res.ConnectedGUID, p);
                     return;
                 }
-
-                Debug.WriteLine("WS SOCKET: " + res.ConnectedGUID + " Create connection");
-                p.URL = WSURL + "websocket/mgmt-" + Uri.EscapeUriString(res.ConnectedGUID);
-                Debug.WriteLine("WS URL: " + p.URL);
-
-                Connections.Add(p);
-                p.ws = new WebSocket(p.URL);
-                p.ws.OnMessage += Ws_OnMessage;
-                p.ws.SetCookie(new WebSocketSharp.Net.Cookie("MGMT-SessionID", net.Session));
-                p.ws.Connect();
-
-                OnStatusEvent(StatusID.Success);
-
-                while (p.sock.Connected == true && StopThread == false)
-                {
-                    int av = p.sock.Available;
-                    if (av == 0)
-                    {
-                        Thread.Sleep(10);
-                        continue;
-                    }
-                    byte[] data = new byte[av];
-                    int av2 = p.sock.Receive(data);
-                    if (av2 == 0)
-                    {
-                        Thread.Sleep(10);
-                        continue;
-                    }
-                    if (av != av2)
-                    {
-                        byte[] data2 = new byte[av2];
-                        for (int i = 0; i < av2; i++)
-                            data2[i] = data[i];
-                        data = data2;
-                    }
-
-                    OnRXTXEvent(null, true, 0, data.LongLength);
-                    try
-                    {
-                        p.ws.Send(data);
-                    }
-                    catch (Exception ee)
-                    {
-                        Debug.WriteLine(ee.ToString());
-                        OnStatusEvent(StatusID.RemoteConnectionStatusError);
-                        CloseAll(res.ConnectedGUID, p);
-                        return;
-                    }
-                    OnRXTXEvent(null, false, 0, 0);
-                }
-
-                OnStatusEvent(StatusID.Success);
-                CloseAll(res.ConnectedGUID, p);
-                #endregion
+                OnRXTXEvent(null, false, 0, 0);
             }
+
+            OnStatusEvent(StatusID.Success);
+            CloseAll(res.ConnectedGUID, p);
+            #endregion
         }
 
         private void CloseAll(string GUID, NetworkConnectionThreadPasser p)
@@ -274,82 +181,6 @@ namespace FoxSDC_RemoteConnect
                     ntp.sock.Send(e.RawData);
                     break;
                 }
-            }
-            OnRXTXEvent(false, null, 0, 0);
-        }
-
-        void RunningConnectionAccepterSender(object s)
-        {
-            NetworkConnectionThreadPasser p = (NetworkConnectionThreadPasser)s;
-            Dictionary<Int64, PushConnectNetworkData> SequenceBuffer = new Dictionary<long, PushConnectNetworkData>();
-            Int64 RunningSequence = 0;
-
-            while (p.sock.Connected == true && StopThread == false)
-            {
-                OnRXTXEvent(true, null, 0, 0);
-                if (SequenceBuffer.ContainsKey(RunningSequence) == true)
-                {
-                    try
-                    {
-                        RunningSequence++;
-                        Debug.WriteLine("Agent->RC Seq# IB! " + SequenceBuffer[RunningSequence - 1].Seq);
-                        p.sock.Send(SequenceBuffer[RunningSequence - 1].data);
-                        SequenceBuffer.Remove(RunningSequence - 1);
-                        continue;
-                    }
-                    catch
-                    {
-
-                    }
-                }
-
-                PushConnectNetworkData data = p.net.PushConnectionFromRemoteData(MachineID, p.GUID);
-                if (data == null)
-                {
-                    Thread.Sleep(10);
-                    continue;
-                }
-                if (data.Result != 0)
-                {
-                    if (data.Result == 0x16)
-                    {
-                        p.sock.Close();
-                        OnRXTXEvent(false, null, 0, 0);
-                        break;
-                    }
-                    Thread.Sleep(10);
-                    continue;
-                }
-                if (data.data == null)
-                {
-                    Thread.Sleep(10);
-                    continue;
-                }
-                if (data.data.Length == 0)
-                {
-                    Thread.Sleep(10);
-                    continue;
-                }
-
-                if (RunningSequence != data.Seq)
-                {
-                    SequenceBuffer.Add(data.Seq, data);
-                    Debug.WriteLine("Agent->RC Seq# OOB! " + data.Seq);
-                    continue;
-                }
-
-                try
-                {
-                    Debug.WriteLine("Agent->RC Seq# " + data.Seq);
-                    RunningSequence++;
-                    p.sock.Send(data.data);
-                    OnRXTXEvent(true, null, data.data.LongLength, 0);
-                }
-                catch
-                {
-
-                }
-                OnRXTXEvent(false, null, 0, 0);
             }
             OnRXTXEvent(false, null, 0, 0);
         }

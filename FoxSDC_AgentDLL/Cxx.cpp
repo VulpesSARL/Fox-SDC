@@ -227,6 +227,8 @@ namespace Fox
 				return(false);
 			if (CSetToken(SE_SYSTEM_ENVIRONMENT_NAME) == false)
 				return(false);
+			if (CSetToken(SE_TIME_ZONE_NAME) == false)
+				return(false);
 			return(true);
 		}
 
@@ -694,6 +696,28 @@ namespace Fox
 			return (list);
 		}
 
+		virtual Nullable<Boolean> ApplyTimeZone(String ^Name)
+		{
+			DYNAMIC_TIME_ZONE_INFORMATION dynamicTimezone = {};
+			DWORD dwResult = 0;
+			DWORD i = 0;
+			do
+			{
+				dwResult = EnumDynamicTimeZoneInformation(i++, &dynamicTimezone);
+				if (dwResult == ERROR_SUCCESS)
+				{
+					if (gcnew String(dynamicTimezone.TimeZoneKeyName) == Name)
+					{
+						if (SetDynamicTimeZoneInformation(&dynamicTimezone) == 0)
+							return(Nullable<Boolean>(false)); //failed
+						else
+							return(Nullable<Boolean>(true)); //success
+					}
+				}
+			} while (dwResult != ERROR_NO_MORE_ITEMS);
+
+			return(Nullable<Boolean>());
+		}
 
 	private:
 		DWORD LastMouseEvent = 0;

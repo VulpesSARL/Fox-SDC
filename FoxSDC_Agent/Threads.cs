@@ -47,7 +47,6 @@ namespace FoxSDC_Agent
             PushMain0.StartPushThread();
             PushMain1.StartPushThread();
             PushMain2.StartPushThread();
-            PushMain3.StartPushThread();
             PushMain10.StartPushThread();
             UpdateCheck.RunUpdateCheckAndHouseKeepingThread();
             DownloadSystemFSData.StartThread();
@@ -64,6 +63,7 @@ namespace FoxSDC_Agent
         {
             FoxEventLog.VerboseWriteEventLog("StopAllThreads()", System.Diagnostics.EventLogEntryType.Information);
             StopThreads = true;
+            Redirs.PortMappings_Kernel.StopAllConnections();
             if (PolicyThreadHandle != null)
                 PolicyThreadHandle.Join();
             if (ReportingThreadHandle1 != null)
@@ -78,7 +78,6 @@ namespace FoxSDC_Agent
             PushMain0.StopPushThread();
             PushMain1.StopPushThread();
             PushMain2.StopPushThread();
-            PushMain3.StopPushThread();
             PushMain10.StopPushThread();
             UpdateCheck.StopUpdateThread();
             DownloadSystemFSData.StopThread();

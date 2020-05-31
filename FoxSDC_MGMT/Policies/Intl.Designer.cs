@@ -85,6 +85,8 @@
             this.chkCurrSymbol = new System.Windows.Forms.CheckBox();
             this.txtCurrSymbol = new System.Windows.Forms.TextBox();
             this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.chkTimeSeparator = new System.Windows.Forms.CheckBox();
+            this.txtTimeSeparator = new System.Windows.Forms.TextBox();
             this.chkTime24Hour = new System.Windows.Forms.CheckBox();
             this.lstTime24Hour = new System.Windows.Forms.ComboBox();
             this.chkTimeShortPrefix0Hour = new System.Windows.Forms.CheckBox();
@@ -764,6 +766,8 @@
             // 
             // tabPage4
             // 
+            this.tabPage4.Controls.Add(this.chkTimeSeparator);
+            this.tabPage4.Controls.Add(this.txtTimeSeparator);
             this.tabPage4.Controls.Add(this.chkTime24Hour);
             this.tabPage4.Controls.Add(this.lstTime24Hour);
             this.tabPage4.Controls.Add(this.chkTimeShortPrefix0Hour);
@@ -784,6 +788,25 @@
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "Time";
             this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // chkTimeSeparator
+            // 
+            this.chkTimeSeparator.AutoSize = true;
+            this.chkTimeSeparator.Location = new System.Drawing.Point(6, 164);
+            this.chkTimeSeparator.Name = "chkTimeSeparator";
+            this.chkTimeSeparator.Size = new System.Drawing.Size(101, 17);
+            this.chkTimeSeparator.TabIndex = 17;
+            this.chkTimeSeparator.Text = "Time Separator:";
+            this.chkTimeSeparator.ThreeState = true;
+            this.chkTimeSeparator.UseVisualStyleBackColor = true;
+            this.chkTimeSeparator.CheckStateChanged += new System.EventHandler(this.chkMULTI_CheckStateChanged);
+            // 
+            // txtTimeSeparator
+            // 
+            this.txtTimeSeparator.Location = new System.Drawing.Point(147, 162);
+            this.txtTimeSeparator.Name = "txtTimeSeparator";
+            this.txtTimeSeparator.Size = new System.Drawing.Size(342, 20);
+            this.txtTimeSeparator.TabIndex = 18;
             // 
             // chkTime24Hour
             // 
@@ -829,7 +852,7 @@
             // 
             // label1
             // 
-            this.label1.Location = new System.Drawing.Point(6, 177);
+            this.label1.Location = new System.Drawing.Point(6, 227);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(251, 128);
             this.label1.TabIndex = 16;
@@ -1346,5 +1369,7 @@
         private System.Windows.Forms.ComboBox lstDateFirstWeekOfYear;
         private System.Windows.Forms.CheckBox chkPaperSize;
         private System.Windows.Forms.ComboBox lstPaperSize;
+        private System.Windows.Forms.CheckBox chkTimeSeparator;
+        private System.Windows.Forms.TextBox txtTimeSeparator;
     }
 }

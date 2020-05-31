@@ -93,6 +93,7 @@
     <Compile Include="DownloadSystemPackages.cs" />
     <Compile Include="FilesystemData.cs" />
     <Compile Include="FoxEventLog.cs" />
+    <Compile Include="HostsEdit.cs" />
     <Compile Include="InternalModels.cs" />
     <Compile Include="MeteredConnection.cs" />
     <Compile Include="PipeCommunicationSRV.cs" />
@@ -101,6 +102,7 @@
     <Compile Include="PolicyObjects\NTP.cs" />
     <Compile Include="PolicyObjects\PackageCertificate.cs" />
     <Compile Include="PolicyObjects\Packages.cs" />
+    <Compile Include="PolicyObjects\PortMapper.cs" />
     <Compile Include="PolicyObjects\Reporting.cs" />
     <Compile Include="PolicyObjects\SignCertificate.cs" />
     <Compile Include="PolicyObjects\TestPolicy.cs" />
@@ -114,19 +116,18 @@
     </Compile>
     <Compile Include="Push\EFIBios.cs" />
     <Compile Include="Push\Filesystem.cs" />
-    <Compile Include="Push\NetRedirLegacy.cs" />
     <Compile Include="Push\NetRedirWS.cs" />
     <Compile Include="Push\PushMain01 - NetData.cs" />
     <Compile Include="Push\PushMain00 - Base.cs" />
     <Compile Include="Push\PushMain10 - Chat.cs" />
     <Compile Include="Push\PushMain02 - ScreenRedir.cs" />
-    <Compile Include="Push\PushMain03 - ScreenRedir Input.cs" />
     <Compile Include="Redirs\MainNetRedirWS.cs" />
     <Compile Include="Redirs\MainScreenData.cs" />
     <Compile Include="Push\Services.cs" />
     <Compile Include="Push\TaskManager.cs" />
     <Compile Include="Push\WindowsUpdateClient.cs" />
     <Compile Include="Redirs\MainScreenDataWS.cs" />
+    <Compile Include="Redirs\PortMappings_Kernel.cs" />
     <Compile Include="RegistryData.cs" />
     <Compile Include="RegistryData_Reportings.cs" />
     <Compile Include="ServiceElement.cs">
@@ -135,7 +136,6 @@
     <Compile Include="ServiceElement.Designer.cs">
       <DependentUpon>ServiceElement.cs</DependentUpon>
     </Compile>
-    <Compile Include="Redirs\MainNetRedirLegacy.cs" />
     <Compile Include="Redirs\MainSTDIORedir.cs" />
     <Compile Include="Syncs\SyncBitlockerRK.cs" />
     <Compile Include="Syncs\SyncDeviceManager.cs" />

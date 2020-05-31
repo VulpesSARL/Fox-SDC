@@ -59,7 +59,8 @@ namespace FoxSDC_MGMT
             new PolicyListElement(PolicyIDs.WSUS, "WSUS Configuration", "Configure the Windows Update Services to use a different server than directly Microsoft", typeof(ctlWSUSSettings), 10),
             new PolicyListElement(PolicyIDs.InternationalSettings, "International Configuration", "Configures Windows International Settings (a.k.a. Regional and Language settings)", typeof(ctlIntl), 12),
             new PolicyListElement(PolicyIDs.ReportingPolicy, "Reporting Configuration", "Adds a reporting configuration, to send alerts / reporting to the administrator or client", typeof(ctlReporting), 13),
-            new PolicyListElement(PolicyIDs.ClientSettings, "Fox SDC Agent Settings", "Changes settings affecting the Fox SDC Agent", typeof(ctlClientSettings), 15)
+            new PolicyListElement(PolicyIDs.ClientSettings, "Fox SDC Agent Settings", "Changes settings affecting the Fox SDC Agent", typeof(ctlClientSettings), 15),
+            new PolicyListElement(PolicyIDs.PortMapping, "Port Mapping", "Adds a TCP Listener to the agent where programs are able to directly connect to the remote-network, offering other services apart from SDC (like WSUS, SMTP Ports, ...)", typeof(ctlPortMapping), 24)
         };
 
         public static int GetIconIndex(int TypeID)

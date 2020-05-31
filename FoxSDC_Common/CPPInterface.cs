@@ -33,6 +33,7 @@ namespace FoxSDC_Common
         bool SetEFINextBootDevice(int ID);
         List<List<string>> DNSQueryTXT(string Name);
         void SetScreenNumber(int ScreenNumber);
+        bool? ApplyTimeZone(string Name);
     }
 
     public class CPPFrameBufferData

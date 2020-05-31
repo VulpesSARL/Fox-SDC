@@ -17,6 +17,7 @@ namespace FoxSDC_Common
         public const int InternationalSettings = 7;
         public const int ReportingPolicy = 8;
         public const int ClientSettings = 9;
+        public const int PortMapping = 10;
         public static readonly List<int> HiddenPolicies = new List<int> { ReportingPolicy };
         public static string HiddenPoliciesSQLINClause
         {
@@ -93,6 +94,20 @@ namespace FoxSDC_Common
         public int DownloadMode;
         public bool? EnableDownloadMode;
         public bool? DisableDualScan;
+    }
+
+    public class PortMappingPolicy
+    {
+        public Int64 ID;
+        public Int64 Order;
+
+        public int ClientPort;
+        public bool BindTo0000;
+        public bool NoBindIfSDCServerIsDetected;
+        public bool EditHOSTS;
+        public string HOSTSEntry;
+        public string ServerServer;
+        public int ServerPort;
     }
 
     public class InternationalPolicy
@@ -228,6 +243,10 @@ namespace FoxSDC_Common
         /// Reg: sTime
         /// :
         /// </summary>
+        public string TimeSeparator;
+        /// <summary>
+        /// Reg: sShortTime
+        /// </summary>
         public string TimeShortTime;
         /// <summary>
         /// Reg: sTimeFormat
@@ -323,6 +342,7 @@ namespace FoxSDC_Common
         public bool? EnableCurrNumDigitsAfterDec;
         public bool? EnableCurrDigitGroupingSymbol;
         public bool? EnableCurrDigitGrouping;
+        public bool? EnableTimeSeparator;
         public bool? EnableTimeShortTime;
         public bool? EnableTimeLongTime;
         public bool? EnableTimeAM;

@@ -33,6 +33,7 @@ namespace FoxSDC_Common
                                 case 17763: OSWin10Edition = "1809"; break;
                                 case 18362: OSWin10Edition = "1903"; break;
                                 case 18363: OSWin10Edition = "1909"; break;
+                                case 19041: OSWin10Edition = "2004"; break;
                                 default: OSWin10Edition = "??? " + OSVersionMinor.ToString(); break;
                             }
                         }

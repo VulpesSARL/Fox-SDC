@@ -278,11 +278,12 @@ namespace FoxSDC_MGMT.Properties {
         ///session bpp:i:15
         ///compression:i:1
         ///keyboardhook:i:1
+        ///winposstr:s:0,1,0,0,1124,868
         ///audiocapturemode:i:0
-        ///videoplaybackmode:i:1
-        ///connection type:i:6
+        ///videoplaybackmode:i:0
+        ///connection type:i:1
         ///networkautodetect:i:0
-        ///bandwidthautodetect:i:1
+        ///bandwidthautodetect:i:0
         ///displayconnectionbar:i:1
         ///enableworkspacereconnect:i:0
         ///disable wallpaper:i:0
@@ -291,8 +292,7 @@ namespace FoxSDC_MGMT.Properties {
         ///disable full window drag:i:1
         ///disable menu anims:i:1
         ///disable themes:i:1
-        ///disable cursor setting:i:0
-        ///bitmapcachepersistenable:i: [rest of string was truncated]&quot;;.
+        ///disable cursor setting:i: [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string MSTSC {
             get {
@@ -326,6 +326,16 @@ namespace FoxSDC_MGMT.Properties {
         internal static System.Drawing.Icon Nix {
             get {
                 object obj = ResourceManager.GetObject("Nix", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon Port {
+            get {
+                object obj = ResourceManager.GetObject("Port", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
         }

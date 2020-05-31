@@ -47,7 +47,6 @@ namespace FoxSDC_RemoteConnect
 
         private void MainDLG_Load(object sender, EventArgs e)
         {
-            chkUseWebSockets.Checked = true;
             panelLogin.Enabled = true;
             panelConnectData.Enabled = false;
             lblRX.Visible = lblTX.Visible = lblRXTXErr.Visible = false;
@@ -269,7 +268,7 @@ namespace FoxSDC_RemoteConnect
                 MessageBox.Show(this, "Invalid Remote Port Number Range (must beween 1-65535).", Program.Title, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return;
             }
-            netc = new NetworkConnection(chkUseWebSockets.Checked);
+            netc = new NetworkConnection();
             netc.OnRXTX += Netc_OnRXTX;
             netc.OnStatus += Netc_OnStatus;
             if (netc.StartConnection(Program.net.CloneElement(), c.ID, LocalPort, txtConnectTo.Text.Trim(), RemotePort) == false)

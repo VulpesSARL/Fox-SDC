@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
@@ -228,38 +229,55 @@ namespace FoxSDC_Server
             {
                 foreach (KeyValuePair<string, WSSessionStorage> kvp in Sessions)
                 {
-                    if (kvp.Value.LastUpdated.AddMinutes(10) < DateTime.UtcNow)
+                    if (kvp.Value.LastUpdated.AddMinutes(Program.WSSessionTimeoutMin) < DateTime.UtcNow)
                     {
+                        bool PingSH1 = true, PingSH2 = true;
                         WebSocketServiceHost sh1, sh2;
-                        if (WSServer.WebSocketServices.TryGetServiceHost(kvp.Value.MGMTURL, out sh1) == false)
+
+                        if (string.IsNullOrWhiteSpace(kvp.Value.MGMTURL) == true &&
+                            string.IsNullOrWhiteSpace(kvp.Value.AgentURL) == true)
                         {
-                            RemoveSessionIDs.Add(kvp.Key);
-                            continue;
-                        }
-                        if (WSServer.WebSocketServices.TryGetServiceHost(kvp.Value.AgentURL, out sh2) == false)
-                        {
+                            //akward situation!
                             RemoveSessionIDs.Add(kvp.Key);
                             continue;
                         }
 
-                        bool PingSH1 = false, PingSH2 = false;
+                        if (string.IsNullOrWhiteSpace(kvp.Value.MGMTURL) == false)
+                        {
+                            if (WSServer.WebSocketServices.TryGetServiceHost(kvp.Value.MGMTURL, out sh1) == false)
+                            {
+                                RemoveSessionIDs.Add(kvp.Key);
+                                continue;
+                            }
 
-                        foreach (IWebSocketSession sess in sh1.Sessions.Sessions)
-                        {
-                            if (sh1.Sessions.PingTo(sess.ID) == true)
+                            foreach (IWebSocketSession sess in sh1.Sessions.Sessions)
                             {
-                                PingSH1 = true;
-                                break;
+                                if (sh1.Sessions.PingTo(sess.ID) == true)
+                                {
+                                    PingSH1 = true;
+                                    break;
+                                }
                             }
                         }
-                        foreach (IWebSocketSession sess in sh2.Sessions.Sessions)
+
+                        if (string.IsNullOrWhiteSpace(kvp.Value.AgentURL) == false)
                         {
-                            if (sh2.Sessions.PingTo(sess.ID) == true)
+                            if (WSServer.WebSocketServices.TryGetServiceHost(kvp.Value.AgentURL, out sh2) == false)
                             {
-                                PingSH2 = true;
-                                break;
+                                RemoveSessionIDs.Add(kvp.Key);
+                                continue;
+                            }
+
+                            foreach (IWebSocketSession sess in sh2.Sessions.Sessions)
+                            {
+                                if (sh2.Sessions.PingTo(sess.ID) == true)
+                                {
+                                    PingSH2 = true;
+                                    break;
+                                }
                             }
                         }
+
 
                         if (PingSH1 == false || PingSH2 == false)
                             RemoveSessionIDs.Add(kvp.Key);
@@ -299,6 +317,26 @@ namespace FoxSDC_Server
             return (SessionID);
         }
 
+        public static string CreateCustomAgentConnection<T>(string MachineID, ref string SessionID, Action<T> Init) where T : WebSocketBehavior, new()
+        {
+            SessionID = Guid.NewGuid().ToString();
+            Debug.WriteLine("Create new WS-CA-Session " + SessionID);
+
+            lock (DictLock)
+            {
+                Sessions.Add(SessionID, new WSSessionStorage());
+                Sessions[SessionID].MachineID = MachineID;
+                Sessions[SessionID].MGMTUser = "";
+                Sessions[SessionID].SessionID = SessionID;
+                Sessions[SessionID].LastUpdated = DateTime.UtcNow;
+                Sessions[SessionID].MGMTURL = "";
+                Sessions[SessionID].AgentURL = AppendToURL + "websocket/agent-" + Uri.EscapeUriString(SessionID);
+
+                WSServer.AddWebSocketService<T>(Sessions[SessionID].AgentURL, Init);
+            }
+            return (SessionID);
+        }
+
         public static void CloseSession(string SessionID)
         {
             lock (DictLock)
@@ -306,8 +344,29 @@ namespace FoxSDC_Server
                 if (Sessions.ContainsKey(SessionID) == false)
                     return;
                 Debug.WriteLine("Closed WS-Session " + SessionID);
-                WSServer.RemoveWebSocketService(Sessions[SessionID].MGMTURL);
-                WSServer.RemoveWebSocketService(Sessions[SessionID].AgentURL);
+                if (string.IsNullOrWhiteSpace(Sessions[SessionID].MGMTURL) == false)
+                    WSServer.RemoveWebSocketService(Sessions[SessionID].MGMTURL);
+                if (string.IsNullOrWhiteSpace(Sessions[SessionID].AgentURL) == false)
+                    WSServer.RemoveWebSocketService(Sessions[SessionID].AgentURL);
+            }
+        }
+
+        public static void CloseSession(string MachineID, string SessionID)
+        {
+            if (string.IsNullOrWhiteSpace(SessionID) == true || string.IsNullOrWhiteSpace(MachineID) == true)
+                return;
+            lock (DictLock)
+            {
+                if (Sessions.ContainsKey(SessionID) == false)
+                    return;
+                if (string.IsNullOrWhiteSpace(Sessions[SessionID].MachineID) == false &&
+                    Sessions[SessionID].MachineID.ToLower() != MachineID.ToLower())
+                    return;
+                Debug.WriteLine("Closed WS-Session " + SessionID);
+                if (string.IsNullOrWhiteSpace(Sessions[SessionID].MGMTURL) == false)
+                    WSServer.RemoveWebSocketService(Sessions[SessionID].MGMTURL);
+                if (string.IsNullOrWhiteSpace(Sessions[SessionID].AgentURL) == false)
+                    WSServer.RemoveWebSocketService(Sessions[SessionID].AgentURL);
             }
         }
     }

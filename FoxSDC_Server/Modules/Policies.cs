@@ -311,7 +311,7 @@ namespace FoxSDC_Server
             SqlDataReader dr = sql.ExecSQLReader("select * from Policies where ID=@id", new SQLParam("@id", ID));
             while (dr.Read())
             {
-                PolicyObj = LoadPolicyDB(dr, true);
+                PolicyObj = LoadPolicyDB(dr, true, false);
             }
             dr.Close();
             return (PolicyObj);
@@ -342,7 +342,7 @@ namespace FoxSDC_Server
                 SqlDataReader dr = sql.ExecSQLReader("select * from Policies where ID=@id", new SQLParam("@id", id));
                 while (dr.Read())
                 {
-                    PolicyObj = LoadPolicyDB(dr, true);
+                    PolicyObj = LoadPolicyDB(dr, true, true);
                 }
                 dr.Close();
             }
@@ -393,7 +393,7 @@ namespace FoxSDC_Server
             return (RESTStatus.Success);
         }
 
-        static PolicyObject LoadPolicyDB(SqlDataReader dr, bool withdata)
+        static PolicyObject LoadPolicyDB(SqlDataReader dr, bool withdata, bool CensorData)
         {
             PolicyObject po = new PolicyObject();
             if (withdata == false)
@@ -408,6 +408,25 @@ namespace FoxSDC_Server
             po.Version = Convert.ToInt64(dr["Version"]);
             po.Enabled = Convert.ToBoolean(dr["Enabled"]);
             po.Type = Convert.ToInt32(dr["Type"]);
+
+            if (CensorData == true && withdata == true)
+            {
+                if (po.Type == PolicyIDs.PortMapping)
+                {
+                    try
+                    {
+                        PortMappingPolicy p = JsonConvert.DeserializeObject<PortMappingPolicy>(po.Data);
+                        p.ServerPort = 0;
+                        p.ServerServer = "";
+                        po.Data = JsonConvert.SerializeObject(p);
+                    }
+                    catch
+                    {
+                        po.Data = null;
+                    }
+                }
+            }
+
             return (po);
         }
 
@@ -457,7 +476,7 @@ namespace FoxSDC_Server
 
                 while (dr.Read())
                 {
-                    PolicyList.Items.Add(LoadPolicyDB(dr, WithData));
+                    PolicyList.Items.Add(LoadPolicyDB(dr, WithData, false));
                 }
                 dr.Close();
             }
@@ -488,7 +507,7 @@ namespace FoxSDC_Server
                     new SQLParam("@m", MachineID));
                 while (dr.Read())
                 {
-                    PolicyObject obj = LoadPolicyDB(dr, false);
+                    PolicyObject obj = LoadPolicyDB(dr, false, true);
                     PolicyObjectSigned objs = new PolicyObjectSigned();
                     objs.Policy = obj;
                     if (Certificates.Sign(objs, SettingsManager.Settings.UseCertificate) == false)
@@ -519,7 +538,7 @@ namespace FoxSDC_Server
                     new SQLParam("@g", GroupID));
                     while (dr.Read())
                     {
-                        PolicyObject obj = LoadPolicyDB(dr, false);
+                        PolicyObject obj = LoadPolicyDB(dr, false, true);
                         PolicyObjectSigned objs = new PolicyObjectSigned();
                         objs.Policy = obj;
                         PolicyListSigned.Items.Add(objs);
@@ -619,7 +638,7 @@ namespace FoxSDC_Server
                             SqlDataReader dr = sql.ExecSQLReader("SELECT * FROM Policies WHERE ID=@id",
                                 new SQLParam("@id", PolID));
                             dr.Read();
-                            po = LoadPolicyDB(dr, false);
+                            po = LoadPolicyDB(dr, false, true);
                             dr.Close();
                         }
 
@@ -691,7 +710,7 @@ namespace FoxSDC_Server
                 new SQLParam("@m", MachineID));
             while (dr.Read())
             {
-                PolicyObject obj = LoadPolicyDB(dr, false);
+                PolicyObject obj = LoadPolicyDB(dr, false, false);
                 PolicyListSigned.Items.Add(obj);
             }
             dr.Close();
@@ -709,7 +728,7 @@ namespace FoxSDC_Server
                     new SQLParam("@g", GroupID));
                 while (dr.Read())
                 {
-                    PolicyObject obj = LoadPolicyDB(dr, false);
+                    PolicyObject obj = LoadPolicyDB(dr, false, false);
                     PolicyListSigned.Items.Add(obj);
                 }
                 dr.Close();
@@ -781,7 +800,7 @@ namespace FoxSDC_Server
                         dr = sql.ExecSQLReader("SELECT * FROM Policies WHERE ID=@id",
                             new SQLParam("@id", PolID));
                         dr.Read();
-                        po = LoadPolicyDB(dr, false);
+                        po = LoadPolicyDB(dr, false, false);
                         dr.Close();
                         if (po == null)
                         {

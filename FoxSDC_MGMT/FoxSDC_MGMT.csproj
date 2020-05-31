@@ -315,6 +315,12 @@
     <Compile Include="Policies\ConnectionCertificates.Designer.cs">
       <DependentUpon>ConnectionCertificates.cs</DependentUpon>
     </Compile>
+    <Compile Include="Policies\PortMapping.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Policies\PortMapping.Designer.cs">
+      <DependentUpon>PortMapping.cs</DependentUpon>
+    </Compile>
     <Compile Include="Policies\Reporting.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -567,6 +573,9 @@
     <EmbeddedResource Include="Policies\ConnectionCertificates.resx">
       <DependentUpon>ConnectionCertificates.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Policies\PortMapping.resx">
+      <DependentUpon>PortMapping.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Policies\Reporting.resx">
       <DependentUpon>Reporting.cs</DependentUpon>
     </EmbeddedResource>
@@ -687,6 +696,7 @@
     <Content Include="Resources\Nix.ico" />
     <None Include="Resources\Report.ico" />
     <None Include="Resources\Run.ico" />
+    <None Include="Resources\Port.ico" />
     <Content Include="Resources\srv.ico" />
     <None Include="Resources\ST.ico" />
     <Content Include="Resources\System.ico" />

@@ -374,41 +374,7 @@ namespace FoxSDC_Server.Pushes
             }
 
             return (RESTStatus.Success);
-        }
-
-        [VulpesRESTful(VulpesRESTfulVerb.POST, "api/httppush/r4sponse", "", "")]
-        public RESTStatus PushResponse4(SQLLib sql, PushDataResponse pdr, NetworkConnectionInfo ni)
-        {
-            if (ni.HasAcl(ACLFlags.ComputerLogin) == false)
-            {
-                ni.Error = "Access denied";
-                ni.ErrorID = ErrorFlags.AccessDenied;
-                return (RESTStatus.Denied);
-            }
-
-            if (pdr == null)
-            {
-                ni.Error = "Invalid data";
-                ni.ErrorID = ErrorFlags.InvalidData;
-                return (RESTStatus.Fail);
-            }
-
-            if (ni.PushChannel == null)
-            {
-                ni.Error = "Too early";
-                ni.ErrorID = ErrorFlags.InvalidData;
-                return (RESTStatus.Fail);
-            }
-
-            if (PushServiceHelper.PushResponse(ni.Username, pdr, ni.PushChannel.Value, true) == false)
-            {
-                ni.Error = "Cannot push";
-                ni.ErrorID = ErrorFlags.SystemError;
-                return (RESTStatus.ServerError);
-            }
-
-            return (RESTStatus.Success);
-        }
+        }     
 
         [VulpesRESTful(VulpesRESTfulVerb.POST, "api/httppush/rBsponse", "", "")]
         public RESTStatus PushResponseB(SQLLib sql, PushDataResponse pdr, NetworkConnectionInfo ni)
@@ -535,38 +501,7 @@ namespace FoxSDC_Server.Pushes
             }
 
             return (RESTStatus.Success);
-        }
-
-        [VulpesRESTful(VulpesRESTfulVerb.GET, "api/httppush/3service", "PushData", "")]
-        public RESTStatus Push3(SQLLib sql, object dummy, NetworkConnectionInfo ni)
-        {
-            if (ni.HasAcl(ACLFlags.ComputerLogin) == false)
-            {
-                ni.Error = "Access denied";
-                ni.ErrorID = ErrorFlags.AccessDenied;
-                return (RESTStatus.Denied);
-            }
-
-            PushData data = PushServiceHelper.WaitForPush(ni, 3);
-            if (data == null)
-            {
-                ni.Error = "Push Service Error";
-                ni.ErrorID = ErrorFlags.SystemError;
-                return (RESTStatus.ServerError);
-            }
-
-            ReturnData = new PushDataRoot();
-            ReturnData.Data = data;
-
-            if (Certificates.Sign(ReturnData, SettingsManager.Settings.UseCertificate) == false)
-            {
-                ni.Error = "Push Service Signing Error";
-                ni.ErrorID = ErrorFlags.SystemError;
-                return (RESTStatus.ServerError);
-            }
-
-            return (RESTStatus.Success);
-        }
+        }   
 
         [VulpesRESTful(VulpesRESTfulVerb.GET, "api/httppush/Aservice", "PushData", "")]
         public RESTStatus Push10(SQLLib sql, object dummy, NetworkConnectionInfo ni)

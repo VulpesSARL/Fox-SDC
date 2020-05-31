@@ -181,22 +181,7 @@ namespace FoxSDC_Common
         {
             bool resb = SendReq<Push_Stdio_StdIn>("api/pushy/pushstdiodata/" + MachineID, Verb.POST, io, out res, true);
             return (resb);
-        }
-
-        public PushConnectNetworkResult PushConnectToRemote(string MachineID, string RemoteAddress, int RemotePort)
-        {
-            PushConnectNetworkResult pres;
-            PushConnectNetwork str = new PushConnectNetwork();
-            str.Address = RemoteAddress;
-            str.Port = RemotePort;
-            bool resb = SendReq<PushConnectNetwork, PushConnectNetworkResult>("api/pushy/connectremotereq/" + MachineID, Verb.POST, str, out pres, out res, true);
-            if (resb == false)
-                return (null);
-            if (pres == null)
-                return (null);
-            else
-                return (pres);
-        }
+        }      
 
         public PushConnectNetworkResult PushConnectToRemote2(string MachineID, string RemoteAddress, int RemotePort)
         {
@@ -211,39 +196,8 @@ namespace FoxSDC_Common
                 return (null);
             else
                 return (pres);
-        }
-
-        public PushConnectNetworkResult PushConnectionToRemoteData(string MachineID, string ConnectionGUID, byte[] data, Int64 Sequence)
-        {
-            PushConnectNetworkData d = new PushConnectNetworkData();
-            d.data = data;
-            d.GUID = ConnectionGUID;
-            d.Seq = Sequence;
-
-            PushConnectNetworkResult b;
-            bool resb = SendReq<PushConnectNetworkData, PushConnectNetworkResult>("api/pushy/connectremotedata/" + MachineID, Verb.POST, d, out b, out res, true);
-            if (resb == false)
-                return (null);
-            if (b == null)
-                return (null);
-            return (b);
-        }
-
-        public PushConnectNetworkResult PushConnectionToRemoteClose(string MachineID, string ConnectionGUID)
-        {
-            PushConnectNetworkData d = new PushConnectNetworkData();
-            d.data = null;
-            d.GUID = ConnectionGUID;
-
-            PushConnectNetworkResult b;
-            bool resb = SendReq<PushConnectNetworkData, PushConnectNetworkResult>("api/pushy/connectremoteclosedata/" + MachineID, Verb.POST, d, out b, out res, true);
-            if (resb == false)
-                return (null);
-            if (b == null)
-                return (null);
-            return (b);
-        }
-
+        }     
+        
         public PushConnectNetworkResult PushConnectionToRemoteClose2(string MachineID, string ConnectionGUID)
         {
             PushConnectNetworkData d = new PushConnectNetworkData();
@@ -258,22 +212,7 @@ namespace FoxSDC_Common
                 return (null);
             return (b);
         }
-
-        public PushConnectNetworkData PushConnectionFromRemoteData(string MachineID, string ConnectionGUID)
-        {
-            PushConnectNetworkData d = new PushConnectNetworkData();
-            d.data = null;
-            d.GUID = ConnectionGUID;
-
-            PushConnectNetworkData b;
-            bool resb = SendReq<PushConnectNetworkData, PushConnectNetworkData>("api/pushy/connectremotegetdata/" + MachineID, Verb.POST, d, out b, out res, true);
-            if (resb == false)
-                return (null);
-            if (b == null)
-                return (null);
-            return (b);
-        }
-
+        
         public List<WUUpdateInfo> PushWUGetList(string MachineID)
         {
             WUUpdateInfoList pres;
@@ -342,15 +281,6 @@ namespace FoxSDC_Common
             return (true);
         }
 
-        public PushScreenData PushGetScreenDataFull(string MachineID)
-        {
-            PushScreenData pres;
-            bool resb = SendReq<PushScreenData>("api/pushy/getscreenbuffer/" + MachineID, Verb.GET, out pres, out res, true);
-            if (resb == false)
-                return (null);
-            return (pres);
-        }
-
         public PushConnectNetworkResult PushCreateWSScreenconnection(string MachineID)
         {
             PushConnectNetworkResult pres;
@@ -358,35 +288,6 @@ namespace FoxSDC_Common
             if (resb == false)
                 return (null);
             return (pres);
-        }
-
-        public PushScreenData PushGetScreenDataDelta(string MachineID)
-        {
-            PushScreenData pres;
-            bool resb = SendReq<PushScreenData>("api/pushy/getscreendelta/" + MachineID, Verb.GET, out pres, out res, true);
-            if (resb == false)
-                return (null);
-            return (pres);
-        }
-
-        public bool PushSetMouse(string MachineID, int X, int Y, int Delta, int Flags)
-        {
-            PushMouseData m = new PushMouseData();
-            m.Flags = Flags;
-            m.X = X;
-            m.Y = Y;
-            bool resb = SendReq<PushMouseData>("api/pushy/setmousedata/" + MachineID, Verb.POST, m, out res, true);
-            return (resb);
-        }
-
-        public bool PushSetKeyboard(string MachineID, int VirtualKey, int ScanCode, int Flags)
-        {
-            PushKeyboardData k = new PushKeyboardData();
-            k.Flags = Flags;
-            k.ScanCode = ScanCode;
-            k.VirtualKey = VirtualKey;
-            bool resb = SendReq<PushKeyboardData>("api/pushy/setkeyboarddata/" + MachineID, Verb.POST, k, out res, true);
-            return (resb);
         }
 
         public bool PushSendChat(string MachineID, string Name, string Text)

@@ -108,16 +108,7 @@ namespace FoxSDC_Agent
                 {
                     FoxEventLog.WriteEventLog("Something horribly got wrong while checking for updates: " + ee.ToString(), EventLogEntryType.Error);
                 }
-
-                try
-                {
-                    Redirs.MainNetRedirLegacy.TestTimeouts();
-                }
-                catch(Exception ee)
-                {
-                    FoxEventLog.WriteEventLog("Something horribly got wrong while performing housekeeping (1): " + ee.ToString(), EventLogEntryType.Error);
-                }
-
+               
                 try
                 {
                     Redirs.MainNetRedirWS.TestTimeouts();

@@ -53,6 +53,8 @@ namespace FoxSDC_Agent
 
                 foreach (ManagementObject WmiObject in Searcher.Get())
                 {
+                    if (string.IsNullOrWhiteSpace((string)WmiObject["SID"]) == true)
+                        continue;
                     Users.Add((string)WmiObject["SID"], (string)WmiObject["Domain"] + "\\" + (string)WmiObject["Name"]);
                 }
             }

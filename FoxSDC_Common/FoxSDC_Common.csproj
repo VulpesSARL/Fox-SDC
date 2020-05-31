@@ -2002,6 +2002,7 @@
     <Compile Include="Memoriam.cs" />
     <Compile Include="Models.cs" />
     <Compile Include="Network.cs" />
+    <Compile Include="NetworkUtilities.cs" />
     <Compile Include="NullTest.cs" />
     <Compile Include="PackageCompiler.cs" />
     <Compile Include="PackageInstaller.cs" />

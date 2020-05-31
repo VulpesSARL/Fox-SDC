@@ -23,11 +23,7 @@ namespace FoxSDC_Agent.Redirs
     public interface IPipeScreenData
     {
         [OperationContract]
-        NetBool SetKeyboard(string keyboardd);
-        [OperationContract]
         NetBool SetKeyboard2(int Flags, int ScanCode, int VirtualKey);
-        [OperationContract]
-        NetBool SetMousePosition(string moused);
         [OperationContract]
         NetBool SetMousePosition2(int X, int Y, int Delta, int Flags);
         [OperationContract]
@@ -64,15 +60,10 @@ namespace FoxSDC_Agent.Redirs
         {
             return (Channel.GetDeltaScreen());
         }
-
         public PushScreenData GetFullscreen()
         {
             return (Channel.GetFullscreen());
-        }
-        public NetBool SetMousePosition(string moused)
-        {
-            return (Channel.SetMousePosition(moused));
-        }
+        }      
         public NetBool SetMousePosition(int X, int Y, int Delta, int Flags)
         {
             return (Channel.SetMousePosition2(X, Y, Delta, Flags));
@@ -80,10 +71,6 @@ namespace FoxSDC_Agent.Redirs
         public NetBool SetScreen(int ScreenNumber)
         {
             return (Channel.SetScreen(ScreenNumber));
-        }
-        public NetBool SetKeyboard(string keyboardd)
-        {
-            return (Channel.SetKeyboard(keyboardd));
         }
         public NetBool SetKeyboard(int Flags, int ScanCode, int VirtualKey)
         {
@@ -333,28 +320,7 @@ namespace FoxSDC_Agent.Redirs
             }
 
             return (data);
-        }
-
-        public NetBool SetMousePosition(string moused)
-        {
-            MainScreenSystemClient.LastCalled = DateTime.Now;
-            NetBool nb = new NetBool();
-
-            PushMouseData mouse;
-            try
-            {
-                mouse = JsonConvert.DeserializeObject<PushMouseData>(moused);
-                ProgramAgent.CPP.MoveMouse(mouse.X, mouse.Y, mouse.Delta, mouse.Flags);
-            }
-            catch (Exception ee)
-            {
-                Debug.WriteLine(ee.ToString());
-                nb.Data = false;
-                return (nb);
-            }
-
-            return (nb);
-        }
+        }      
 
         public NetBool SetMousePosition2(int X, int Y, int Delta, int Flags)
         {
@@ -364,34 +330,6 @@ namespace FoxSDC_Agent.Redirs
             try
             {
                 ProgramAgent.CPP.MoveMouse(X, Y, Delta, Flags);
-            }
-            catch (Exception ee)
-            {
-                Debug.WriteLine(ee.ToString());
-                nb.Data = false;
-                return (nb);
-            }
-
-            return (nb);
-        }
-
-        public NetBool SetKeyboard(string keyboardd)
-        {
-            MainScreenSystemClient.LastCalled = DateTime.Now;
-            NetBool nb = new NetBool();
-
-            PushKeyboardData keyboard;
-            try
-            {
-                keyboard = JsonConvert.DeserializeObject<PushKeyboardData>(keyboardd);
-                if (keyboard.Flags == 0xFFFFFFF && keyboard.ScanCode == 0xFFFFFFF && keyboard.VirtualKey == 0xFFFFFFF)
-                    ProgramAgent.CPP.SendCTRLALTDELETE();
-                else if (keyboard.VirtualKey == 0xFFFFFFF && keyboard.ScanCode == 0xFFFFFFE)
-                    ProgramAgent.CPP.SetKeyboardLayout(keyboard.Flags);
-                else if (keyboard.VirtualKey == 0xFFFFFFF && keyboard.ScanCode == 0xFFFFFFD)
-                    ProgramAgent.CPP.TypeKeyboardChar((char)keyboard.Flags);
-                else
-                    ProgramAgent.CPP.SetKeyboard(keyboard.VirtualKey, keyboard.ScanCode, keyboard.Flags);
             }
             catch (Exception ee)
             {
@@ -681,55 +619,6 @@ namespace FoxSDC_Agent.Redirs
             try
             {
                 b = Pipe.Pipe1.SetKeyboard(Flags, ScanCode, VirtualKey);
-            }
-            catch
-            {
-                return (new NetBool() { Data = false });
-            }
-
-            return (b);
-        }
-        static public NetBool SetKeyboard(string keyboardd)
-        {
-            try
-            {
-                PushKeyboardData keyboard = JsonConvert.DeserializeObject<PushKeyboardData>(keyboardd);
-                if (keyboard.Flags == 0xFFFFFFF && keyboard.ScanCode == 0xFFFFFFF && keyboard.VirtualKey == 0xFFFFFFF)
-                {
-                    ProgramAgent.CPP.SendCTRLALTDELETE();
-                    return (new NetBool() { Data = true });
-                }
-            }
-            catch
-            {
-
-            }
-
-            if (CheckConnection() == false)
-                return (new NetBool() { Data = false });
-
-            NetBool b;
-            try
-            {
-                b = Pipe.Pipe1.SetKeyboard(keyboardd);
-            }
-            catch
-            {
-                return (new NetBool() { Data = false });
-            }
-
-            return (b);
-        }
-
-        static public NetBool SetMousePosition(string moused)
-        {
-            if (CheckConnection() == false)
-                return (new NetBool() { Data = false });
-
-            NetBool b;
-            try
-            {
-                b = Pipe.Pipe1.SetMousePosition(moused);
             }
             catch
             {

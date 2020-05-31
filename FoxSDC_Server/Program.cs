@@ -227,7 +227,8 @@ namespace FoxSDC_Server
             }
         }
 
-        const int SessionTimeoutMin = 15;
+        public const int SessionTimeoutMin = 15;
+        public const int WSSessionTimeoutMin = 15;
 
         static void TimeoutManager()
         {
@@ -240,6 +241,15 @@ namespace FoxSDC_Server
                 if (cnt < 120)
                     continue;
                 cnt = 0;
+
+                try
+                {
+                    RemoteNetworkConnectionWSCrosser.TestTimeouts();
+                }
+                catch (Exception ee)
+                {
+                    Debug.WriteLine(ee.ToString());
+                }
 
                 try
                 {

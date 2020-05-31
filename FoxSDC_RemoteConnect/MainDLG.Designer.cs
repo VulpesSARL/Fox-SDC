@@ -48,7 +48,6 @@
             this.cmdStart = new System.Windows.Forms.Button();
             this.panelLogin = new System.Windows.Forms.Panel();
             this.panelConnectData = new System.Windows.Forms.Panel();
-            this.chkUseWebSockets = new System.Windows.Forms.CheckBox();
             this.lblPing = new System.Windows.Forms.Label();
             this.picStatus = new System.Windows.Forms.PictureBox();
             this.panelStatus = new System.Windows.Forms.Panel();
@@ -218,7 +217,6 @@
             // 
             // panelConnectData
             // 
-            this.panelConnectData.Controls.Add(this.chkUseWebSockets);
             this.panelConnectData.Controls.Add(this.lblPing);
             this.panelConnectData.Controls.Add(this.picStatus);
             this.panelConnectData.Controls.Add(this.label4);
@@ -234,16 +232,6 @@
             this.panelConnectData.Name = "panelConnectData";
             this.panelConnectData.Size = new System.Drawing.Size(398, 192);
             this.panelConnectData.TabIndex = 1;
-            // 
-            // chkUseWebSockets
-            // 
-            this.chkUseWebSockets.AutoSize = true;
-            this.chkUseWebSockets.Location = new System.Drawing.Point(270, 35);
-            this.chkUseWebSockets.Name = "chkUseWebSockets";
-            this.chkUseWebSockets.Size = new System.Drawing.Size(108, 17);
-            this.chkUseWebSockets.TabIndex = 1;
-            this.chkUseWebSockets.Text = "Use Websockets";
-            this.chkUseWebSockets.UseVisualStyleBackColor = true;
             // 
             // lblPing
             // 
@@ -391,7 +379,6 @@
         private System.ComponentModel.BackgroundWorker bgwPinger;
         private System.Windows.Forms.Timer timerPinger;
         private System.Windows.Forms.Label lblRXTXStat;
-        private System.Windows.Forms.CheckBox chkUseWebSockets;
     }
 }
 
