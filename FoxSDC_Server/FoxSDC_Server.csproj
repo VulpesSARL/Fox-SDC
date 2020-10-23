@@ -226,7 +226,7 @@
     <PreBuildEvent>"$(TargetDir)FoxSDC_AutoVersion.exe" "$(ProjectDir)AutoVersion.cs" "FoxSDC_Server"</PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>copy "$(SolutionDir)Test Lic.lic" "$(TargetDir)License.lic"</PostBuildEvent>
+    <PostBuildEvent>rem copy "$(SolutionDir)Test Lic.lic" "$(TargetDir)License.lic"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -5,7 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.ServiceProcess;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -370,6 +372,101 @@ namespace FoxSDC_Agent
                                 CompleteTask(net, st, 0, SuccessText);
                             break;
                         }
+                    #endregion
+                    case 3:
+                        #region Reset WU Client
+                        {
+                            try
+                            {
+                                ServiceController scm = new ServiceController("wuauserv");
+
+                                if (scm.Status != ServiceControllerStatus.Stopped)
+                                {
+                                    if (scm.CanStop == false)
+                                    {
+                                        CompleteTask(net, st, 1, "WU Reset: cannot stop Service");
+                                        break;
+                                    }
+
+                                    scm.Stop();
+                                    int Counter = 0;
+                                    do
+                                    {
+                                        Counter++;
+                                        Thread.Sleep(1000);
+                                        if (Counter > 120)
+                                        {
+                                            CompleteTask(net, st, 2, "WU Reset: stop Service: timed out");
+                                            break;
+                                        }
+                                    } while (scm.Status != ServiceControllerStatus.Stopped);
+
+                                    Thread.Sleep(1000);
+                                    if (scm.Status != ServiceControllerStatus.Stopped)
+                                    {
+                                        scm.Stop();
+                                        Counter = 0;
+                                        do
+                                        {
+                                            Counter++;
+                                            Thread.Sleep(1000);
+                                            if (Counter > 120)
+                                            {
+                                                CompleteTask(net, st, 3, "WU Reset: stop Service: timed out (2)");
+                                                break;
+                                            }
+                                        } while (scm.Status != ServiceControllerStatus.Stopped);
+                                    }
+
+                                    if (scm.Status != ServiceControllerStatus.Stopped)
+                                    {
+                                        CompleteTask(net, st, 4, "WU Reset: stop Service: didn't stop for the 2nd time");
+                                        break;
+                                    }
+                                }
+
+                                string SDPath = Environment.ExpandEnvironmentVariables("%SYSTEMROOT%\\SoftwareDistribution");
+                                if (Directory.Exists(SDPath) == true)
+                                    Directory.Delete(SDPath, true);
+
+                                string USOEXE = Environment.ExpandEnvironmentVariables("%SYSTEMROOT%\\System32\\usoclient.exe");
+                                try
+                                {
+                                    Process p = new Process();
+                                    p.StartInfo.UseShellExecute = false;
+                                    p.StartInfo.FileName = USOEXE;
+                                    p.StartInfo.Arguments = "RefreshSettings";
+                                    p.Start();
+                                    p.WaitForExit(30000);
+                                }
+                                catch
+                                {
+
+                                }
+
+                                try
+                                {
+                                    Process p = new Process();
+                                    p.StartInfo.UseShellExecute = false;
+                                    p.StartInfo.FileName = USOEXE;
+                                    p.StartInfo.Arguments = "StartScan";
+                                    p.Start();
+                                    p.WaitForExit(30000);
+                                }
+                                catch
+                                {
+
+                                }
+
+                                CompleteTask(net, st, 0, "WU Reset completed successfully");
+                            }
+                            catch (Exception ee)
+                            {
+                                CompleteTask(net, st, 0xFFFF, "SEH: " + ee.ToString());
+                                break;
+                            }
+                        }
+                        break;
                     #endregion
                     default:
                         {

@@ -630,7 +630,7 @@ namespace FoxSDC_Common
 
     public class UsersList
     {
-        public Dictionary<string,string> Users;
+        public Dictionary<string, string> Users;
         public string MachineID;
     }
 
@@ -841,6 +841,11 @@ namespace FoxSDC_Common
         public string Valuename;
         public int ValueType;
         public string Data;
+    }
+
+    public class SimpleTaskNix
+    {
+        public string Dummy;
     }
 
     public class UserInfo

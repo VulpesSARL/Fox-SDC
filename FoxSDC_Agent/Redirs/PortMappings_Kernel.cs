@@ -148,7 +148,12 @@ namespace FoxSDC_Agent.Redirs
                 {
                     if (string.IsNullOrWhiteSpace(ad.HOSTSEntry) == false)
                     {
-                        HostsEdit.AppendIntoHOSTSFile(ad.HOSTSEntry, "127.0.0.1");
+                        foreach (string HOSTS in ad.HOSTSEntry.Split('|'))
+                        {
+                            if (string.IsNullOrWhiteSpace(HOSTS) == true)
+                                continue;
+                            HostsEdit.AppendIntoHOSTSFile(HOSTS.Trim(), "127.0.0.1");
+                        }
                     }
                 }
 

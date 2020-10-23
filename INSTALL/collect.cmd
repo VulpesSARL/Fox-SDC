@@ -1,8 +1,13 @@
+rd /s /q CD
 md CD
 md "CD\ADMX"
 md "CD\SDC Agent"
 md "CD\SDC Tools"
 md "CD\SDC Server"
+
+rd /s /q PDB
+md PDB
+copy "..\Release\*.PDB" PDB
 
 copy "..\Release\MyUCID.exe" "CD\MyUCID.exe"
 copy "..\Release\FoxSDC_Agent.exe" "CD\SDC Agent"

@@ -12,7 +12,6 @@ namespace FoxSDC_Agent
         public string Filename;
         public string SignFilename;
         public PolicyObject PolicyObject;
-        public bool Processed;
     }
 
     class DownloadQueueElement

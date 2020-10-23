@@ -37,6 +37,11 @@ namespace FoxSDC_MGMT.ReportingMGMT
             lstBook.Items.Add("Security");
             lstBook.Items.Add("System");
 
+            lstInclExcl.Items.Add("None");
+            lstInclExcl.Items.Add("Only include with these texts");
+            lstInclExcl.Items.Add("Exclude with these texts");
+            lstInclExcl.SelectedIndex = 0;
+
             if (Element != null)
             {
                 if (Element.Book != null)
@@ -91,6 +96,14 @@ namespace FoxSDC_MGMT.ReportingMGMT
                         }
                     }
                 }
+                lstInclExcl.SelectedIndex = Element.IncludeExclude;
+                if (Element.IncludeExcludeTexts != null)
+                {
+                    foreach (string l in Element.IncludeExcludeTexts)
+                    {
+                        lstTexts.Items.Add(l);
+                    }
+                }
             }
         }
 
@@ -143,6 +156,13 @@ namespace FoxSDC_MGMT.ReportingMGMT
             if (lstTypes.GetItemChecked(4) == true)
                 Element.EventLogTypes.Add(16);
 
+            Element.IncludeExclude = lstInclExcl.SelectedIndex;
+            Element.IncludeExcludeTexts = new List<string>();
+            foreach(string Item in lstTexts.Items)
+            {
+                Element.IncludeExcludeTexts.Add(Item);
+            }
+
             if (Element.Book.Count == 0 && Element.CategoryNumbers.Count == 0 && Element.EventLogTypes.Count == 0 && Element.Sources.Count == 0)
             {
                 MessageBox.Show(this, "Event Log Filter cannot be empty.", Program.Title, MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -157,6 +177,35 @@ namespace FoxSDC_MGMT.ReportingMGMT
         {
             this.DialogResult = DialogResult.Cancel;
             this.Close();
+        }
+
+        private void cmdInsert_Click(object sender, EventArgs e)
+        {
+            frmAskText frm = new frmAskText("Add Event Log Text filter", "Add text to Event Log filter", "");
+            if (frm.ShowDialog(this) != DialogResult.OK)
+                return;
+            if (string.IsNullOrWhiteSpace(frm.RetText) == false)
+                lstTexts.Items.Add(frm.RetText);
+        }
+
+        private void cmdEdit_Click(object sender, EventArgs e)
+        {
+            if (lstTexts.SelectedIndex == -1)
+                return;
+
+            frmAskText frm = new frmAskText("Add Event Log Text filter", "Add text to Event Log filter", lstTexts.Items[lstTexts.SelectedIndex].ToString());
+            if (frm.ShowDialog(this) != DialogResult.OK)
+                return;
+            if (string.IsNullOrWhiteSpace(frm.RetText) == false)
+                lstTexts.Items[lstTexts.SelectedIndex] = frm.RetText;
+        }
+
+        private void cmdRemove_Click(object sender, EventArgs e)
+        {
+            if (lstTexts.SelectedIndex == -1)
+                return;
+
+            lstTexts.Items.RemoveAt(lstTexts.SelectedIndex);
         }
     }
 }

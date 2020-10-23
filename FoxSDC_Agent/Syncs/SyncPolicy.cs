@@ -25,6 +25,8 @@ namespace FoxSDC_Agent
             RequestCertPolicyMessageID = 0;
             RequestCertPolicyCERData = null;
 
+            List<Int64> ProcessedPolicies = new List<long>();
+
             Network net;
             net = Utilities.ConnectNetwork(9);
             if (net == null)
@@ -98,7 +100,7 @@ namespace FoxSDC_Agent
             {
                 if (obj.Policy.Type == PolicyIDs.SignCertificate)
                 {
-                    if (FilesystemData.ContainsPolicy(obj.Policy, false) == true)
+                    if (FilesystemData.ContainsPolicy(obj.Policy, false, false) == true)
                         continue;
                     PolicyObjectSigned objj = net.GetPolicyObjectSigned(obj.Policy.ID);
                     //do not verify signing here - that won't work! - Fox
@@ -139,8 +141,10 @@ namespace FoxSDC_Agent
             {
                 foreach (PolicyObjectSigned obj in policies)
                 {
-                    if (FilesystemData.ContainsPolicy(obj.Policy, false) == true)
+                    if (FilesystemData.ContainsPolicy(obj.Policy, false, false) == true)
                     {
+                        if (ProcessedPolicies.Contains(obj.Policy.ID) == false)
+                            ProcessedPolicies.Add(obj.Policy.ID);
                         FilesystemData.UpdatePolicyOrder(obj.Policy, obj.Policy.Order);
                         continue;
                     }
@@ -159,13 +163,15 @@ namespace FoxSDC_Agent
 
                     if (FilesystemData.InstallPolicy(objj.Policy, obj.Policy.Order) == false)
                         continue;
+                    if (ProcessedPolicies.Contains(obj.Policy.ID) == false)
+                        ProcessedPolicies.Add(obj.Policy.ID);
                 }
 
                 List<LoadedPolicyObject> RemovePol = new List<LoadedPolicyObject>();
 
                 foreach (LoadedPolicyObject lobj in FilesystemData.LoadedPolicyObjects)
                 {
-                    if (lobj.Processed == false)
+                    if (ProcessedPolicies.Contains(lobj.PolicyObject.ID) == false)
                         RemovePol.Add(lobj);
                 }
 
@@ -224,37 +230,41 @@ namespace FoxSDC_Agent
                 }
             }
 
+            if (FilesystemData.UpdatePolicies != null)
+            {
+                foreach (KeyValuePair<LoadedPolicyObject, LoadedPolicyObject> kvp in FilesystemData.UpdatePolicies)
+                {
+                    foreach (Type type in GetTypesWithHelpAttribute(Assembly.GetExecutingAssembly()))
+                    {
+                        PolicyObjectAttr po = type.GetCustomAttribute<PolicyObjectAttr>();
+                        if (po.PolicyType == kvp.Key.PolicyObject.Type)
+                        {
+                            IPolicyClass instance = (IPolicyClass)Activator.CreateInstance(type);
+                            try
+                            {
+                                instance.UpdatePolicy(kvp.Key, kvp.Value);
+                            }
+                            catch (Exception ee)
+                            {
+                                Debug.WriteLine(ee.ToString());
+                                FoxEventLog.WriteEventLog("SEH Error while updating policy - (Policy ID=" + kvp.Value.PolicyObject.ID.ToString() + " Name=" + kvp.Value.PolicyObject.Name + ")", System.Diagnostics.EventLogEntryType.Error);
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+
             List<LoadedPolicyObject> RemovePol = new List<LoadedPolicyObject>();
             foreach (LoadedPolicyObject a in ActivePolicy)
             {
                 bool PolicyFound = false;
                 foreach (LoadedPolicyObject b in FilesystemData.LoadedPolicyObjects)
                 {
-                    if (a.PolicyObject.ID == b.PolicyObject.ID && b.PolicyObject.Version >= a.PolicyObject.Version && a.PolicyObject.Type == b.PolicyObject.Type)
+                    if (a.PolicyObject.ID == b.PolicyObject.ID &&
+                        a.PolicyObject.Type == b.PolicyObject.Type)
                     {
                         PolicyFound = true;
-
-                        if (b.PolicyObject.Version > a.PolicyObject.Version)
-                        {
-                            foreach (Type type in GetTypesWithHelpAttribute(Assembly.GetExecutingAssembly()))
-                            {
-                                PolicyObjectAttr po = type.GetCustomAttribute<PolicyObjectAttr>();
-                                if (po.PolicyType == a.PolicyObject.Type)
-                                {
-                                    IPolicyClass instance = (IPolicyClass)Activator.CreateInstance(type);
-                                    try
-                                    {
-                                        instance.UpdatePolicy(a, b);
-                                    }
-                                    catch (Exception ee)
-                                    {
-                                        Debug.WriteLine(ee.ToString());
-                                        FoxEventLog.WriteEventLog("SEH Error while updating policy - (Policy ID=" + a.PolicyObject.ID.ToString() + " Name=" + a.PolicyObject.Name + ")", System.Diagnostics.EventLogEntryType.Error);
-                                    }
-                                    break;
-                                }
-                            }
-                        }
                         break;
                     }
                 }
@@ -292,7 +302,9 @@ namespace FoxSDC_Agent
                 bool PolicyFound = false;
                 foreach (LoadedPolicyObject b in ActivePolicy)
                 {
-                    if (a.PolicyObject.ID == b.PolicyObject.ID && a.PolicyObject.Version == b.PolicyObject.Version && a.PolicyObject.Type == b.PolicyObject.Type)
+                    if (a.PolicyObject.ID == b.PolicyObject.ID &&
+                        a.PolicyObject.Version == b.PolicyObject.Version &&
+                        a.PolicyObject.Type == b.PolicyObject.Type)
                     {
                         PolicyFound = true;
                         break;
@@ -318,7 +330,6 @@ namespace FoxSDC_Agent
                                 Debug.WriteLine(ee.ToString());
                                 FoxEventLog.WriteEventLog("SEH Error while applying policy - (Policy ID=" + a.PolicyObject.ID.ToString() + " Name=" + a.PolicyObject.Name + ")", System.Diagnostics.EventLogEntryType.Error);
                             }
-                            ActivePolicy.Add(a);
                             CanProcessPolicy = true;
                             FoundPolicyProcessor = true;
                             break;
@@ -381,6 +392,8 @@ namespace FoxSDC_Agent
                     FoxEventLog.WriteEventLog("SEH Error while finalising policy (applymethod=" + applymethod.ToString() + ") - Type 0x" + po.PolicyType.ToString("X"), System.Diagnostics.EventLogEntryType.Error);
                 }
             }
+
+            FilesystemData.UpdatePolicies = null;
 
             if (applymethod == ApplyPolicyFunction.ApplySystem)
             {

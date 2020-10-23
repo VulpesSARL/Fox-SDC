@@ -84,7 +84,7 @@ namespace FoxSDC_Common
             return (true);
         }
 
-        bool SendReq(string URLAppend, Verb verb, string sdata, out string rdata, out int HTTPResponseCode, bool LongTimeOut = false)
+        bool SendReq(string URLAppend, Verb verb, string sdata, out string rdata, out int HTTPResponseCode, int Timeout = 30)
         {
             ServicePointManager.DefaultConnectionLimit = 1024;
             rdata = "";
@@ -102,29 +102,8 @@ namespace FoxSDC_Common
                 client.AllowAutoRedirect = true;
                 if (SessionID != "")
                     client.Headers.Add("Authorization", "Bearer " + SessionID);
-#if DEBUG
-                if (LongTimeOut == false)
-                {
-                    client.ReadWriteTimeout = 30000;
-                    client.Timeout = 30000;
-                }
-                else
-                {
-                    client.ReadWriteTimeout = 1000 * 60 * 10; //10 Minutes
-                    client.Timeout = 1000 * 60 * 10;
-                }
-#else
-                if (LongTimeOut == false)
-                {
-                    client.ReadWriteTimeout = 60000;
-                    client.Timeout = 60000;
-                }
-                else
-                {
-                    client.ReadWriteTimeout = 1000 * 60 * 10; //10 Minutes
-                    client.Timeout = 1000 * 60 * 10;
-                }
-#endif
+                client.ReadWriteTimeout = Timeout * 1000;
+                client.Timeout = Timeout * 1000;
                 client.UserAgent = "FoxSDC Client";
                 switch (verb)
                 {
@@ -183,12 +162,12 @@ namespace FoxSDC_Common
             }
         }
 
-        bool SendReq<T, U>(string URLAppend, Verb verb, T sdata, out U rdata, out int HTTPResponseCode, bool LongTimeOut = false)
+        bool SendReq<T, U>(string URLAppend, Verb verb, T sdata, out U rdata, out int HTTPResponseCode, int Timeout = 30)
         {
             string sjson = JsonConvert.SerializeObject(sdata);
             string rjson = "";
             rdata = default(U);
-            bool res = SendReq(URLAppend, verb, sjson, out rjson, out HTTPResponseCode, LongTimeOut);
+            bool res = SendReq(URLAppend, verb, sjson, out rjson, out HTTPResponseCode, Timeout);
             try
             {
                 rdata = JsonConvert.DeserializeObject<U>(rjson);
@@ -201,12 +180,12 @@ namespace FoxSDC_Common
             return (res);
         }
 
-        bool SendReq<U>(string URLAppend, Verb verb, out U rdata, out int HTTPResponseCode, bool LongTimeOut = false)
+        bool SendReq<U>(string URLAppend, Verb verb, out U rdata, out int HTTPResponseCode, int Timeout = 30)
         {
             string sjson = "";
             string rjson = "";
             rdata = default(U);
-            bool res = SendReq(URLAppend, verb, sjson, out rjson, out HTTPResponseCode, LongTimeOut);
+            bool res = SendReq(URLAppend, verb, sjson, out rjson, out HTTPResponseCode, Timeout);
             try
             {
                 rdata = JsonConvert.DeserializeObject<U>(rjson);
@@ -219,19 +198,19 @@ namespace FoxSDC_Common
             return (res);
         }
 
-        bool SendReq<T>(string URLAppend, Verb verb, T sdata, out int HTTPResponseCode, bool LongTimeOut = false)
+        bool SendReq<T>(string URLAppend, Verb verb, T sdata, out int HTTPResponseCode, int Timeout = 30)
         {
             string sjson = JsonConvert.SerializeObject(sdata);
             string rjson = "";
-            bool res = SendReq(URLAppend, verb, sjson, out rjson, out HTTPResponseCode, LongTimeOut);
+            bool res = SendReq(URLAppend, verb, sjson, out rjson, out HTTPResponseCode, Timeout);
             return (res);
         }
 
-        bool SendReq(string URLAppend, Verb verb, out int HTTPResponseCode, bool LongTimeOut = false)
+        bool SendReq(string URLAppend, Verb verb, out int HTTPResponseCode, int Timeout = 30)
         {
             string sjson = "";
             string rjson = "";
-            bool res = SendReq(URLAppend, verb, sjson, out rjson, out HTTPResponseCode, LongTimeOut);
+            bool res = SendReq(URLAppend, verb, sjson, out rjson, out HTTPResponseCode, Timeout);
             return (res);
         }
 
@@ -1065,7 +1044,7 @@ namespace FoxSDC_Common
             ReportPaper p = new ReportPaper();
             p.data = data;
             p.Name = Paper;
-            bool resb = SendReq<ReportPaper>("api/mgmt/rep/addpaper", Verb.POST, p, out res, true);
+            bool resb = SendReq<ReportPaper>("api/mgmt/rep/addpaper", Verb.POST, p, out res, 300);
             if (resb == false)
                 return (false);
             if (res != 200)
@@ -1076,7 +1055,7 @@ namespace FoxSDC_Common
         public List<string> PaperGetSupported()
         {
             NetStringList l;
-            if (SendReq<NetStringList>("api/mgmt/rep/listpaper", Verb.GET, out l, out res, true) == false)
+            if (SendReq<NetStringList>("api/mgmt/rep/listpaper", Verb.GET, out l, out res, 300) == false)
                 return (null);
             return (l.Items);
         }
@@ -1084,7 +1063,7 @@ namespace FoxSDC_Common
         public byte[] PaperGetTemplate(string Name)
         {
             NetByte l;
-            if (SendReq<NetByte>("api/mgmt/rep/paper/" + Name, Verb.GET, out l, out res, true) == false)
+            if (SendReq<NetByte>("api/mgmt/rep/paper/" + Name, Verb.GET, out l, out res, 300) == false)
                 return (null);
             return (l.Data);
         }
@@ -1097,7 +1076,7 @@ namespace FoxSDC_Common
             req.To = To;
             req.MachineIDs = MachineIDs;
             NetByte l;
-            if (SendReq<ReportPaperRequest, NetByte>("api/mgmt/rep/getpaper", Verb.POST, req, out l, out res, true) == false)
+            if (SendReq<ReportPaperRequest, NetByte>("api/mgmt/rep/getpaper", Verb.POST, req, out l, out res, 300) == false)
                 return (null);
             return (l.Data);
         }
@@ -1105,7 +1084,7 @@ namespace FoxSDC_Common
         public List<ContractInfos> GetContractInfos()
         {
             ContractInfosList cl;
-            if (SendReq<ContractInfosList>("api/mgmt/getcontractinfos", Verb.GET, out cl, out res, true) == false)
+            if (SendReq<ContractInfosList>("api/mgmt/getcontractinfos", Verb.GET, out cl, out res, 300) == false)
                 return (null);
             return (cl.Items);
         }
@@ -1113,7 +1092,7 @@ namespace FoxSDC_Common
         public byte[] PaperTest(string Name)
         {
             NetByte l;
-            if (SendReq<NetByte>("api/mgmt/rep/testpaper/" + Name, Verb.GET, out l, out res, true) == false)
+            if (SendReq<NetByte>("api/mgmt/rep/testpaper/" + Name, Verb.GET, out l, out res, 300) == false)
                 return (null);
             return (l.Data);
         }
@@ -1121,7 +1100,7 @@ namespace FoxSDC_Common
         public PushDataRoot GetPushData0()
         {
             PushDataRoot pd;
-            bool resb = SendReq<PushDataRoot>("api/httppush/service", Verb.GET, out pd, out res, true);
+            bool resb = SendReq<PushDataRoot>("api/httppush/service", Verb.GET, out pd, out res, 420);
             if (pd == null)
                 return (null);
             return (pd);
@@ -1130,7 +1109,7 @@ namespace FoxSDC_Common
         public PushDataRoot GetPushData1()
         {
             PushDataRoot pd;
-            bool resb = SendReq<PushDataRoot>("api/httppush/1service", Verb.GET, out pd, out res, true);
+            bool resb = SendReq<PushDataRoot>("api/httppush/1service", Verb.GET, out pd, out res, 420);
             if (pd == null)
                 return (null);
             return (pd);
@@ -1139,16 +1118,16 @@ namespace FoxSDC_Common
         public PushDataRoot GetPushData2()
         {
             PushDataRoot pd;
-            bool resb = SendReq<PushDataRoot>("api/httppush/2service", Verb.GET, out pd, out res, true);
+            bool resb = SendReq<PushDataRoot>("api/httppush/2service", Verb.GET, out pd, out res, 420);
             if (pd == null)
                 return (null);
             return (pd);
         }
-        
+
         public PushDataRoot GetPushData10()
         {
             PushDataRoot pd;
-            bool resb = SendReq<PushDataRoot>("api/httppush/Aservice", Verb.GET, out pd, out res, true);
+            bool resb = SendReq<PushDataRoot>("api/httppush/Aservice", Verb.GET, out pd, out res, 420);
             if (pd == null)
                 return (null);
             return (pd);
@@ -1176,7 +1155,7 @@ namespace FoxSDC_Common
             resp.Channel = Channel;
             bool resb = SendReq<PushDataResponse>("api/httppush/r3sponse", Verb.POST, resp, out res);
             return (resb);
-        }      
+        }
 
         public bool ResponsePushData10(object data, string Action, Int64 Channel, string ReplyID)
         {
@@ -1224,7 +1203,7 @@ namespace FoxSDC_Common
         public List<string> GetPendingChats()
         {
             NetStringList pd;
-            bool resb = SendReq<NetStringList>("api/mgmt/getpendingchats", Verb.GET, out pd, out res, true);
+            bool resb = SendReq<NetStringList>("api/mgmt/getpendingchats", Verb.GET, out pd, out res, 300);
             if (pd == null)
                 return (null);
             return (pd.Items);
@@ -1233,7 +1212,7 @@ namespace FoxSDC_Common
         public List<PushChatMessage> GetChatMessages(string MachineID)
         {
             PushChatMessageList pd;
-            bool resb = SendReq<PushChatMessageList>("api/mgmt/getpendingchatdata/" + MachineID, Verb.GET, out pd, out res, true);
+            bool resb = SendReq<PushChatMessageList>("api/mgmt/getpendingchatdata/" + MachineID, Verb.GET, out pd, out res, 300);
             if (pd == null)
                 return (null);
             return (pd.List);
@@ -1242,7 +1221,7 @@ namespace FoxSDC_Common
         public List<PushChatMessage> GetChatMessagesForClient()
         {
             PushChatMessageList pd;
-            bool resb = SendReq<PushChatMessageList>("api/reports/getchatmessages", Verb.GET, out pd, out res, true);
+            bool resb = SendReq<PushChatMessageList>("api/reports/getchatmessages", Verb.GET, out pd, out res, 300);
             if (pd == null)
                 return (null);
             return (pd.List);
@@ -1250,7 +1229,7 @@ namespace FoxSDC_Common
 
         public bool ConfirmChat(Int64 ID)
         {
-            bool resb = SendReq("api/reports/confirmchitchat/" + ID.ToString(), Verb.GET, out res, true);
+            bool resb = SendReq("api/reports/confirmchitchat/" + ID.ToString(), Verb.GET, out res, 300);
             return (resb);
         }
 
@@ -1294,7 +1273,7 @@ namespace FoxSDC_Common
             ud.Size = data.Length;
             ud.MD5 = MD5Utilities.CalcMD5(data);
 
-            bool resb = SendReq<FileUploadAppendData>("api/agent/fileappendupload", Verb.POST, ud, out res, true);
+            bool resb = SendReq<FileUploadAppendData>("api/agent/fileappendupload", Verb.POST, ud, out res, 300);
             if (resb == false)
                 return (false);
             if (res != 200)
@@ -1398,7 +1377,7 @@ namespace FoxSDC_Common
             ud.MachineID = MachineID;
             ud.MD5 = MD5Utilities.CalcMD5(data);
 
-            bool resb = SendReq<FileUploadAppendData>("api/mgmt/fileappendupload", Verb.POST, ud, out res, true);
+            bool resb = SendReq<FileUploadAppendData>("api/mgmt/fileappendupload", Verb.POST, ud, out res, 300);
             if (resb == false)
                 return (false);
             if (res != 200)
@@ -1567,7 +1546,7 @@ namespace FoxSDC_Common
         {
             PushConnectNetworkResult pres;
             NetInt64 str = new NetInt64() { Data = ID };
-            bool resb = SendReq<NetInt64, PushConnectNetworkResult>("api/agent/wsserverportmappingconnect", Verb.POST, str, out pres, out res, true);
+            bool resb = SendReq<NetInt64, PushConnectNetworkResult>("api/agent/wsserverportmappingconnect", Verb.POST, str, out pres, out res, 300);
             if (resb == false)
                 return (null);
             if (pres == null)
@@ -1579,7 +1558,7 @@ namespace FoxSDC_Common
         public PushConnectNetworkResult CloseWSServerPortMappingConnection(string ConnectionGUID)
         {
             PushConnectNetworkResult b;
-            bool resb = SendReq<NetString, PushConnectNetworkResult>("api/agent/wsserverportmappingclose", Verb.POST, new NetString() { Data = ConnectionGUID }, out b, out res, true);
+            bool resb = SendReq<NetString, PushConnectNetworkResult>("api/agent/wsserverportmappingclose", Verb.POST, new NetString() { Data = ConnectionGUID }, out b, out res, 300);
             if (resb == false)
                 return (null);
             if (b == null)

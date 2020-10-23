@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Management;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -21,6 +22,12 @@ namespace FoxSDC_Agent
                 Status.UpdateMessage(0, "Collecting users");
 
                 Dictionary<string, string> lst = Userregistries.GetUsers();
+                if (lst == null)
+                {
+                    net.CloseConnection();
+                    Status.UpdateMessage(0);
+                    return (true);
+                }
 
                 Status.UpdateMessage(0, "Reporting users");
                 UsersList lstt = new UsersList();

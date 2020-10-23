@@ -75,6 +75,16 @@ namespace FoxSDC_Common
         /// EventID
         /// </summary>
         public List<int> CategoryNumbers;
+        /// <summary>
+        /// 0 = none
+        /// 1 = include
+        /// 2 = exclude
+        /// </summary>
+        public int IncludeExclude;
+        /// <summary>
+        /// Texts
+        /// </summary>
+        public List<string> IncludeExcludeTexts;
     }
 
     public class ReportingPolicyElementAddRemovePrograms

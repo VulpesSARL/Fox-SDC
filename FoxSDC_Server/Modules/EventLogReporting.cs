@@ -418,6 +418,42 @@ namespace FoxSDC_Server
                                     continue;
                             }
 
+                            if (evrep.IncludeExclude == 1) //include
+                            {
+                                if (evrep.IncludeExcludeTexts != null)
+                                {
+                                    bool Match = false;
+                                    foreach (string s in evrep.IncludeExcludeTexts)
+                                    {
+                                        if (EV.Message.ToLower().Contains(s.ToLower()) == true)
+                                        {
+                                            Match = true;
+                                            break;
+                                        }
+                                    }
+                                    if (Match == false)
+                                        continue;
+                                }
+                            }
+
+                            if (evrep.IncludeExclude == 2) //exclude
+                            {
+                                if (evrep.IncludeExcludeTexts != null)
+                                {
+                                    bool Match = true;
+                                    foreach (string s in evrep.IncludeExcludeTexts)
+                                    {
+                                        if (EV.Message.ToLower().Contains(s.ToLower()) == true)
+                                        {
+                                            Match = false;
+                                            break;
+                                        }
+                                    }
+                                    if (Match == false)
+                                        continue;
+                                }
+                            }
+
                             bool ReportToAdmin = RepElementRoot.ReportToAdmin.Value;
                             bool ReportToClient = RepElementRoot.ReportToClient.Value;
                             bool UrgentForAdmin = RepElementRoot.UrgentForAdmin.Value;

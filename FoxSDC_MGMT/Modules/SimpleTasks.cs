@@ -41,6 +41,9 @@ namespace FoxSDC_MGMT
                     case 2:
                         lst.SubItems.Add("Modify registry");
                         break;
+                    case 3:
+                        lst.SubItems.Add("Reset WU Client");
+                        break;
                     default:
                         lst.SubItems.Add("??? 0x" + l.Type.ToString("X"));
                         break;

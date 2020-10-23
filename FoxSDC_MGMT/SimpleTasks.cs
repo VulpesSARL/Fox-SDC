@@ -45,6 +45,7 @@ namespace FoxSDC_MGMT
 
             lstType.Items.Add("Run a program");
             lstType.Items.Add("Edit Registry");
+            lstType.Items.Add("Reset Windows Update Client");
 
             lstRegAction.Items.Add("Add / Update value");
             lstRegAction.Items.Add("Delete value");
@@ -106,6 +107,11 @@ namespace FoxSDC_MGMT
                             txtRegValue.Text = streg.Data;
                             break;
                         }
+                    case 3://Reset WU
+                        {
+                            lstType.SelectedIndex = 2;
+                            break;
+                        }
                 }
                 this.Text = "Edit Simple Task";
                 if (editst.ID == -1)
@@ -124,6 +130,9 @@ namespace FoxSDC_MGMT
                     break;
                 case 1:
                     panelReg.Visible = panelReg.Enabled = true;
+                    break;
+                case 2:
+                    //no settings
                     break;
             }
         }
@@ -200,6 +209,28 @@ namespace FoxSDC_MGMT
                         {
                             ComputerData cd = (ComputerData)lst.Tag;
                             Int64? ID = Program.net.SetSimpleTask(txtName.Text.Trim(), cd.MachineID, 2, streg);
+                            if (ID == null)
+                            {
+                                MessageBox.Show(this, "Cannot create SimpleTask on Server: " + Program.net.GetLastError(), Program.Title, MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                                return;
+                            }
+                        }
+
+                        this.DialogResult = DialogResult.OK;
+                        this.Close();
+                        break;
+                    }
+                case 2: //reset WU
+                    {
+                        SimpleTaskNix streg = new SimpleTaskNix();
+                        streg.Dummy = "";
+
+                        RemovePreviousThing();
+
+                        foreach (ListViewItem lst in lstPCs.CheckedItems)
+                        {
+                            ComputerData cd = (ComputerData)lst.Tag;
+                            Int64? ID = Program.net.SetSimpleTask(txtName.Text.Trim(), cd.MachineID, 3, streg);
                             if (ID == null)
                             {
                                 MessageBox.Show(this, "Cannot create SimpleTask on Server: " + Program.net.GetLastError(), Program.Title, MessageBoxButtons.OK, MessageBoxIcon.Stop);

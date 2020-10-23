@@ -25,7 +25,7 @@ namespace FoxSDC_Agent
             catch (Exception ee)
             {
                 Debug.WriteLine(ee.ToString());
-                return (lst);
+                return (null);
             }
 
             foreach (ManagementObject mo in mc.GetInstances())
@@ -44,6 +44,8 @@ namespace FoxSDC_Agent
                     continue;
 
                 string[] keys = (string[])outparams2["VolumeKeyProtectorID"];
+                if (keys == null)
+                    return (null);
 
                 foreach (string key in keys)
                 {
@@ -76,7 +78,12 @@ namespace FoxSDC_Agent
                 Status.UpdateMessage(1, "Collecting Bitlocker Recovery Keys");
 
                 List<BitlockerRK> lst = GetRKs();
-
+                if (lst == null)
+                {
+                    net.CloseConnection();
+                    Status.UpdateMessage(1);
+                    return (false);
+                }
                 if (lst.Count != 0)
                 {
                     Status.UpdateMessage(1, "Reporting Bitlocker Recovery Keys");

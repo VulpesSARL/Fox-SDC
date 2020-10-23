@@ -124,7 +124,7 @@ namespace FoxSDC_Agent
                 }
                 catch (ManagementException ee)
                 {
-                    if(ee.ErrorCode== ManagementStatus.NotSupported)
+                    if (ee.ErrorCode == ManagementStatus.NotSupported)
                     {
                         SMART = new List<VulpesSMARTInfo>();
                         SMART.Add(new VulpesSMARTInfo()

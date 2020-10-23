@@ -142,8 +142,8 @@ namespace FoxSDC_Agent.PolicyObjects
                 p.SpecifyStatusServer = null;
             if (p.WUServer == null)
                 p.SpecifyWUServer = null;
-            if (p.Target == null)
-                p.SpecifyClientSideTargeting = null;
+            if (string.IsNullOrWhiteSpace(p.Target) == true)
+                p.SpecifyClientSideTargeting = false;
 
             if (p.ConfigureWSUS == true)
             {
@@ -274,7 +274,7 @@ namespace FoxSDC_Agent.PolicyObjects
         public bool FinaliseApplyPolicy()
         {
             if (SystemInfos.SysInfo.RunningInWindowsPE == true)
-                return(true);
+                return (true);
 
             Merge();
             ApplyPolicy(RunningPolicy);
@@ -289,7 +289,7 @@ namespace FoxSDC_Agent.PolicyObjects
         public bool FinaliseUninstallProgramm()
         {
             if (SystemInfos.SysInfo.RunningInWindowsPE == true)
-                return(true);
+                return (true);
 
             Merge();
             if (RunningPolicy.ConfigureWSUS != null)

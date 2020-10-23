@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Management;
 using System.Text;
@@ -46,7 +47,7 @@ namespace FoxSDC_Agent
             {
                 ManagementScope Scope;
                 Scope = new ManagementScope("\\\\.\\root\\CIMV2", null);
-                ObjectQuery Query = new ObjectQuery("SELECT * FROM Win32_UserAccount");
+                ObjectQuery Query = new ObjectQuery("SELECT SID,Domain,Name FROM Win32_UserAccount");
                 EnumerationOptions eo = new EnumerationOptions();
                 eo.Timeout = new TimeSpan(0, 0, 3, 0);
                 ManagementObjectSearcher Searcher = new ManagementObjectSearcher(Scope, Query, eo);
@@ -58,9 +59,25 @@ namespace FoxSDC_Agent
                     Users.Add((string)WmiObject["SID"], (string)WmiObject["Domain"] + "\\" + (string)WmiObject["Name"]);
                 }
             }
+            catch (ManagementException ee)
+            {
+                if (ee.ErrorCode == ManagementStatus.CallCanceled || ee.ErrorCode == ManagementStatus.Timedout)
+                {
+                    //drop message silently
+                    Debug.WriteLine(ee.ToString());
+                    return (null);
+                }
+                else
+                {
+                    Debug.WriteLine(ee.ToString());
+                    FoxEventLog.WriteEventLog("Cannot list users (SID): " + ee.ToString(), EventLogEntryType.Error);
+                    return (null);
+                }
+            }
             catch (Exception ee)
             {
                 FoxEventLog.WriteEventLog("Cannot list users (SID): " + ee.ToString(), System.Diagnostics.EventLogEntryType.Error);
+                return (null);
             }
             return (Users);
         }

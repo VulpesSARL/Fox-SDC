@@ -20,6 +20,7 @@ using namespace FoxSDC_Common;
 extern BOOL GetFirmwareType_CXX(PFIRMWARE_TYPE firmwaretype);
 extern VOID SendSAS(BOOL AsUser);
 extern BOOL SetFirmwareEnvironmentVariableEx_CXX(LPCWSTR lpName, LPCWSTR lpGuid, PVOID pValue, DWORD nSize, DWORD dwAttributes);
+extern DWORD EnumDynamicTimeZoneInformation_CXX(DWORD dwIndex, PDYNAMIC_TIME_ZONE_INFORMATION lpTimeZoneInformation);
 
 bool LauchApp(WCHAR* FILE, WCHAR* ARGS);
 bool LauchApp(WCHAR* FILE, WCHAR* ARGS, DWORD SessionID, DWORD *PID);
@@ -703,7 +704,7 @@ namespace Fox
 			DWORD i = 0;
 			do
 			{
-				dwResult = EnumDynamicTimeZoneInformation(i++, &dynamicTimezone);
+				dwResult = EnumDynamicTimeZoneInformation_CXX(i++, &dynamicTimezone);
 				if (dwResult == ERROR_SUCCESS)
 				{
 					if (gcnew String(dynamicTimezone.TimeZoneKeyName) == Name)

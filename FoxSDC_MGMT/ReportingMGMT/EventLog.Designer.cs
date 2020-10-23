@@ -38,6 +38,13 @@
             this.cmdCancel = new System.Windows.Forms.Button();
             this.cmdOK = new System.Windows.Forms.Button();
             this.lstBook = new System.Windows.Forms.ComboBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.lstInclExcl = new System.Windows.Forms.ComboBox();
+            this.lstTexts = new System.Windows.Forms.ListBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.cmdInsert = new System.Windows.Forms.Button();
+            this.cmdEdit = new System.Windows.Forms.Button();
+            this.cmdRemove = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // label1
@@ -104,20 +111,20 @@
             // cmdCancel
             // 
             this.cmdCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.cmdCancel.Location = new System.Drawing.Point(189, 173);
+            this.cmdCancel.Location = new System.Drawing.Point(189, 330);
             this.cmdCancel.Name = "cmdCancel";
             this.cmdCancel.Size = new System.Drawing.Size(75, 23);
-            this.cmdCancel.TabIndex = 5;
+            this.cmdCancel.TabIndex = 10;
             this.cmdCancel.Text = "Cancel";
             this.cmdCancel.UseVisualStyleBackColor = true;
             this.cmdCancel.Click += new System.EventHandler(this.cmdCancel_Click);
             // 
             // cmdOK
             // 
-            this.cmdOK.Location = new System.Drawing.Point(270, 173);
+            this.cmdOK.Location = new System.Drawing.Point(270, 330);
             this.cmdOK.Name = "cmdOK";
             this.cmdOK.Size = new System.Drawing.Size(75, 23);
-            this.cmdOK.TabIndex = 4;
+            this.cmdOK.TabIndex = 9;
             this.cmdOK.Text = "OK";
             this.cmdOK.UseVisualStyleBackColor = true;
             this.cmdOK.Click += new System.EventHandler(this.cmdOK_Click);
@@ -130,13 +137,87 @@
             this.lstBook.Size = new System.Drawing.Size(249, 21);
             this.lstBook.TabIndex = 0;
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(12, 166);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(52, 13);
+            this.label2.TabIndex = 8;
+            this.label2.Text = "Incl/Excl:";
+            // 
+            // lstInclExcl
+            // 
+            this.lstInclExcl.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.lstInclExcl.FormattingEnabled = true;
+            this.lstInclExcl.Location = new System.Drawing.Point(96, 163);
+            this.lstInclExcl.Name = "lstInclExcl";
+            this.lstInclExcl.Size = new System.Drawing.Size(249, 21);
+            this.lstInclExcl.TabIndex = 4;
+            // 
+            // lstTexts
+            // 
+            this.lstTexts.FormattingEnabled = true;
+            this.lstTexts.IntegralHeight = false;
+            this.lstTexts.Location = new System.Drawing.Point(96, 190);
+            this.lstTexts.Name = "lstTexts";
+            this.lstTexts.ScrollAlwaysVisible = true;
+            this.lstTexts.Size = new System.Drawing.Size(249, 96);
+            this.lstTexts.TabIndex = 5;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(12, 190);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(36, 13);
+            this.label6.TabIndex = 11;
+            this.label6.Text = "Texts:";
+            // 
+            // cmdInsert
+            // 
+            this.cmdInsert.Location = new System.Drawing.Point(96, 292);
+            this.cmdInsert.Name = "cmdInsert";
+            this.cmdInsert.Size = new System.Drawing.Size(75, 23);
+            this.cmdInsert.TabIndex = 6;
+            this.cmdInsert.Text = "Add";
+            this.cmdInsert.UseVisualStyleBackColor = true;
+            this.cmdInsert.Click += new System.EventHandler(this.cmdInsert_Click);
+            // 
+            // cmdEdit
+            // 
+            this.cmdEdit.Location = new System.Drawing.Point(177, 292);
+            this.cmdEdit.Name = "cmdEdit";
+            this.cmdEdit.Size = new System.Drawing.Size(75, 23);
+            this.cmdEdit.TabIndex = 7;
+            this.cmdEdit.Text = "Edit";
+            this.cmdEdit.UseVisualStyleBackColor = true;
+            this.cmdEdit.Click += new System.EventHandler(this.cmdEdit_Click);
+            // 
+            // cmdRemove
+            // 
+            this.cmdRemove.Location = new System.Drawing.Point(258, 292);
+            this.cmdRemove.Name = "cmdRemove";
+            this.cmdRemove.Size = new System.Drawing.Size(75, 23);
+            this.cmdRemove.TabIndex = 8;
+            this.cmdRemove.Text = "Remove";
+            this.cmdRemove.UseVisualStyleBackColor = true;
+            this.cmdRemove.Click += new System.EventHandler(this.cmdRemove_Click);
+            // 
             // frmEventLog
             // 
             this.AcceptButton = this.cmdOK;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.cmdCancel;
-            this.ClientSize = new System.Drawing.Size(357, 205);
+            this.ClientSize = new System.Drawing.Size(357, 365);
+            this.Controls.Add(this.cmdRemove);
+            this.Controls.Add(this.cmdEdit);
+            this.Controls.Add(this.cmdInsert);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.lstTexts);
+            this.Controls.Add(this.lstInclExcl);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this.lstBook);
             this.Controls.Add(this.cmdOK);
             this.Controls.Add(this.cmdCancel);
@@ -173,5 +254,12 @@
         private System.Windows.Forms.Button cmdCancel;
         private System.Windows.Forms.Button cmdOK;
         private System.Windows.Forms.ComboBox lstBook;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.ComboBox lstInclExcl;
+        private System.Windows.Forms.ListBox lstTexts;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Button cmdInsert;
+        private System.Windows.Forms.Button cmdEdit;
+        private System.Windows.Forms.Button cmdRemove;
     }
 }

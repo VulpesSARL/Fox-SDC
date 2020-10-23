@@ -605,7 +605,7 @@ namespace FoxSDC_Agent
             return (FoundCert);
         }
 
-        static public bool ContainsPolicy(PolicyObject obj, bool CheckData)
+        static public bool ContainsPolicy(PolicyObject obj, bool CheckData, bool CheckIDOnly)
         {
             if (LoadedPolicyObjects == null)
                 LoadedPolicyObjects = new List<LoadedPolicyObject>();
@@ -613,23 +613,31 @@ namespace FoxSDC_Agent
             bool ElementFound = false;
             foreach (LoadedPolicyObject pol in LoadedPolicyObjects)
             {
-                if (pol.PolicyObject.ID != obj.ID)
-                    continue;
-                if (pol.PolicyObject.Name != obj.Name)
-                    continue;
-                if (pol.PolicyObject.Type != obj.Type)
-                    continue;
-                if (pol.PolicyObject.Version != obj.Version)
-                    continue;
-                if (pol.PolicyObject.DT != obj.DT)
-                    continue;
-                if (CheckData == true)
+                if (CheckIDOnly == true)
                 {
-                    if (pol.PolicyObject.Data != obj.Data)
+                    if (pol.PolicyObject.ID != obj.ID)
                         continue;
+                    ElementFound = true;
                 }
-                ElementFound = true;
-                pol.Processed = true;
+                else
+                {
+                    if (pol.PolicyObject.ID != obj.ID)
+                        continue;
+                    if (pol.PolicyObject.Name != obj.Name)
+                        continue;
+                    if (pol.PolicyObject.Type != obj.Type)
+                        continue;
+                    if (pol.PolicyObject.Version != obj.Version)
+                        continue;
+                    if (pol.PolicyObject.DT != obj.DT)
+                        continue;
+                    if (CheckData == true)
+                    {
+                        if (pol.PolicyObject.Data != obj.Data)
+                            continue;
+                    }
+                    ElementFound = true;
+                }
                 break;
             }
 
@@ -703,12 +711,6 @@ namespace FoxSDC_Agent
             return (true);
         }
 
-        static public void ResetProcessedPolicyObjectStatus()
-        {
-            foreach (LoadedPolicyObject pol in LoadedPolicyObjects)
-                pol.Processed = false;
-        }
-
         static public bool InstallCertificate(byte[] data)
         {
             if (ContainsLoadedCert(data) == true)
@@ -738,6 +740,11 @@ namespace FoxSDC_Agent
             return (true);
         }
 
+        /// <summary>
+        /// Dict&lt;old,new&gt;
+        /// </summary>
+        static public Dictionary<LoadedPolicyObject, LoadedPolicyObject> UpdatePolicies;
+
         static public bool InstallPolicy(PolicyObject data, Int64 Order)
         {
             if (data == null)
@@ -754,11 +761,90 @@ namespace FoxSDC_Agent
                 return (false);
             }
 
+            //do we have that policy loaded?... - overwrite that (and store it to an Update Dict)
+            if (LoadedPolicyObjects == null)
+                LoadedPolicyObjects = new List<LoadedPolicyObject>();
+
+            foreach (LoadedPolicyObject loadedpol in LoadedPolicyObjects)
+            {
+                if (loadedpol.PolicyObject.ID != data.ID)
+                    continue;
+
+                if (UpdatePolicies == null)
+                    UpdatePolicies = new Dictionary<LoadedPolicyObject, LoadedPolicyObject>();
+                UpdatePolicies.Add(
+                    new LoadedPolicyObject()
+                    {
+                        Filename = loadedpol.Filename,
+                        SignFilename = loadedpol.SignFilename,
+                        PolicyObject = new PolicyObject()
+                        {
+                            Condition = loadedpol.PolicyObject.Condition,
+                            DataAddtions1 = loadedpol.PolicyObject.DataAddtions1,
+                            DataAddtions2 = loadedpol.PolicyObject.DataAddtions2,
+                            DataAddtions3 = loadedpol.PolicyObject.DataAddtions3,
+                            DataAddtions4 = loadedpol.PolicyObject.DataAddtions4,
+                            DataAddtions5 = loadedpol.PolicyObject.DataAddtions5,
+                            Data = loadedpol.PolicyObject.Data,
+                            DT = loadedpol.PolicyObject.DT,
+                            Enabled = loadedpol.PolicyObject.Enabled,
+                            Grouping = loadedpol.PolicyObject.Grouping,
+                            ID = loadedpol.PolicyObject.ID,
+                            MachineID = loadedpol.PolicyObject.MachineID,
+                            Name = loadedpol.PolicyObject.Name,
+                            Order = loadedpol.PolicyObject.Order,
+                            TimeStampCheck = loadedpol.PolicyObject.TimeStampCheck,
+                            Type = loadedpol.PolicyObject.Type,
+                            Version = loadedpol.PolicyObject.Version
+                        }
+                    }
+                    ,
+                    new LoadedPolicyObject()
+                    {
+                        PolicyObject = data,
+                        Filename = loadedpol.Filename,
+                        SignFilename = loadedpol.SignFilename
+                    });
+
+                loadedpol.PolicyObject = data;
+
+                try
+                {
+                    File.WriteAllBytes(loadedpol.Filename, pol);
+                }
+                catch
+                {
+                    FoxEventLog.WriteEventLog("Cannot save policy", System.Diagnostics.EventLogEntryType.Error);
+                    return (false);
+                }
+
+                try
+                {
+                    File.WriteAllBytes(loadedpol.SignFilename, sign);
+                }
+                catch
+                {
+                    try
+                    {
+                        File.Delete(loadedpol.Filename);
+                    }
+                    catch
+                    {
+
+                    }
+                    FoxEventLog.WriteEventLog("Cannot save policy signature", System.Diagnostics.EventLogEntryType.Error);
+                    return (false);
+                }
+
+                return (true);
+            }
+
+            //no? create the file
+
             LoadedPolicyObject lobj = new LoadedPolicyObject();
             lobj.PolicyObject = data;
             lobj.Filename = PoliciesFolder + Filename + ".pol";
             lobj.SignFilename = PoliciesFolder + Filename + ".sign";
-            lobj.Processed = true;
 
             try
             {
@@ -878,7 +964,7 @@ namespace FoxSDC_Agent
                         try
                         {
                             PolicyObject obj = JsonConvert.DeserializeObject<PolicyObject>(Encoding.UTF8.GetString(pol));
-                            if (ContainsPolicy(obj, true) == true)
+                            if (ContainsPolicy(obj, true, true) == true)
                             {
                                 FoxEventLog.WriteEventLog("File \"" + file + "\" is already loaded from a different file - deleting the files", System.Diagnostics.EventLogEntryType.Warning);
                                 File.Delete(file);
@@ -889,7 +975,6 @@ namespace FoxSDC_Agent
                             lobj.PolicyObject = obj;
                             lobj.Filename = file;
                             lobj.SignFilename = signfile;
-                            lobj.Processed = false;
                             LoadedPolicyObjects.Add(lobj);
                             Debug.WriteLine(file + " loaded");
                         }
