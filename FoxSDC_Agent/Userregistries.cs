@@ -56,7 +56,8 @@ namespace FoxSDC_Agent
                 {
                     if (string.IsNullOrWhiteSpace((string)WmiObject["SID"]) == true)
                         continue;
-                    Users.Add((string)WmiObject["SID"], (string)WmiObject["Domain"] + "\\" + (string)WmiObject["Name"]);
+                    if (Users.ContainsKey((string)WmiObject["SID"]) == false)
+                        Users.Add((string)WmiObject["SID"], (string)WmiObject["Domain"] + "\\" + (string)WmiObject["Name"]);
                 }
             }
             catch (ManagementException ee)
