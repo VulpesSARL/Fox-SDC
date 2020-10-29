@@ -63,7 +63,7 @@ namespace FoxSDC_Agent.Redirs
         public PushScreenData GetFullscreen()
         {
             return (Channel.GetFullscreen());
-        }      
+        }
         public NetBool SetMousePosition(int X, int Y, int Delta, int Flags)
         {
             return (Channel.SetMousePosition2(X, Y, Delta, Flags));
@@ -91,6 +91,8 @@ namespace FoxSDC_Agent.Redirs
         public int ScreenX;
         public int ScreenY;
         public byte[] ScreenRawBytes = null;
+        public int UseDeltaScreenAlgo = 1;
+        int NextSquare = 0;
 
         public bool CloseSession()
         {
@@ -113,214 +115,375 @@ namespace FoxSDC_Agent.Redirs
 
         public PushScreenData GetDeltaScreen()
         {
-            MainScreenSystemClient.LastCalled = DateTime.Now;
-            PushScreenData data = new PushScreenData();
-            CPPFrameBufferData screen = ProgramAgent.CPP.GetFrameBufferData();
-            if (screen == null)
-            {
-                data.X = data.Y = 0;
-                data.FailedCode = -1;
-                return (data);
-            }
-
-            if (screen.Failed == true)
-            {
-                Debug.WriteLine("Screendata failed @ " + screen.FailedAt.ToString() + " 0x" + screen.Win32Error.ToString("X"));
-
-                data.X = data.Y = 0;
-                data.FailedCode = screen.FailedAt;
-                return (data);
-            }
-
-            lock (ScreenLock)
-            {
-                if (screen.X != ScreenX || screen.Y != ScreenY)
-                {
-                    ScreenX = screen.X;
-                    ScreenY = screen.Y;
-                    ScreenRawBytes = screen.Data;
-
-                    try
-                    {
-                        Bitmap bmp = new Bitmap(screen.X, screen.Y, 4 * screen.X, PixelFormat.Format32bppArgb, Marshal.UnsafeAddrOfPinnedArrayElement(screen.Data, 0));
-
-                        MemoryStream mem = new MemoryStream();
-                        ImageCodecInfo codec = GetEncoder(ImageFormat.Jpeg);
-                        EncoderParameters myEncoderParameters = new EncoderParameters(1);
-                        myEncoderParameters.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 50L);
-
-                        bmp.Save(mem, codec, myEncoderParameters);
-                        mem.Seek(0, SeekOrigin.Begin);
-                        data.Data = new byte[mem.Length];
-                        mem.Read(data.Data, 0, (int)mem.Length);
-                        return (data);
-                    }
-                    catch (Exception ee)
-                    {
-                        Debug.WriteLine(ee.ToString());
-                        data.X = data.Y = 0;
-                        data.FailedCode = -2;
-                        return (data);
-                    }
-                }
-            }
-
-            int BlockX = 64;
-            int BlockY = 64;
-            int VScreenX = screen.X + (BlockX - (screen.X % BlockX));
-            int VScreenY = screen.Y + (BlockY - (screen.Y % BlockY));
-
-            byte[] deltadata = new byte[screen.Data.Length];
-            int XSZ = screen.X * 4;
-            data.ChangedBlocks = new List<long>();
-            data.DataType = 1;
-            data.BlockX = BlockX;
-            data.BlockY = BlockY;
-            data.X = screen.X;
-            data.Y = screen.Y;
-
-            lock (ScreenLock)
-            {
-                for (int y = 0; y < VScreenY; y += BlockY)
-                {
-                    for (int x = 0; x < VScreenX; x += BlockX)
-                    {
-                        bool Changed = false;
-
-                        for (int by = 0; by < BlockY; by++)
-                        {
-                            for (int bx = 0; bx < BlockX; bx++)
-                            {
-                                int pos = ((by + y) * XSZ) + ((bx + x) * 4);
-                                if (pos >= screen.Data.Length)
-                                    continue;
-                                if (BitConverter.ToInt32(screen.Data, pos) != BitConverter.ToInt32(ScreenRawBytes, pos))
-                                {
-                                    Changed = true;
-                                    break;
-                                }
-                            }
-                            if (Changed == true)
-                                break;
-                        }
-
-                        if (Changed == true)
-                        {
-                            for (int by = 0; by < BlockY; by++)
-                            {
-                                for (int bx = 0; bx < BlockX; bx++)
-                                {
-                                    int pos = ((by + y) * XSZ) + ((bx + x) * 4);
-                                    if (pos >= screen.Data.Length)
-                                        continue;
-                                    deltadata[pos + 0] = screen.Data[pos + 0];
-                                    deltadata[pos + 1] = screen.Data[pos + 1];
-                                    deltadata[pos + 2] = screen.Data[pos + 2];
-                                    deltadata[pos + 3] = screen.Data[pos + 3];
-                                }
-                            }
-                            data.ChangedBlocks.Add(((Int64)x << 32) | (Int64)y);
-                        }
-                    }
-                }
-            }
-
             try
             {
-                Bitmap bmp = new Bitmap(screen.X, screen.Y, 4 * screen.X, PixelFormat.Format32bppArgb, Marshal.UnsafeAddrOfPinnedArrayElement(deltadata, 0));
+                MainScreenSystemClient.LastCalled = DateTime.Now;
+                PushScreenData data = new PushScreenData();
+                CPPFrameBufferData screen = ProgramAgent.CPP.GetFrameBufferData();
+                if (screen == null)
+                {
+                    data.X = data.Y = 0;
+                    data.FailedCode = -1;
+                    return (data);
+                }
 
-                MemoryStream mem = new MemoryStream();
-                ImageCodecInfo codec = GetEncoder(ImageFormat.Jpeg);
-                EncoderParameters myEncoderParameters = new EncoderParameters(1);
-                myEncoderParameters.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 50L);
+                if (screen.Failed == true)
+                {
+                    Debug.WriteLine("Screendata failed @ " + screen.FailedAt.ToString() + " 0x" + screen.Win32Error.ToString("X"));
 
-                bmp.Save(mem, codec, myEncoderParameters);
-                mem.Seek(0, SeekOrigin.Begin);
-                data.Data = new byte[mem.Length];
-                mem.Read(data.Data, 0, (int)mem.Length);
+                    data.X = data.Y = 0;
+                    data.FailedCode = screen.FailedAt;
+                    return (data);
+                }
 
-                //string Filename = "C:\\Temp\\SSDCSC-" + DateTime.Now.ToString("yyyyddMMHHmmss") + ".jpg";
-                //File.WriteAllBytes(Filename, data.Data);
+                lock (ScreenLock)
+                {
+                    //resolution has changed - send whole image over
+                    if (screen.X != ScreenX || screen.Y != ScreenY)
+                    {
+                        try
+                        {
+                            Bitmap bmp = new Bitmap(screen.X, screen.Y, 4 * screen.X, PixelFormat.Format32bppArgb, Marshal.UnsafeAddrOfPinnedArrayElement(screen.Data, 0));
+
+                            MemoryStream mem = new MemoryStream();
+                            ImageCodecInfo codec = GetEncoder(ImageFormat.Jpeg);
+                            EncoderParameters myEncoderParameters = new EncoderParameters(1);
+                            myEncoderParameters.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 50L);
+
+                            bmp.Save(mem, codec, myEncoderParameters);
+                            mem.Seek(0, SeekOrigin.Begin);
+                            data.Data = new byte[mem.Length];
+                            mem.Read(data.Data, 0, (int)mem.Length);
+
+                            NextSquare = 0;
+                            ScreenX = screen.X;
+                            ScreenY = screen.Y;
+                            ScreenRawBytes = screen.Data;
+                            return (data);
+                        }
+                        catch (Exception ee)
+                        {
+                            Debug.WriteLine(ee.ToString());
+                            data.X = data.Y = 0;
+                            data.FailedCode = -2;
+
+                            //next time, transfer whole screen
+                            ScreenX = ScreenY = 0;
+                            NextSquare = 0;
+                            return (data);
+                        }
+                    }
+                }
+
+                switch (UseDeltaScreenAlgo)
+                {
+                    case 0:
+                        {
+                            int BlockX = 64;
+                            int BlockY = 64;
+                            int VScreenX = screen.X + (BlockX - (screen.X % BlockX));
+                            int VScreenY = screen.Y + (BlockY - (screen.Y % BlockY));
+
+                            byte[] deltadata = new byte[screen.Data.Length];
+                            int XSZ = screen.X * 4;
+                            data.ChangedBlocks = new List<long>();
+                            data.DataType = 1;
+                            data.BlockX = BlockX;
+                            data.BlockY = BlockY;
+                            data.X = screen.X;
+                            data.Y = screen.Y;
+
+                            lock (ScreenLock)
+                            {
+                                for (int y = 0; y < VScreenY; y += BlockY)
+                                {
+                                    for (int x = 0; x < VScreenX; x += BlockX)
+                                    {
+                                        bool Changed = false;
+
+                                        for (int by = 0; by < BlockY; by++)
+                                        {
+                                            for (int bx = 0; bx < BlockX; bx++)
+                                            {
+                                                int pos = ((by + y) * XSZ) + ((bx + x) * 4);
+                                                if (pos >= screen.Data.Length)
+                                                    continue;
+                                                if (BitConverter.ToInt32(screen.Data, pos) != BitConverter.ToInt32(ScreenRawBytes, pos))
+                                                {
+                                                    Changed = true;
+                                                    break;
+                                                }
+                                            }
+                                            if (Changed == true)
+                                                break;
+                                        }
+
+                                        if (Changed == true)
+                                        {
+                                            for (int by = 0; by < BlockY; by++)
+                                            {
+                                                for (int bx = 0; bx < BlockX; bx++)
+                                                {
+                                                    int pos = ((by + y) * XSZ) + ((bx + x) * 4);
+                                                    if (pos >= screen.Data.Length)
+                                                        continue;
+                                                    deltadata[pos + 0] = screen.Data[pos + 0];
+                                                    deltadata[pos + 1] = screen.Data[pos + 1];
+                                                    deltadata[pos + 2] = screen.Data[pos + 2];
+                                                    deltadata[pos + 3] = screen.Data[pos + 3];
+                                                }
+                                            }
+                                            data.ChangedBlocks.Add(((Int64)x << 32) | (Int64)y);
+                                        }
+                                    }
+                                }
+                            }
+
+                            try
+                            {
+                                Bitmap bmp = new Bitmap(screen.X, screen.Y, 4 * screen.X, PixelFormat.Format32bppArgb, Marshal.UnsafeAddrOfPinnedArrayElement(deltadata, 0));
+
+                                MemoryStream mem = new MemoryStream();
+                                ImageCodecInfo codec = GetEncoder(ImageFormat.Jpeg);
+                                EncoderParameters myEncoderParameters = new EncoderParameters(1);
+                                myEncoderParameters.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 50L);
+
+                                bmp.Save(mem, codec, myEncoderParameters);
+                                mem.Seek(0, SeekOrigin.Begin);
+                                data.Data = new byte[mem.Length];
+                                mem.Read(data.Data, 0, (int)mem.Length);
+
+                                //string Filename = "C:\\Temp\\SSDCSC-" + DateTime.Now.ToString("yyyyddMMHHmmss") + ".jpg";
+                                //File.WriteAllBytes(Filename, data.Data);
+                            }
+                            catch (Exception ee)
+                            {
+                                Debug.WriteLine(ee.ToString());
+                                data.X = data.Y = 0;
+                                data.FailedCode = -2;
+                                return (data);
+                            }
+
+                            lock (ScreenLock)
+                            {
+                                ScreenX = screen.X;
+                                ScreenY = screen.Y;
+                                ScreenRawBytes = screen.Data;
+                            }
+
+                            data.CursorX = screen.CursorX;
+                            data.CursorY = screen.CursorY;
+
+                            break;
+                        }
+                    case 1:
+                        {
+                            int BlockX = 64;
+                            int BlockY = 64;
+                            int VScreenX = screen.X + (BlockX - (screen.X % BlockX));
+                            int VScreenY = screen.Y + (BlockY - (screen.Y % BlockY));
+                            byte[] deltadata = new byte[BlockX * BlockY * 4];
+
+                            do
+                            {
+                                lock (ScreenLock)
+                                {
+                                    if (NextSquare > (VScreenX / BlockX) * (VScreenY / BlockY))
+                                    {
+                                        NextSquare = 0;
+                                        //spun around, nothing changed?
+                                        data.CursorX = screen.CursorX;
+                                        data.CursorY = screen.CursorY;
+                                        data.DataType = 3;
+                                        data.BlockX = BlockX;
+                                        data.BlockY = BlockY;
+                                        data.X = screen.X;
+                                        data.Y = screen.Y;
+                                        break;
+                                    }
+                                }
+
+                                bool Changed = false;
+                                int XSZ = screen.X * 4;
+
+                                int y = NextSquare / (VScreenX / BlockX);
+                                int x = NextSquare % (VScreenX / BlockX);
+                                x *= BlockX;
+                                y *= BlockY;
+
+                                lock (ScreenLock)
+                                {
+                                    for (int by = 0; by < BlockY; by++)
+                                    {
+                                        for (int bx = 0; bx < BlockX; bx++)
+                                        {
+                                            int pos = ((by + y) * XSZ) + ((bx + x) * 4);
+                                            if (pos >= screen.Data.Length)
+                                                continue;
+                                            if (BitConverter.ToInt32(screen.Data, pos) != BitConverter.ToInt32(ScreenRawBytes, pos))
+                                            {
+                                                Changed = true;
+                                                break;
+                                            }
+                                        }
+                                        if (Changed == true)
+                                            break;
+                                    }
+
+                                    if (Changed == true)
+                                    {
+                                        for (int by = 0; by < BlockY; by++)
+                                        {
+                                            for (int bx = 0; bx < BlockX; bx++)
+                                            {
+                                                int pos = ((by + y) * XSZ) + ((bx + x) * 4);
+                                                if (pos >= screen.Data.Length)
+                                                    continue;
+                                                deltadata[((by * BlockX * 4) + bx * 4) + 0] = screen.Data[pos + 0];
+                                                deltadata[((by * BlockX * 4) + bx * 4) + 1] = screen.Data[pos + 1];
+                                                deltadata[((by * BlockX * 4) + bx * 4) + 2] = screen.Data[pos + 2];
+                                                deltadata[((by * BlockX * 4) + bx * 4) + 3] = screen.Data[pos + 3];
+
+                                                if (pos >= ScreenRawBytes.Length)
+                                                    continue;
+                                                ScreenRawBytes[pos + 0] = screen.Data[pos + 0];
+                                                ScreenRawBytes[pos + 1] = screen.Data[pos + 1];
+                                                ScreenRawBytes[pos + 2] = screen.Data[pos + 2];
+                                                ScreenRawBytes[pos + 3] = screen.Data[pos + 3];
+                                            }
+                                        }
+                                        data.ChangedBlocks = new List<long>();
+                                        data.ChangedBlocks.Add(NextSquare);
+                                        NextSquare++;
+                                    }
+                                    else
+                                    {
+                                        NextSquare++;
+                                        continue;
+                                    }
+                                }
+
+                                if (Changed == true)
+                                {
+                                    try
+                                    {
+                                        Bitmap bmp = new Bitmap(BlockX, BlockY, 4 * BlockX, PixelFormat.Format32bppArgb, Marshal.UnsafeAddrOfPinnedArrayElement(deltadata, 0));
+
+                                        MemoryStream mem = new MemoryStream();
+                                        ImageCodecInfo codec = GetEncoder(ImageFormat.Jpeg);
+                                        EncoderParameters myEncoderParameters = new EncoderParameters(1);
+                                        myEncoderParameters.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 50L);
+
+                                        bmp.Save(mem, codec, myEncoderParameters);
+                                        mem.Seek(0, SeekOrigin.Begin);
+                                        data.Data = new byte[mem.Length];
+                                        mem.Read(data.Data, 0, (int)mem.Length);
+
+                                        //string Filename = "C:\\Temp\\SSDCSC-" + DateTime.Now.ToString("yyyyddMMHHmmss") + ".jpg";
+                                        //File.WriteAllBytes(Filename, data.Data);
+                                    }
+                                    catch (Exception ee)
+                                    {
+                                        Debug.WriteLine(ee.ToString());
+                                        data.X = data.Y = 0;
+                                        data.FailedCode = -2;
+                                        return (data);
+                                    }
+
+                                    data.CursorX = screen.CursorX;
+                                    data.CursorY = screen.CursorY;
+                                    data.DataType = 2;
+                                    data.BlockX = BlockX;
+                                    data.BlockY = BlockY;
+                                    data.X = screen.X;
+                                    data.Y = screen.Y;
+                                    break;
+                                }
+
+                            } while (true);
+
+                            break;
+                        }
+                }
+
+                return (data);
             }
             catch (Exception ee)
             {
                 Debug.WriteLine(ee.ToString());
-                data.X = data.Y = 0;
-                data.FailedCode = -2;
-                return (data);
+                FoxEventLog.VerboseWriteEventLog(ee.ToString(), EventLogEntryType.Error);
+                throw (ee);
             }
-
-            lock (ScreenLock)
-            {
-                ScreenX = screen.X;
-                ScreenY = screen.Y;
-                ScreenRawBytes = screen.Data;
-            }
-
-            data.CursorX = screen.CursorX;
-            data.CursorY = screen.CursorY;
-
-            return (data);
         }
 
         public PushScreenData GetFullscreen()
         {
-            MainScreenSystemClient.LastCalled = DateTime.Now;
-            PushScreenData data = new PushScreenData();
-            CPPFrameBufferData screen = ProgramAgent.CPP.GetFrameBufferData();
-            if (screen == null)
-            {
-                data.X = data.Y = 0;
-                data.FailedCode = -1;
-                return (data);
-            }
-
-            if (screen.Failed == true)
-            {
-                Debug.WriteLine("Screendata failed @ " + screen.FailedAt.ToString() + " 0x" + screen.Win32Error.ToString("X"));
-
-                data.X = data.Y = 0;
-                data.FailedCode = screen.FailedAt;
-                return (data);
-            }
-
-            data.X = screen.X;
-            data.Y = screen.Y;
-            data.CursorX = screen.CursorX;
-            data.CursorY = screen.CursorY;
-            data.DataType = 0;
-
-            lock (ScreenLock)
-            {
-                ScreenX = screen.X;
-                ScreenY = screen.Y;
-                ScreenRawBytes = screen.Data;
-            }
-
             try
             {
-                Bitmap bmp = new Bitmap(screen.X, screen.Y, 4 * screen.X, PixelFormat.Format32bppArgb, Marshal.UnsafeAddrOfPinnedArrayElement(screen.Data, 0));
+                MainScreenSystemClient.LastCalled = DateTime.Now;
+                PushScreenData data = new PushScreenData();
+                CPPFrameBufferData screen = ProgramAgent.CPP.GetFrameBufferData();
+                if (screen == null)
+                {
+                    data.X = data.Y = 0;
+                    data.FailedCode = -1;
+                    return (data);
+                }
 
-                MemoryStream mem = new MemoryStream();
-                ImageCodecInfo codec = GetEncoder(ImageFormat.Jpeg);
-                EncoderParameters myEncoderParameters = new EncoderParameters(1);
-                myEncoderParameters.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 50L);
+                if (screen.Failed == true)
+                {
+                    Debug.WriteLine("Screendata failed @ " + screen.FailedAt.ToString() + " 0x" + screen.Win32Error.ToString("X"));
 
-                bmp.Save(mem, codec, myEncoderParameters);
-                mem.Seek(0, SeekOrigin.Begin);
-                data.Data = new byte[mem.Length];
-                mem.Read(data.Data, 0, (int)mem.Length);
+                    data.X = data.Y = 0;
+                    data.FailedCode = screen.FailedAt;
+                    return (data);
+                }
+
+                data.X = screen.X;
+                data.Y = screen.Y;
+                data.CursorX = screen.CursorX;
+                data.CursorY = screen.CursorY;
+                data.DataType = 0;
+
+                lock (ScreenLock)
+                {
+                    ScreenX = screen.X;
+                    ScreenY = screen.Y;
+                    ScreenRawBytes = screen.Data;
+                    NextSquare = 0;
+                }
+
+                try
+                {
+                    Bitmap bmp = new Bitmap(screen.X, screen.Y, 4 * screen.X, PixelFormat.Format32bppArgb, Marshal.UnsafeAddrOfPinnedArrayElement(screen.Data, 0));
+
+                    MemoryStream mem = new MemoryStream();
+                    ImageCodecInfo codec = GetEncoder(ImageFormat.Jpeg);
+                    EncoderParameters myEncoderParameters = new EncoderParameters(1);
+                    myEncoderParameters.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 50L);
+
+                    bmp.Save(mem, codec, myEncoderParameters);
+                    mem.Seek(0, SeekOrigin.Begin);
+                    data.Data = new byte[mem.Length];
+                    mem.Read(data.Data, 0, (int)mem.Length);
+                }
+                catch (Exception ee)
+                {
+                    Debug.WriteLine(ee.ToString());
+                    data.X = data.Y = 0;
+                    data.FailedCode = -2;
+                    return (data);
+                }
+
+                return (data);
             }
             catch (Exception ee)
             {
                 Debug.WriteLine(ee.ToString());
-                data.X = data.Y = 0;
-                data.FailedCode = -2;
-                return (data);
+                FoxEventLog.VerboseWriteEventLog(ee.ToString(), EventLogEntryType.Error);
+                throw (ee);
             }
-
-            return (data);
-        }      
+        }
 
         public NetBool SetMousePosition2(int X, int Y, int Delta, int Flags)
         {

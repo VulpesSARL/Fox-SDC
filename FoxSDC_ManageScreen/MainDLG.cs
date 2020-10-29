@@ -363,7 +363,7 @@ namespace FoxSDC_ManageScreen
                                     pd.BlockY = RecvPushScreenData.BlockY;
                                     pd.CursorX = RecvPushScreenData.CursorX;
                                     pd.CursorY = RecvPushScreenData.CursorY;
-                                    pd.Data = RecvScreenData.ToArray();
+                                    pd.Data = RecvScreenData == null ? null : RecvScreenData.ToArray();
                                     pd.DataType = RecvPushScreenData.DataType;
                                     pd.FailedCode = RecvPushScreenData.FailedCode;
                                     pd.X = RecvPushScreenData.X;
@@ -465,7 +465,12 @@ namespace FoxSDC_ManageScreen
                     }
 #endif
                 }
-                Thread.Sleep(slowRefreshToolStripMenuItem.Checked == true ? 5000 : 100);
+                if (slowRefreshToolStripMenuItem.Checked == true)
+                    Thread.Sleep(5000);
+                else if (fastRefreshToolStripMenuItem.Checked == true)
+                    Thread.Sleep(20);
+                else
+                    Thread.Sleep(100);
             } while (ThreadRunning == true);
         }
 
@@ -521,6 +526,35 @@ namespace FoxSDC_ManageScreen
 
                                 graa.DrawImage(bmpdelta, new Rectangle(X, Y - screen.BlockY, screen.BlockX, screen.BlockY), new Rectangle(X, Y - screen.BlockY, screen.BlockX, screen.BlockY), GraphicsUnit.Pixel);
                             }
+                            UpdatePic(ScreenData, screen.CursorX, screen.CursorY);
+                            break;
+                        }
+                    case 2:
+                        {
+                            //single square update
+                            Bitmap bmpdelta = new Bitmap(new MemoryStream(screen.Data));
+                            bmpdelta.RotateFlip(RotateFlipType.RotateNoneFlipY);
+
+                            int VScreenX = screen.X + (screen.BlockX - (screen.X % screen.BlockX));
+                            int VScreenY = screen.Y + (screen.BlockY - (screen.Y % screen.BlockY));
+
+                            int XBlk = VScreenX / screen.BlockX;
+                            int YBlk = VScreenY / screen.BlockY;
+
+                            int Chg = (int)screen.ChangedBlocks[0];
+                            int Y = Chg / XBlk;
+                            int X = Chg % XBlk;
+                            Y = YBlk - Y;
+
+                            Graphics graa = Graphics.FromImage(ScreenData);
+                            graa.DrawImage(bmpdelta, new Rectangle((X * screen.BlockX), (Y * screen.BlockY) - screen.BlockY - (VScreenY - screen.Y), screen.BlockX, screen.BlockY), new Rectangle(0, 0, screen.BlockX, screen.BlockY), GraphicsUnit.Pixel);
+
+                            UpdatePic(ScreenData, screen.CursorX, screen.CursorY);
+                            break;
+                        }
+                    case 3:
+                        {
+                            //no changes
                             UpdatePic(ScreenData, screen.CursorX, screen.CursorY);
                             break;
                         }
@@ -779,6 +813,7 @@ namespace FoxSDC_ManageScreen
 
         private void slowRefreshToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            fastRefreshToolStripMenuItem.Checked = false;
             slowRefreshToolStripMenuItem.Checked = !slowRefreshToolStripMenuItem.Checked;
         }
 
@@ -834,6 +869,12 @@ namespace FoxSDC_ManageScreen
         {
             SendData(SendDataType.SetScreen, 8, 0, 0, 0);
             refreshScreenToolStripMenuItem_Click(sender, e);
+        }
+
+        private void fastRefreshToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            slowRefreshToolStripMenuItem.Checked = false;
+            fastRefreshToolStripMenuItem.Checked = !fastRefreshToolStripMenuItem.Checked;
         }
     }
 }
