@@ -1,0 +1,14 @@
+To use automatic DNS configuration, create a new TXT Record for
+
+sdc-contract.my-vulpes-config.lu
+
+Containing the following lines:
+
+ContractID=xxxx
+ContractPassword=xxxx
+
+Optional:
+
+UseOnPrem=1
+OnPremURL=xxxx
+

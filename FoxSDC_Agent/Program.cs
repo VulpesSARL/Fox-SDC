@@ -343,6 +343,8 @@ namespace FoxSDC_Agent
             {
                 try
                 {
+                    if (SystemInfos.CollectSystemInfo() != 0)
+                        return;
                     MainScreenSystemClient.RunPipeClient();
                 }
                 catch (Exception ee)

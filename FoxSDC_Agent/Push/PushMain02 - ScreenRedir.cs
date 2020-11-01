@@ -55,12 +55,12 @@ namespace FoxSDC_Agent.Push
                     case "ping":
                         t.net.ResponsePushData2("ok", t.p.Action, 2, t.p.ReplyID);
                         break;
-                    case "getfullscreen":
-                        t.net.ResponsePushData2(Redirs.MainScreenSystem.GetFullscreen(), t.p.Action, 2, t.p.ReplyID);
-                        break;
-                    case "getdeltascreen":
-                        t.net.ResponsePushData2(Redirs.MainScreenSystem.GetDeltaScreen(), t.p.Action, 2, t.p.ReplyID);
-                        break;
+                    //case "getfullscreen":
+                    //    t.net.ResponsePushData2(Redirs.MainScreenSystem.GetFullscreen(), t.p.Action, 2, t.p.ReplyID);
+                    //    break;
+                    //case "getdeltascreen":
+                    //    t.net.ResponsePushData2(Redirs.MainScreenSystem.GetDeltaScreen(), t.p.Action, 2, t.p.ReplyID);
+                    //    break;
                     case "startwsscreen":
                         t.net.ResponsePushData2(Redirs.MainScreenDataWS.StartRemoteScreen(t.net, t.p.AdditionalData1), t.p.Action, 1, t.p.ReplyID);
                         break;

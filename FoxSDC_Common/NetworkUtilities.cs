@@ -27,5 +27,22 @@ namespace FoxSDC_Common
             }
             return (isAvailable);
         }
+
+        public static int GetAvailablePort()
+        {
+            int Port = 9999;
+            try
+            {
+                while (NetworkUtilities.PortAvailable(Port) == false)
+                {
+                    Port++;
+                }
+            }
+            catch
+            {
+                Port = 9999;
+            }
+            return (Port);
+        }
     }
 }

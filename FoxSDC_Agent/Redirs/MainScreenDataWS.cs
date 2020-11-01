@@ -11,7 +11,7 @@ using WebSocketSharp;
 
 namespace FoxSDC_Agent.Redirs
 {
-    class ScreenDataWS
+    public class ScreenDataWS
     {
         public string SessionID;
         public DateTime LastUpdated = DateTime.UtcNow;
@@ -50,12 +50,15 @@ namespace FoxSDC_Agent.Redirs
         {
             try
             {
-                ws = new WebSocket(URL);
-                ws.OnMessage += Ws_OnMessage;
-                ws.SetCookie(new WebSocketSharp.Net.Cookie("Agent-SessionID", NetSessionID));
-                ws.Connect();
+                if (this.SessionID != "TEST")
+                {
+                    ws = new WebSocket(URL);
+                    ws.OnMessage += Ws_OnMessage;
+                    ws.SetCookie(new WebSocketSharp.Net.Cookie("Agent-SessionID", NetSessionID));
+                    ws.Connect();
 
-                Debug.WriteLine("Screen WSSOCKET: " + SessionID + " Create connection");
+                    Debug.WriteLine("Screen WSSOCKET: " + SessionID + " Create connection");
+                }
             }
             catch
             {
@@ -68,12 +71,15 @@ namespace FoxSDC_Agent.Redirs
         public ScreenDataWS(Network net, string SessionID)
         {
             this.SessionID = SessionID;
-            this.LastUpdated = DateTime.UtcNow;
-            this.URL = ProgramAgent.GetWSUrl(net) + "websocket/agent-" + Uri.EscapeUriString(SessionID);
-            this.NetSessionID = net.Session;
+            if (SessionID != "TEST")
+            {
+                this.LastUpdated = DateTime.UtcNow;
+                this.URL = ProgramAgent.GetWSUrl(net) + "websocket/agent-" + Uri.EscapeUriString(SessionID);
+                this.NetSessionID = net.Session;
 
-            if (ConnectWS() == false)
-                return;
+                if (ConnectWS() == false)
+                    return;
+            }
 
             InitSuccess = true;
         }
@@ -99,7 +105,10 @@ namespace FoxSDC_Agent.Redirs
                     Array.Copy(UploadBytes, i, u, 0, ch);
                     try
                     {
-                        ws.Send(u);
+                        if (this.SessionID != "TEST")
+                            ws.Send(u);
+                        else
+                            Thread.Sleep(10);
                     }
                     catch
                     {
@@ -108,7 +117,10 @@ namespace FoxSDC_Agent.Redirs
                             Debug.WriteLine("Screen RESETTING WS Connection");
                             if (ConnectWS() == true)
                             {
-                                ws.Send(u);
+                                if (this.SessionID != "TEST")
+                                    ws.Send(u);
+                                else
+                                    Thread.Sleep(10);
                             }
                         }
                     }
@@ -123,7 +135,7 @@ namespace FoxSDC_Agent.Redirs
             {
                 UploadBytes = null;
                 RWLck.ExitWriteLock();
-                Debug.WriteLine("Screen all buffer sent");
+                //Debug.WriteLine("Screen all buffer sent");
             }
         }
 
@@ -134,13 +146,20 @@ namespace FoxSDC_Agent.Redirs
             return (true);
         }
 
-        private void Ws_OnMessage(object sender, MessageEventArgs e)
+#if DEBUG
+        public void Ws_OnMessage(byte[] data)
+        {
+            ProcessWsOnMessage(data);
+        }
+#endif
+
+        private void ProcessWsOnMessage(byte[] data)
         {
             try
             {
                 lock (RecvBufferLock)
                 {
-                    List<byte> Recv = new List<byte>(e.RawData);
+                    List<byte> Recv = new List<byte>(data);
 
                     while (Recv.Count > 0)
                     {
@@ -192,62 +211,65 @@ namespace FoxSDC_Agent.Redirs
                             LastUpdated = DateTime.UtcNow;
                             SendDataData ddd = CommonUtilities.Deserialize<SendDataData>(RecvBuffer.ToArray());
                             RecvBuffer.Clear();
-                            switch (ddd.DataType)
+                            Task.Run(() =>
                             {
-                                case (int)SendDataType.Keyboard:
-                                    Redirs.MainScreenSystem.SetKeyboard(ddd.Flag3, ddd.Flag2, ddd.Flag1);
-                                    break;
-                                case (int)SendDataType.Mouse:
-                                    Redirs.MainScreenSystem.SetMousePosition(ddd.Flag1, ddd.Flag2, ddd.Flag3, ddd.Flag4);
-                                    break;
-                                case (int)SendDataType.SetScreen:
-                                    Redirs.MainScreenSystem.SetScreen(ddd.Flag1);
-                                    break;
-                                case (int)SendDataType.DeltaScreen:
-                                    {
-                                        RWLck.EnterReadLock();
-                                        if (UploadBytes != null)
+                                switch (ddd.DataType)
+                                {
+                                    case (int)SendDataType.Keyboard:
+                                        Redirs.MainScreenSystem.SetKeyboard(ddd.Flag3, ddd.Flag2, ddd.Flag1);
+                                        break;
+                                    case (int)SendDataType.Mouse:
+                                        Redirs.MainScreenSystem.SetMousePosition(ddd.Flag1, ddd.Flag2, ddd.Flag3, ddd.Flag4);
+                                        break;
+                                    case (int)SendDataType.SetScreen:
+                                        Redirs.MainScreenSystem.SetScreen(ddd.Flag1);
+                                        break;
+                                    case (int)SendDataType.DeltaScreen:
                                         {
+                                            RWLck.EnterReadLock();
+                                            if (UploadBytes != null)
+                                            {
+                                                RWLck.ExitReadLock();
+                                                break;
+                                            }
                                             RWLck.ExitReadLock();
+                                            RWLck.EnterWriteLock();
+                                            UploadBytes = Redirs.MainScreenSystem.GetDeltaScreen2();
+                                            Thread t = new Thread(UploaderThread);
+                                            t.Start();
+                                            RWLck.ExitWriteLock();
+                                            //Debug.WriteLine("Screen D-Render Prep");
                                             break;
                                         }
-                                        RWLck.ExitReadLock();
-                                        RWLck.EnterWriteLock();
-                                        UploadBytes = Redirs.MainScreenSystem.GetDeltaScreen2();
-                                        Thread t = new Thread(UploaderThread);
-                                        t.Start();
-                                        RWLck.ExitWriteLock();
-                                        Debug.WriteLine("Screen D-Render Prep");
-                                        break;
-                                    }
-                                case (int)SendDataType.RefreshScreen:
-                                    {
-                                        RWLck.EnterReadLock();
-                                        if (UploadBytes != null)
+                                    case (int)SendDataType.RefreshScreen:
                                         {
+                                            RWLck.EnterReadLock();
+                                            if (UploadBytes != null)
+                                            {
+                                                RWLck.ExitReadLock();
+                                                break;
+                                            }
                                             RWLck.ExitReadLock();
+                                            RWLck.EnterWriteLock();
+                                            UploadBytes = Redirs.MainScreenSystem.GetFullscreen2();
+                                            Thread t = new Thread(UploaderThread);
+                                            t.Start();
+                                            RWLck.ExitWriteLock();
+                                            //Debug.WriteLine("Screen F-Render Prep");
                                             break;
                                         }
-                                        RWLck.ExitReadLock();
-                                        RWLck.EnterWriteLock();
-                                        UploadBytes = Redirs.MainScreenSystem.GetFullscreen2();
-                                        Thread t = new Thread(UploaderThread);
-                                        t.Start();
-                                        RWLck.ExitWriteLock();
-                                        Debug.WriteLine("Screen F-Render Prep");
+                                    case (int)SendDataType.ResetStream:
+                                        Debug.WriteLine("Screen RESET Buffer");
+                                        RecvBuffer.Clear();
                                         break;
-                                    }
-                                case (int)SendDataType.ResetStream:
-                                    Debug.WriteLine("Screen RESET Buffer");
-                                    RecvBuffer.Clear();
-                                    break;
-                                case (int)SendDataType.Disconnect:
-                                    CloseAll();
-                                    return;
-                                default:
-                                    Debug.WriteLine("Screen ??? unknown code " + ddd.DataType);
-                                    return;
-                            }
+                                    case (int)SendDataType.Disconnect:
+                                        CloseAll();
+                                        return;
+                                    default:
+                                        Debug.WriteLine("Screen ??? unknown code " + ddd.DataType);
+                                        return;
+                                }
+                            });
                         }
                     }
                 }
@@ -256,6 +278,11 @@ namespace FoxSDC_Agent.Redirs
             {
                 Debug.WriteLine("Screen RX/TX Error: " + ee.ToString());
             }
+        }
+
+        private void Ws_OnMessage(object sender, MessageEventArgs e)
+        {
+            ProcessWsOnMessage(e.RawData);
         }
     }
 

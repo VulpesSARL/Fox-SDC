@@ -251,7 +251,7 @@ namespace FoxSDC_Common
         DeltaScreen = 4,
         ResetStream = 5,
         Disconnect = 6,
-        SetScreen = 7
+        SetScreen = 7,
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 0)]
