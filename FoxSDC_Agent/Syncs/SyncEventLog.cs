@@ -3,9 +3,12 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Eventing.Reader;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace FoxSDC_Agent
 {
@@ -13,6 +16,91 @@ namespace FoxSDC_Agent
     {
         static List<EventLogReport> lst = new List<EventLogReport>();
         static HashSet<string> HasEVTLogs;
+
+        static string MakeNiceXML(string XML)
+        {
+            XmlDocument document = new XmlDocument();
+            document.LoadXml(XML);
+
+            using (MemoryStream mStream = new MemoryStream())
+            {
+                XmlTextWriter writer = new XmlTextWriter(mStream, Encoding.Unicode);
+                writer.Formatting = System.Xml.Formatting.Indented;
+
+                document.WriteContentTo(writer);
+                writer.Flush();
+                mStream.Flush();
+
+                mStream.Seek(0, SeekOrigin.Begin);
+
+                using (StreamReader sReader = new StreamReader(mStream))
+                {
+                    return (sReader.ReadToEnd());
+                }
+            }
+        }
+
+        static bool CollectEVT2(string Book)
+        {
+            try
+            {
+                EventLogSession session = new EventLogSession();
+
+                bool Found = false;
+                foreach (string logName in session.GetLogNames())
+                {
+                    if (Book==logName)
+                    {
+                        Found = true;
+                        break;
+                    }
+                }
+
+                if (Found == false)
+                    return (true);
+
+                EventLogReader evt = new EventLogReader(Book);
+
+                EventRecord log;
+                while ((log = evt.ReadEvent()) != null)
+                {
+                    EventLogReport ev = new EventLogReport();
+
+                    ev.Category = "(" + log.Id + ")";
+                    ev.CategoryNumber = log.Id;
+                    ev.Data = new byte[0];
+                    ev.EventLog = Book;
+                    switch (log.LevelDisplayName.ToLower())
+                    {
+                        case "information":
+                            ev.EventLogType = (int)EventLogEntryType.Information; break;
+                        case "warning":
+                            ev.EventLogType = (int)EventLogEntryType.Warning; break;
+                        case "error":
+                            ev.EventLogType = (int)EventLogEntryType.Error; break;
+                        default:
+                            ev.EventLogType = (int)EventLogEntryType.Information; break;
+                    }
+                    ev.InstanceID = log.Id;
+                    ev.LogID = "";
+                    ev.MachineID = SystemInfos.SysInfo.MachineID;
+                    ev.Message = MakeNiceXML(log.ToXml());
+                    ev.Source = log.ProviderName;
+                    ev.TimeGenerated = log.TimeCreated==null?DateTime.Now: log.TimeCreated.Value;
+                    ev.TimeWritten = log.TimeCreated == null ? DateTime.Now : log.TimeCreated.Value;
+                    ev.JSONReplacementStrings = "[]";
+                    CommonUtilities.CalcEventLogID(ev);
+                    HasEVTLogs.Add(ev.LogID);
+                    lst.Add(ev);
+                }
+            }
+            catch
+            {
+                FoxEventLog.WriteEventLog("Cannot collect EventLog " + Book, EventLogEntryType.Error);
+            }
+            return (true);
+        }
+
         static bool CollectEVT(string Book)
         {
             EventLog eventLog;
@@ -76,6 +164,22 @@ namespace FoxSDC_Agent
 
                 if (CollectEVT("System") == false)
                     return (false);
+
+                if (RegistryData.EnableAdditionalEventLogs == true)
+                {
+                    string AdditionalBooks = RegistryData.AdditionalEventLogs;
+                    if (string.IsNullOrWhiteSpace(AdditionalBooks) == false)
+                    {
+                        foreach (string AdditionalBook in AdditionalBooks.Split('|'))
+                        {
+                            if (string.IsNullOrWhiteSpace(AdditionalBook) == true)
+                                continue;
+                            Status.UpdateMessage(0, "Collecting EventLog data (" + AdditionalBook + ")");
+                            if (CollectEVT2(AdditionalBook) == false)
+                                return (false);
+                        }
+                    }
+                }
 
                 Status.UpdateMessage(0, "Collecting EventLog data (Processing ...)");
 

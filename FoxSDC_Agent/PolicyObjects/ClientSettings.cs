@@ -110,6 +110,13 @@ namespace FoxSDC_Agent.PolicyObjects
 
                 if (p.DisableStartupSync != null)
                     RunningPolicy.DisableStartupSync = p.DisableStartupSync;
+
+                if (p.EnableAdditionalEventLogs != null)
+                {
+                    RunningPolicy.EnableAdditionalEventLogs = p.EnableAdditionalEventLogs;
+                    if (RunningPolicy.EnableAdditionalEventLogs == true)
+                        RunningPolicy.AdditionalEventLogs = p.AdditionalEventLogs;
+                }
             }
         }
 
@@ -174,6 +181,17 @@ namespace FoxSDC_Agent.PolicyObjects
                 RegistryData.DisableStartupSync = p.DisableStartupSync.Value;
             else
                 RegistryData.DisableStartupSync = false;
+
+            if (p.EnableAdditionalEventLogs != null)
+            {
+                RegistryData.EnableAdditionalEventLogs = p.EnableAdditionalEventLogs.Value;
+                if (p.EnableAdditionalEventLogs==true)
+                {
+                    RegistryData.AdditionalEventLogs = p.AdditionalEventLogs;
+                }
+            }
+            else
+                RegistryData.EnableAdditionalEventLogs = false;
         }
 
         public bool FinaliseApplyPolicy()

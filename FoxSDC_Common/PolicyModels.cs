@@ -380,5 +380,8 @@ namespace FoxSDC_Common
         public bool? EnableBitlockerRKSync;
         public bool? DisableSMARTSync;
         public bool? DisableSimpleTasks;
+
+        public bool? EnableAdditionalEventLogs;
+        public string AdditionalEventLogs;
     }
 }

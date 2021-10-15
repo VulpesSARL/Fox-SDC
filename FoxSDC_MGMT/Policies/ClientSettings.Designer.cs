@@ -42,6 +42,8 @@
             this.chkDisableStartupSync = new System.Windows.Forms.CheckBox();
             this.chkDisableSMART = new System.Windows.Forms.CheckBox();
             this.chkDisableSimpleTasks = new System.Windows.Forms.CheckBox();
+            this.chkAdditionalEventLogs = new System.Windows.Forms.CheckBox();
+            this.txtAdditionalEventLogs = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // lblName
@@ -132,10 +134,10 @@
             // 
             // cmdSave
             // 
-            this.cmdSave.Location = new System.Drawing.Point(13, 341);
+            this.cmdSave.Location = new System.Drawing.Point(17, 386);
             this.cmdSave.Name = "cmdSave";
             this.cmdSave.Size = new System.Drawing.Size(91, 50);
-            this.cmdSave.TabIndex = 12;
+            this.cmdSave.TabIndex = 14;
             this.cmdSave.Text = "Save";
             this.cmdSave.UseVisualStyleBackColor = true;
             this.cmdSave.Click += new System.EventHandler(this.cmdSave_Click);
@@ -195,10 +197,31 @@
             this.chkDisableSimpleTasks.ThreeState = true;
             this.chkDisableSimpleTasks.UseVisualStyleBackColor = true;
             // 
+            // chkAdditionalEventLogs
+            // 
+            this.chkAdditionalEventLogs.AutoSize = true;
+            this.chkAdditionalEventLogs.Location = new System.Drawing.Point(31, 326);
+            this.chkAdditionalEventLogs.Name = "chkAdditionalEventLogs";
+            this.chkAdditionalEventLogs.Size = new System.Drawing.Size(165, 17);
+            this.chkAdditionalEventLogs.TabIndex = 12;
+            this.chkAdditionalEventLogs.Text = "Enable Additional Event Logs";
+            this.chkAdditionalEventLogs.ThreeState = true;
+            this.chkAdditionalEventLogs.UseVisualStyleBackColor = true;
+            this.chkAdditionalEventLogs.CheckedChanged += new System.EventHandler(this.chkAdditionalEventLogs_CheckedChanged);
+            // 
+            // txtAdditionalEventLogs
+            // 
+            this.txtAdditionalEventLogs.Location = new System.Drawing.Point(44, 349);
+            this.txtAdditionalEventLogs.Name = "txtAdditionalEventLogs";
+            this.txtAdditionalEventLogs.Size = new System.Drawing.Size(265, 20);
+            this.txtAdditionalEventLogs.TabIndex = 13;
+            // 
             // ctlClientSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.txtAdditionalEventLogs);
+            this.Controls.Add(this.chkAdditionalEventLogs);
             this.Controls.Add(this.chkDisableSimpleTasks);
             this.Controls.Add(this.chkDisableSMART);
             this.Controls.Add(this.chkDisableStartupSync);
@@ -214,7 +237,7 @@
             this.Controls.Add(this.chkDisableEventLogSync);
             this.Controls.Add(this.lblName);
             this.Name = "ctlClientSettings";
-            this.Size = new System.Drawing.Size(312, 404);
+            this.Size = new System.Drawing.Size(312, 448);
             this.Load += new System.EventHandler(this.ctlClientSettings_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -237,5 +260,7 @@
         private System.Windows.Forms.CheckBox chkDisableStartupSync;
         private System.Windows.Forms.CheckBox chkDisableSMART;
         private System.Windows.Forms.CheckBox chkDisableSimpleTasks;
+        private System.Windows.Forms.CheckBox chkAdditionalEventLogs;
+        private System.Windows.Forms.TextBox txtAdditionalEventLogs;
     }
 }

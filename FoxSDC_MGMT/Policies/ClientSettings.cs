@@ -62,6 +62,8 @@ namespace FoxSDC_MGMT.Policies
             chkDisableStartupSync.CheckState = C(CliSettings.DisableStartupSync);
             chkDisableSMART.CheckState = C(CliSettings.DisableSMARTSync);
             chkDisableSimpleTasks.CheckState = C(CliSettings.DisableSimpleTasks);
+            chkAdditionalEventLogs.CheckState = C(CliSettings.EnableAdditionalEventLogs);
+            txtAdditionalEventLogs.Text = CliSettings.AdditionalEventLogs;
         }
 
         public string GetData()
@@ -78,6 +80,8 @@ namespace FoxSDC_MGMT.Policies
             CliSettings.DisableStartupSync = C(chkDisableStartupSync.CheckState);
             CliSettings.DisableSMARTSync = C(chkDisableSMART.CheckState);
             CliSettings.DisableSimpleTasks = C(chkDisableSimpleTasks.CheckState);
+            CliSettings.EnableAdditionalEventLogs = C(chkAdditionalEventLogs.CheckState);
+            CliSettings.AdditionalEventLogs = txtAdditionalEventLogs.Text;
             return (JsonConvert.SerializeObject(CliSettings));
         }
 
@@ -103,6 +107,11 @@ namespace FoxSDC_MGMT.Policies
         {
             string d = GetData();
             Program.net.EditPolicy(Pol.ID, d);
+        }
+
+        private void chkAdditionalEventLogs_CheckedChanged(object sender, EventArgs e)
+        {
+            txtAdditionalEventLogs.Enabled = chkAdditionalEventLogs.CheckState == CheckState.Checked ? true : false;
         }
     }
 }

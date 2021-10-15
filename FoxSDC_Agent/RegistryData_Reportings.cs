@@ -31,12 +31,42 @@ namespace FoxSDC_Agent
             }
         }
 
+        static string ReadRepRegistryString(string Name)
+        {
+            try
+            {
+                RegistryKey k = Registry.LocalMachine.OpenSubKey("SOFTWARE\\Fox\\SDC\\Reportings");
+                if (k == null)
+                    return ("");
+                string s = k.GetValue(Name, "").ToString();
+                k.Close();
+                return (s);
+            }
+            catch
+            {
+                return ("");
+            }
+        }
+
         static void WriteRepRegistry(string Name, bool Value)
         {
             try
             {
                 RegistryKey k = Registry.LocalMachine.CreateSubKey("SOFTWARE\\Fox\\SDC\\Reportings");
                 k.SetValue(Name, Value == true ? 1 : 0, RegistryValueKind.DWord);
+                k.Close();
+            }
+            catch
+            {
+            }
+        }
+
+        static void WriteRepRegistry(string Name, string Value)
+        {
+            try
+            {
+                RegistryKey k = Registry.LocalMachine.CreateSubKey("SOFTWARE\\Fox\\SDC\\Reportings");
+                k.SetValue(Name, Value, RegistryValueKind.String);
                 k.Close();
             }
             catch
@@ -91,7 +121,7 @@ namespace FoxSDC_Agent
                 WriteRepRegistry("DisableStartupSync", value);
             }
         }
-        
+
         static public bool DisableAddRemoveProgramsSync
         {
             get
@@ -188,5 +218,28 @@ namespace FoxSDC_Agent
             }
         }
 
+        static public string AdditionalEventLogs
+        {
+            get
+            {
+                return (ReadRepRegistryString("AdditionalEventLogs"));
+            }
+            set
+            {
+                WriteRepRegistry("AdditionalEventLogs", value);
+            }
+        }
+
+        static public bool EnableAdditionalEventLogs
+        {
+            get
+            {
+                return (ReadRepRegistry("EnableAdditionalEventLogs"));
+            }
+            set
+            {
+                WriteRepRegistry("EnableAdditionalEventLogs", value);
+            }
+        }
     }
 }
