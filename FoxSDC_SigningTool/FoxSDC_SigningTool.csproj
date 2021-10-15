@@ -51,6 +51,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AskCert.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AskCert.Designer.cs">
+      <DependentUpon>AskCert.cs</DependentUpon>
+    </Compile>
     <Compile Include="CreateCer.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -74,6 +80,9 @@
     <Compile Include="SelectSmartcard.Designer.cs">
       <DependentUpon>SelectSmartcard.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="AskCert.resx">
+      <DependentUpon>AskCert.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="CreateCer.resx">
       <DependentUpon>CreateCer.cs</DependentUpon>
     </EmbeddedResource>

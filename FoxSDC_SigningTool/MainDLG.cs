@@ -24,8 +24,14 @@ namespace FoxSDC_SigningTool
             this.Close();
         }
 
-        /*private void signPlainfileToolStripMenuItem_Click(object sender, EventArgs e)
+        private void signPlainfileToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            string CN = "";
+            frmAskCert acert = new frmAskCert();
+            if (acert.ShowDialog(this) != DialogResult.OK)
+                return;
+            CN = acert.SelectedCert;
+
             OpenFileDialog cmdlg = new OpenFileDialog();
             cmdlg.Filter = "All files files|*.*";
             cmdlg.Title = "Select any file to sign";
@@ -33,7 +39,7 @@ namespace FoxSDC_SigningTool
             if (cmdlg.ShowDialog(this) != DialogResult.OK)
                 return;
             FileStream file = new FileStream(cmdlg.FileName, FileMode.Open, FileAccess.Read, FileShare.Read);
-            byte[] sign = Certificates.Sign(file);
+            byte[] sign = Certificates.Sign(file, CN, System.Security.Cryptography.X509Certificates.StoreLocation.CurrentUser);
             file.Close();
 
             if (sign == null)
@@ -46,7 +52,7 @@ namespace FoxSDC_SigningTool
             if (save.ShowDialog(this) != System.Windows.Forms.DialogResult.OK)
                 return;
             File.WriteAllBytes(save.FileName, sign);
-        }*/
+        }
 
         private void createPlainCERToolStripMenuItem_Click(object sender, EventArgs e)
         {

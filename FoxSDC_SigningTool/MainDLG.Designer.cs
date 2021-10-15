@@ -80,6 +80,7 @@
             this.signPlainfileToolStripMenuItem.Name = "signPlainfileToolStripMenuItem";
             this.signPlainfileToolStripMenuItem.Size = new System.Drawing.Size(253, 24);
             this.signPlainfileToolStripMenuItem.Text = "Sign plain &file";
+            this.signPlainfileToolStripMenuItem.Click += new System.EventHandler(this.signPlainfileToolStripMenuItem_Click);
             // 
             // signPlainFilewithcardToolStripMenuItem
             // 
