@@ -52,12 +52,27 @@ namespace FoxSDC_MGMT
             }
         }
 
+        public int GetSelectedCount
+        {
+            get
+            {
+                int Selected = 0;
+                foreach(ListViewItem lst in lstComputers.Items)
+                {
+                    if (lst.Checked == true)
+                        Selected++;
+                }
+                return (Selected);
+            }
+        }
+
         public ctlListPCs()
         {
             Approved = true;
             Group = null;
             InitializeComponent();
         }
+
         public bool ShowCheckBoxes
         {
             get
@@ -90,7 +105,7 @@ namespace FoxSDC_MGMT
             }
         }
 
-        void LoadList()
+        public void LoadList()
         {
             lstComputers.Items.Clear();
             List<ComputerData> cdlst = Program.net.GetComputerList(Approved, Group);

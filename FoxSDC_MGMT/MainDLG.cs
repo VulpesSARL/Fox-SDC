@@ -14,6 +14,9 @@ namespace FoxSDC_MGMT
 {
     public partial class MainDLG : FForm
     {
+        Int64? SelectedGroup = null;
+        Int64? SelectedPolicy = null;
+
         public MainDLG()
         {
             InitializeComponent();
@@ -145,8 +148,8 @@ namespace FoxSDC_MGMT
                     }
             }
 
-            Int64? SelectedGroup;
-            Int64? SelectedPolicy;
+            SelectedGroup = null;
+            SelectedPolicy = null;
             if (GroupFolders.AfterSelect(treeAction, e, out SelectedGroup, out SelectedPolicy) == true)
             {
                 if (SelectedGroup != null)
@@ -236,15 +239,18 @@ namespace FoxSDC_MGMT
                 {
                     deleteGroupToolStripMenuItem.Enabled = true;
                     renameGroupToolStripMenuItem.Enabled = true;
+                    createsimpleTasksInThisGroupToolStripMenuItem.Enabled = true;
                 }
                 else
                 {
                     deleteGroupToolStripMenuItem.Enabled = false;
                     renameGroupToolStripMenuItem.Enabled = false;
+                    createsimpleTasksInThisGroupToolStripMenuItem.Enabled = false;
                 }
             }
             else
             {
+                createsimpleTasksInThisGroupToolStripMenuItem.Enabled = false;
                 createGroupToolStripMenuItem.Enabled = false;
                 deleteGroupToolStripMenuItem.Enabled = false;
                 refreshGroupToolStripMenuItem.Enabled = false;
@@ -466,6 +472,21 @@ namespace FoxSDC_MGMT
         {
             frmUserManagement usr = new frmUserManagement();
             usr.ShowDialog(this);
+        }
+
+        private void showactiveUsersOnComputerInfoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Settings.Default.ShowActiveUsers = !Settings.Default.ShowActiveUsers;
+            showactiveUsersOnComputerInfoToolStripMenuItem.Checked = Settings.Default.ShowActiveUsers;
+            Settings.Default.Save();
+        }
+
+        private void createsimpleTasksInThisGroupToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (SelectedGroup == null)
+                return;
+            frmSimpleTasks ST = new frmSimpleTasks(SelectedGroup.Value, GroupFolders.GetFullPath(treeAction));
+            ST.ShowDialog(this);
         }
     }
 }

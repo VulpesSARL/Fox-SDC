@@ -93,6 +93,7 @@ namespace FoxSDC_Server.Modules
         [VulpesRESTful(VulpesRESTfulVerb.GET, "api/mgmt/rep/testpaper", "RetPaper", "Paper")]
         public RESTStatus TestPaperTemplate(SQLLib sql, object dummy, NetworkConnectionInfo ni, string Paper)
         {
+#if !TXTREPORT
             if (ni.HasAcl(ACLFlags.ChangeServerSettings) == false)
             {
                 ni.Error = "Access denied";
@@ -130,12 +131,18 @@ namespace FoxSDC_Server.Modules
             }
 
             return (RESTStatus.Success);
+#else
+            ni.Error = "Unsupported functionality";
+            ni.ErrorID = ErrorFlags.SystemError;
+            return (RESTStatus.Fail);
+#endif
         }
 
         [VulpesRESTProtected]
         [VulpesRESTful(VulpesRESTfulVerb.POST, "api/mgmt/rep/addpaper", "", "")]
         public RESTStatus AddPaperTemplate(SQLLib sql, ReportPaper req, NetworkConnectionInfo ni)
         {
+#if !TXTREPORT
             if (ni.HasAcl(ACLFlags.ChangeServerSettings) == false)
             {
                 ni.Error = "Access denied";
@@ -196,8 +203,12 @@ namespace FoxSDC_Server.Modules
                     }
                 }
             }
-
             return (RESTStatus.Success);
+#else
+            ni.Error = "Unsupported functionality";
+            ni.ErrorID = ErrorFlags.SystemError;
+            return (RESTStatus.Fail);
+#endif
         }
 
         [VulpesRESTProtected]

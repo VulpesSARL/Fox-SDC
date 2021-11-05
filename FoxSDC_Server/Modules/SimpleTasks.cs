@@ -148,6 +148,16 @@ namespace FoxSDC_Server
                 return (RESTStatus.NotFound);
             }
 
+            if (NewTask.ExecAfter != null)
+            {
+                if (NewTask.ExecAfter.Value.Year < 2010)
+                {
+                    ni.Error = "ExecAfter is invalid";
+                    ni.ErrorID = ErrorFlags.InvalidData;
+                    return (RESTStatus.NotFound);
+                }
+            }
+
             lock (ni.sqllock)
             {
                 if (Computers.MachineExists(sql, NewTask.MachineID) == false)
@@ -161,6 +171,7 @@ namespace FoxSDC_Server
                    new SQLData("MachineID", NewTask.MachineID),
                    new SQLData("Type", NewTask.Type),
                    new SQLData("Name", NewTask.Name),
+                   new SQLData("ExecAfter", NewTask.ExecAfter),
                    new SQLData("Data", NewTask.Data));
 
                 if (ID == null)
@@ -217,7 +228,8 @@ namespace FoxSDC_Server
 
             lock (ni.sqllock)
             {
-                SqlDataReader dr = sql.ExecSQLReader("select top 1 * from SimpleTasks WHERE MachineID=@id ORDER BY ID asc", new SQLParam("@id", ni.Username));
+                SqlDataReader dr = sql.ExecSQLReader("select top 1 * from SimpleTasks WHERE MachineID=@id AND GETUTCDATE()>isnull(execafter,'2010-01-01') ORDER BY ID asc", 
+                    new SQLParam("@id", ni.Username));
                 if (dr.HasRows == false)
                 {
                     dr.Close();

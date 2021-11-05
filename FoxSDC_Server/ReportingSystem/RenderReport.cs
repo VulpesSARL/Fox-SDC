@@ -7,13 +7,24 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+#if !TXTREPORT
 using Telerik.Reporting;
 using Telerik.Reporting.Processing;
+#endif
+
+/*
+ 
+Note for GitHub Users: if you do not have/want Telerik Reporting, you can configure it to use plain text reports
+Go to the Build Options, and define TXTREPORT compilation symbol
+ 
+ */
+
 
 namespace FoxSDC_Server.ReportingSystem
 {
     class RenderReport
     {
+#if !TXTREPORT
         //Telerik Supported output formats: https://docs.telerik.com/reporting/configuring-rendering-extensions
 
         public static byte[] GetReportPaperData(SQLLib sql, string Paper, byte[] Default)
@@ -98,6 +109,47 @@ namespace FoxSDC_Server.ReportingSystem
 
             return (result.DocumentBytes);
         }
+#else
+        public static byte[] RenderMachineReport(SQLLib sql, List<string> MachineIDs, DateTime? From, DateTime? To, ReportingFlagsPaper ReportingPaperType, string Output = "PDF")
+        {
+            StringBuilder sb = new StringBuilder();
 
+            foreach (string MachineID in MachineIDs)
+            {
+                //this piece is the SAME piece, that's used by Telerik Reporting to get the data
+                //(BDO - DataSource)
+                ReportingPaper rep = new ReportingPaper();
+                List<ReportingPaperElements> items = rep.GetItems(MachineID, From, To, (int)ReportingPaperType);
+                if (items.Count == 0)
+                    continue;
+                sb.AppendLine("Computer:       " + items[0].MachineName);
+                sb.AppendLine("Version:        " + items[0].AgentVersion);
+                sb.AppendLine("Last updated:   " + items[0].LastUpdated.ToShortDateString() + " " + items[0].LastUpdated.ToShortTimeString());
+                sb.AppendLine("Boot:           " + items[0].BIOSBootType);
+                sb.AppendLine("ID:             " + items[0].MachineID);
+                sb.AppendLine("Total RAM:      " + items[0].TotalPhysicalMemory);
+                sb.AppendLine("Make:           " + items[0].VendorMake);
+                sb.AppendLine("BIOS:           " + items[0].VendorBIOS);
+                sb.AppendLine("OS:             " + items[0].OS);
+                sb.AppendLine("OS Ver:         " + items[0].OSVersion);
+                sb.AppendLine("OS Rev:         " + items[0].OSWin10Version);
+                sb.AppendLine("");
+                sb.AppendLine("");
+                foreach(ReportingPaperElements item in items)
+                {
+                    sb.AppendLine(" ===");
+                    int IconDesc = (int)(item.Flags & (Int64)ReportingFlags.IconFlags) >> (int)ReportingFlags.IconFlagsShift;
+                    string IconDescText = FoxSDC_Common.ReportingStatusPicture.GetPictureDescription((FoxSDC_Common.ReportingStatusPictureEnum)IconDesc);
+                    sb.AppendLine(IconDescText);
+                    sb.AppendLine(item.ReportedDate.ToShortDateString() + " " + item.ReportedDate.ToShortTimeString());
+                    sb.AppendLine(item.Text);
+                }
+                sb.AppendLine("");
+                sb.AppendLine("========================================================");
+            }
+
+            return (Encoding.UTF8.GetBytes(sb.ToString()));
+        }
+#endif
     }
 }

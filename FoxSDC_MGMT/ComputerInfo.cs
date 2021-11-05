@@ -24,6 +24,7 @@ namespace FoxSDC_MGMT
         delegate void DUpdateWU(List<WUUpdateInfo> Lst);
         ComputerData data;
         Int64? SelectedPolicy = null;
+        bool UsersLoaded = false;
 
         public frmComputerInfo(string MachineID)
         {
@@ -59,6 +60,11 @@ namespace FoxSDC_MGMT
             ((PComputerData)transformeddata).OSWin10Edition = Win10Version.GetWin10Version(transformeddata.OSVersion);
             ((PComputerData)transformeddata).BMeteredConnection = data.IsMeteredConnection;
             ((PComputerData)transformeddata).RunningInWindowsPE = data.RunningInWindowsPE;
+
+            if (Settings.Default.ShowActiveUsers == false)
+            {
+                transformeddata.OneUser = "-- disabled --";
+            }
 
             PropertiesG.SelectedObject = transformeddata;
 
@@ -142,6 +148,47 @@ namespace FoxSDC_MGMT
             Network net = Program.net.CloneElement();
             bool res = net.PushPing(MID);
             UpdatePing(res == true ? "Online" : "Not connected", res);
+
+            if (res == true && UsersLoaded == false && Settings.Default.ShowActiveUsers == true)
+            {
+                List<PushRunningSessionElement> sessions = Program.net.PushGetSessions(MID);
+                if (sessions != null)
+                {
+
+                    PComputerData pc = (PComputerData)PropertiesG.SelectedObject;
+
+                    foreach (PushRunningSessionElement s in sessions)
+                    {
+                        if (string.IsNullOrWhiteSpace(pc.OneUser) == true)
+                        {
+                            if (s.SessionID != 0)
+                            {
+                                if (string.IsNullOrWhiteSpace(s.Domain) == true)
+                                    pc.OneUser = s.User;
+                                else
+                                    pc.OneUser = s.Domain + "\\" + s.User;
+
+                            }
+                        }
+
+                        if (s.SessionID != 0)
+                        {
+                            if (string.IsNullOrWhiteSpace(s.Domain) == true)
+                                pc.LoggedInUsers.Add(s.SessionID + " - " + s.User);
+                            else
+                                pc.LoggedInUsers.Add(s.SessionID + " - " + s.Domain + "\\" + s.User);
+                        }
+                    }
+
+                    pc.NumberOfUsers = pc.LoggedInUsers.Count;
+                    if (pc.NumberOfUsers == 0)
+                    {
+                        pc.OneUser = "-- none is logged in --";
+                    }
+
+                    UsersLoaded = true;
+                }
+            }
         }
 
         void UpdateTaskList(PushTaskManagerListElement element)

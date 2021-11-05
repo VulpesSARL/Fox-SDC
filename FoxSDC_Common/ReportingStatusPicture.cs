@@ -31,6 +31,37 @@ namespace FoxSDC_Common
             return (GetPicture((ReportingStatusPictureEnum)status));
         }
 
+        public static string GetPictureDescription(ReportingStatusPictureEnum status)
+        {
+            switch (status)
+            {
+                case ReportingStatusPictureEnum.Bad:
+                    return ("Bad");
+                case ReportingStatusPictureEnum.Exclamation:
+                    return ("Exclamation");
+                case ReportingStatusPictureEnum.Good:
+                    return ("Good");
+                case ReportingStatusPictureEnum.Help:
+                    return ("Help");
+                case ReportingStatusPictureEnum.Info:
+                    return ("Info");
+                case ReportingStatusPictureEnum.Key:
+                    return ("Key");
+                case ReportingStatusPictureEnum.Pencil:
+                    return ("Pencil");
+                case ReportingStatusPictureEnum.Point:
+                    return ("Point");
+                case ReportingStatusPictureEnum.Questionmark:
+                    return ("Questionmark");
+                case ReportingStatusPictureEnum.Stop:
+                    return ("Stop");
+                case ReportingStatusPictureEnum.NoKey:
+                    return ("NoKey");
+                default:
+                    return ("");
+            }
+        }
+
         public static Image GetPicture(ReportingStatusPictureEnum status)
         {
             switch (status)

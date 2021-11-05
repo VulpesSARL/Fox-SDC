@@ -7,6 +7,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -16,6 +17,8 @@ namespace FoxSDC_MGMT
     {
         SimpleTask editst = null;
         List<string> MachineIDs = null;
+        Int64? GroupID = null;
+        string PathName = "";
 
         public frmSimpleTasks()
         {
@@ -38,10 +41,18 @@ namespace FoxSDC_MGMT
             InitializeComponent();
         }
 
+        public frmSimpleTasks(Int64 GroupID, string PathName)
+        {
+            this.PathName = PathName;
+            this.GroupID = GroupID;
+            InitializeComponent();
+        }
+
         private void frmSimpleTasks_Load(object sender, EventArgs e)
         {
             lstPCs.ShowCheckBoxes = true;
             lstPCs.ListOnly = true;
+            lblTZ.Text = "(" + TimeZoneInfo.Local.StandardName + ")";
 
             lstType.Items.Add("Run a program");
             lstType.Items.Add("Edit Registry");
@@ -72,6 +83,7 @@ namespace FoxSDC_MGMT
             lstRegRoot.SelectedIndex = 0;
 
             this.Text = "New Simple Task";
+            lblIntoGroup.Visible = false;
 
             if (MachineIDs != null)
             {
@@ -79,11 +91,28 @@ namespace FoxSDC_MGMT
                     lstPCs.SelectMachineID(MID);
             }
 
+            if (GroupID != null)
+            {
+                lstPCs.Visible = false;
+                lblIntoGroup.Visible = true;
+                lblIntoGroup.Text = "All computers located in the group:\n\n" + PathName;
+            }
+
             if (editst != null)
             {
                 lstPCs.SelectMachineID(editst.MachineID);
 
                 txtName.Text = editst.Name;
+                if (editst.ExecAfter == null)
+                {
+                    chkDontExec.Checked = false;
+                }
+                else
+                {
+                    chkDontExec.Checked = true;
+                    DTExecBefore.Value = TimeZoneInfo.ConvertTimeFromUtc(editst.ExecAfter.Value, TimeZoneInfo.Local);
+                }
+
                 switch (editst.Type)
                 {
                     case 1://run app
@@ -117,6 +146,10 @@ namespace FoxSDC_MGMT
                 if (editst.ID == -1)
                     editst = null;
             }
+
+            DTExecBefore.CustomFormat = Thread.CurrentThread.CurrentCulture.DateTimeFormat.FullDateTimePattern;
+            DTExecBefore.Format = DateTimePickerFormat.Custom;
+            chkDontExec_CheckedChanged(null, null);
         }
 
         private void lstType_SelectedIndexChanged(object sender, EventArgs e)
@@ -143,6 +176,27 @@ namespace FoxSDC_MGMT
             this.Close();
         }
 
+        private void SelectComputers(Int64 GroupID)
+        {
+            List<GroupElement> gel = Program.net.GetGroups(GroupID);
+            if (gel != null)
+            {
+                foreach (GroupElement g in gel)
+                {
+                    SelectComputers(g.ID);
+                }
+            }
+
+            List<ComputerData> cdlst = Program.net.GetComputerList(true, GroupID);
+            if (cdlst != null)
+            {
+                foreach (ComputerData pc in cdlst)
+                {
+                    lstPCs.SelectMachineID(pc.MachineID);
+                }
+            }
+        }
+
         private void cmdOK_Click(object sender, EventArgs e)
         {
             if (txtName.Text.Trim() == "")
@@ -150,10 +204,29 @@ namespace FoxSDC_MGMT
                 MessageBox.Show(this, "Please type in a name.", Program.Title, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return;
             }
-            if (lstPCs.CheckedItems.Count == 0)
+            if (lstPCs.CheckedItems.Count == 0 && GroupID == null)
             {
                 MessageBox.Show(this, "Please select a least one computer.", Program.Title, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return;
+            }
+
+            DateTime? DontExecBefore = null;
+            if (chkDontExec.Checked == true)
+            {
+                DontExecBefore = DTExecBefore.Value;
+                if (DTExecBefore.Value.Year < 2010)
+                {
+                    MessageBox.Show(this, "Invalid date", Program.Title, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    return;
+                }
+            }
+
+            if (GroupID != null)
+            {
+                lstPCs.LoadList();
+                lstPCs.UncheckItems();
+
+                SelectComputers(GroupID.Value);
             }
 
             switch (lstType.SelectedIndex)
@@ -175,13 +248,16 @@ namespace FoxSDC_MGMT
                         foreach (ListViewItem lst in lstPCs.CheckedItems)
                         {
                             ComputerData cd = (ComputerData)lst.Tag;
-                            Int64? ID = Program.net.SetSimpleTask(txtName.Text.Trim(), cd.MachineID, 1, stapp);
+                            Int64? ID = Program.net.SetSimpleTask(txtName.Text.Trim(), cd.MachineID, DontExecBefore, 1, stapp);
                             if (ID == null)
                             {
                                 MessageBox.Show(this, "Cannot create SimpleTask on Server: " + Program.net.GetLastError(), Program.Title, MessageBoxButtons.OK, MessageBoxIcon.Stop);
                                 return;
                             }
                         }
+
+                        if (GroupID != null)
+                            MessageBox.Show(this, "Task" + (lstPCs.GetSelectedCount == 1 ? "" : "s") + " created for " + lstPCs.GetSelectedCount + " PC" + (lstPCs.GetSelectedCount == 1 ? "" : "s"), Program.Title, MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                         this.DialogResult = DialogResult.OK;
                         this.Close();
@@ -208,7 +284,7 @@ namespace FoxSDC_MGMT
                         foreach (ListViewItem lst in lstPCs.CheckedItems)
                         {
                             ComputerData cd = (ComputerData)lst.Tag;
-                            Int64? ID = Program.net.SetSimpleTask(txtName.Text.Trim(), cd.MachineID, 2, streg);
+                            Int64? ID = Program.net.SetSimpleTask(txtName.Text.Trim(), cd.MachineID, DontExecBefore, 2, streg);
                             if (ID == null)
                             {
                                 MessageBox.Show(this, "Cannot create SimpleTask on Server: " + Program.net.GetLastError(), Program.Title, MessageBoxButtons.OK, MessageBoxIcon.Stop);
@@ -216,6 +292,9 @@ namespace FoxSDC_MGMT
                             }
                         }
 
+                        if (GroupID != null)
+                            MessageBox.Show(this, "Task" + (lstPCs.GetSelectedCount == 1 ? "" : "s") + " created for " + lstPCs.GetSelectedCount + " PC" + (lstPCs.GetSelectedCount == 1 ? "" : "s"), Program.Title, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        
                         this.DialogResult = DialogResult.OK;
                         this.Close();
                         break;
@@ -230,7 +309,7 @@ namespace FoxSDC_MGMT
                         foreach (ListViewItem lst in lstPCs.CheckedItems)
                         {
                             ComputerData cd = (ComputerData)lst.Tag;
-                            Int64? ID = Program.net.SetSimpleTask(txtName.Text.Trim(), cd.MachineID, 3, streg);
+                            Int64? ID = Program.net.SetSimpleTask(txtName.Text.Trim(), cd.MachineID, DontExecBefore, 3, streg);
                             if (ID == null)
                             {
                                 MessageBox.Show(this, "Cannot create SimpleTask on Server: " + Program.net.GetLastError(), Program.Title, MessageBoxButtons.OK, MessageBoxIcon.Stop);
@@ -238,6 +317,9 @@ namespace FoxSDC_MGMT
                             }
                         }
 
+                        if (GroupID != null)
+                            MessageBox.Show(this, "Task" + (lstPCs.GetSelectedCount == 1 ? "" : "s") + " created for " + lstPCs.GetSelectedCount + " PC" + (lstPCs.GetSelectedCount == 1 ? "" : "s"), Program.Title, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        
                         this.DialogResult = DialogResult.OK;
                         this.Close();
                         break;
@@ -268,6 +350,11 @@ namespace FoxSDC_MGMT
                     txtRegValueName.Enabled = lstRegValueType.Enabled = txtRegValue.Enabled = false;
                     break;
             }
+        }
+
+        private void chkDontExec_CheckedChanged(object sender, EventArgs e)
+        {
+            DTExecBefore.Enabled = chkDontExec.Checked;
         }
     }
 }

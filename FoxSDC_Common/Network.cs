@@ -1429,13 +1429,21 @@ namespace FoxSDC_Common
                 return (null);
         }
 
-        public Int64? SetSimpleTask(string Name, string MachineID, int Type, object data)
+        public Int64? SetSimpleTask(string Name, string MachineID, DateTime? DontExecBefore, int Type, object data)
         {
             SimpleTask st = new SimpleTask();
             st.Data = JsonConvert.SerializeObject(data);
             st.MachineID = MachineID;
             st.Type = Type;
             st.Name = Name;
+            if (DontExecBefore!=null)
+            {
+                st.ExecAfter = TimeZoneInfo.ConvertTimeToUtc(DontExecBefore.Value);
+            }
+            else
+            {
+                st.ExecAfter = null;
+            }
             return (SetSimpleTask(st));
         }
 

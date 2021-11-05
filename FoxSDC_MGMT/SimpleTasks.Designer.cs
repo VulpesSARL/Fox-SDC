@@ -44,11 +44,16 @@
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.panelRunApp = new System.Windows.Forms.Panel();
+            this.txtRunUser = new System.Windows.Forms.TextBox();
+            this.label11 = new System.Windows.Forms.Label();
             this.txtRunArgs = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.txtRunExec = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.lblTZ = new System.Windows.Forms.Label();
+            this.chkDontExec = new System.Windows.Forms.CheckBox();
+            this.DTExecBefore = new System.Windows.Forms.DateTimePicker();
             this.label4 = new System.Windows.Forms.Label();
             this.txtName = new System.Windows.Forms.TextBox();
             this.lstType = new System.Windows.Forms.ComboBox();
@@ -57,8 +62,7 @@
             this.panel2 = new System.Windows.Forms.Panel();
             this.cmdCancel = new System.Windows.Forms.Button();
             this.cmdOK = new System.Windows.Forms.Button();
-            this.txtRunUser = new System.Windows.Forms.TextBox();
-            this.label11 = new System.Windows.Forms.Label();
+            this.lblIntoGroup = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -78,7 +82,7 @@
             this.lstPCs.Location = new System.Drawing.Point(0, 0);
             this.lstPCs.Name = "lstPCs";
             this.lstPCs.ShowCheckBoxes = false;
-            this.lstPCs.Size = new System.Drawing.Size(610, 209);
+            this.lstPCs.Size = new System.Drawing.Size(858, 209);
             this.lstPCs.TabIndex = 0;
             // 
             // splitContainer1
@@ -92,6 +96,7 @@
             // splitContainer1.Panel1
             // 
             this.splitContainer1.Panel1.Controls.Add(this.lstPCs);
+            this.splitContainer1.Panel1.Controls.Add(this.lblIntoGroup);
             // 
             // splitContainer1.Panel2
             // 
@@ -99,7 +104,7 @@
             this.splitContainer1.Panel2.Controls.Add(this.panelRunApp);
             this.splitContainer1.Panel2.Controls.Add(this.panel3);
             this.splitContainer1.Panel2.Controls.Add(this.panel1);
-            this.splitContainer1.Size = new System.Drawing.Size(610, 530);
+            this.splitContainer1.Size = new System.Drawing.Size(858, 565);
             this.splitContainer1.SplitterDistance = 209;
             this.splitContainer1.TabIndex = 1;
             // 
@@ -117,10 +122,10 @@
             this.panelReg.Controls.Add(this.txtRegFolder);
             this.panelReg.Controls.Add(this.label5);
             this.panelReg.Controls.Add(this.label6);
-            this.panelReg.Location = new System.Drawing.Point(271, 62);
+            this.panelReg.Location = new System.Drawing.Point(269, 116);
             this.panelReg.Name = "panelReg";
             this.panelReg.Size = new System.Drawing.Size(387, 205);
-            this.panelReg.TabIndex = 1;
+            this.panelReg.TabIndex = 2;
             // 
             // txtRegValue
             // 
@@ -238,7 +243,23 @@
             this.panelRunApp.Location = new System.Drawing.Point(12, 110);
             this.panelRunApp.Name = "panelRunApp";
             this.panelRunApp.Size = new System.Drawing.Size(230, 82);
-            this.panelRunApp.TabIndex = 2;
+            this.panelRunApp.TabIndex = 1;
+            // 
+            // txtRunUser
+            // 
+            this.txtRunUser.Location = new System.Drawing.Point(95, 59);
+            this.txtRunUser.Name = "txtRunUser";
+            this.txtRunUser.Size = new System.Drawing.Size(253, 20);
+            this.txtRunUser.TabIndex = 5;
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(3, 62);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(32, 13);
+            this.label11.TabIndex = 4;
+            this.label11.Text = "User:";
             // 
             // txtRunArgs
             // 
@@ -274,6 +295,9 @@
             // 
             // panel3
             // 
+            this.panel3.Controls.Add(this.lblTZ);
+            this.panel3.Controls.Add(this.chkDontExec);
+            this.panel3.Controls.Add(this.DTExecBefore);
             this.panel3.Controls.Add(this.label4);
             this.panel3.Controls.Add(this.txtName);
             this.panel3.Controls.Add(this.lstType);
@@ -281,8 +305,35 @@
             this.panel3.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel3.Location = new System.Drawing.Point(0, 0);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(610, 56);
+            this.panel3.Size = new System.Drawing.Size(858, 104);
             this.panel3.TabIndex = 0;
+            // 
+            // lblTZ
+            // 
+            this.lblTZ.AutoSize = true;
+            this.lblTZ.Location = new System.Drawing.Point(440, 85);
+            this.lblTZ.Name = "lblTZ";
+            this.lblTZ.Size = new System.Drawing.Size(16, 13);
+            this.lblTZ.TabIndex = 4;
+            this.lblTZ.Text = "---";
+            // 
+            // chkDontExec
+            // 
+            this.chkDontExec.AutoSize = true;
+            this.chkDontExec.Location = new System.Drawing.Point(95, 56);
+            this.chkDontExec.Name = "chkDontExec";
+            this.chkDontExec.Size = new System.Drawing.Size(151, 17);
+            this.chkDontExec.TabIndex = 2;
+            this.chkDontExec.Text = "&Do not execute this before";
+            this.chkDontExec.UseVisualStyleBackColor = true;
+            this.chkDontExec.CheckedChanged += new System.EventHandler(this.chkDontExec_CheckedChanged);
+            // 
+            // DTExecBefore
+            // 
+            this.DTExecBefore.Location = new System.Drawing.Point(95, 79);
+            this.DTExecBefore.Name = "DTExecBefore";
+            this.DTExecBefore.Size = new System.Drawing.Size(339, 20);
+            this.DTExecBefore.TabIndex = 3;
             // 
             // label4
             // 
@@ -323,17 +374,17 @@
             // 
             this.panel1.Controls.Add(this.panel2);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel1.Location = new System.Drawing.Point(0, 288);
+            this.panel1.Location = new System.Drawing.Point(0, 323);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(610, 29);
-            this.panel1.TabIndex = 0;
+            this.panel1.Size = new System.Drawing.Size(858, 29);
+            this.panel1.TabIndex = 3;
             // 
             // panel2
             // 
             this.panel2.Controls.Add(this.cmdCancel);
             this.panel2.Controls.Add(this.cmdOK);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel2.Location = new System.Drawing.Point(446, 0);
+            this.panel2.Location = new System.Drawing.Point(694, 0);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(164, 29);
             this.panel2.TabIndex = 0;
@@ -359,21 +410,14 @@
             this.cmdOK.UseVisualStyleBackColor = true;
             this.cmdOK.Click += new System.EventHandler(this.cmdOK_Click);
             // 
-            // txtRunUser
+            // lblIntoGroup
             // 
-            this.txtRunUser.Location = new System.Drawing.Point(95, 59);
-            this.txtRunUser.Name = "txtRunUser";
-            this.txtRunUser.Size = new System.Drawing.Size(253, 20);
-            this.txtRunUser.TabIndex = 5;
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(3, 62);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(32, 13);
-            this.label11.TabIndex = 4;
-            this.label11.Text = "User:";
+            this.lblIntoGroup.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblIntoGroup.Location = new System.Drawing.Point(0, 0);
+            this.lblIntoGroup.Name = "lblIntoGroup";
+            this.lblIntoGroup.Size = new System.Drawing.Size(858, 209);
+            this.lblIntoGroup.TabIndex = 1;
+            this.lblIntoGroup.Text = "---";
             // 
             // frmSimpleTasks
             // 
@@ -381,7 +425,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.cmdCancel;
-            this.ClientSize = new System.Drawing.Size(610, 530);
+            this.ClientSize = new System.Drawing.Size(858, 565);
             this.Controls.Add(this.splitContainer1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
@@ -442,5 +486,9 @@
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.TextBox txtRunUser;
         private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.CheckBox chkDontExec;
+        private System.Windows.Forms.DateTimePicker DTExecBefore;
+        private System.Windows.Forms.Label lblTZ;
+        private System.Windows.Forms.Label lblIntoGroup;
     }
 }

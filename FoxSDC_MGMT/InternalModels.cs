@@ -262,6 +262,19 @@ namespace FoxSDC_MGMT
         [CategoryAttribute("Operating System"), ReadOnlyAttribute(true), Browsable(true)]
         public bool? RunningInWindowsPE { get => _RunningInWindowsPE; set => _RunningInWindowsPE = value; }
 
+
+        [RefreshProperties(RefreshProperties.All)]
+        [CategoryAttribute("Users"), ReadOnlyAttribute(true), Browsable(true)]
+        public string OneUser { get => _OneUser; set => _OneUser = value; }
+
+        [RefreshProperties(RefreshProperties.All)]
+        [CategoryAttribute("Users"), ReadOnlyAttribute(true), Browsable(true)]
+        public int NumberOfUsers { get => _NumberOfUsers; set => _NumberOfUsers = value; }
+
+        [RefreshProperties(RefreshProperties.All)]
+        [CategoryAttribute("Users"), ReadOnlyAttribute(true), Browsable(true)]
+        public List<string> LoggedInUsers { get => _LoggedInUser; set => _LoggedInUser = value; }
+
         string _SUSID;
         string _BIOSType;
         int _NumberOfLogicalProcessors;
@@ -272,6 +285,10 @@ namespace FoxSDC_MGMT
         string _SystemRoot;
         bool? _RunningInWindowsPE;
         public bool? BMeteredConnection;
+
+        List<string> _LoggedInUser = new List<string>();
+        int _NumberOfUsers;
+        string _OneUser;
     }
 
     public class PAddRemovePrograms

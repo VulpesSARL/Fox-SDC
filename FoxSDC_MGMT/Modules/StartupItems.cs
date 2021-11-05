@@ -102,7 +102,7 @@ namespace FoxSDC_MGMT
                 reg.Action = 1;
                 reg.Valuename = start.Key == "(Default)" ? "" : start.Key;
 
-                Program.net.SetSimpleTask("Removing Startup Item: " + start.Key + (string.IsNullOrWhiteSpace(start.Username) == true ? "" : " (as " + start.Username + ")"), start.MachineID, 2, reg);
+                Program.net.SetSimpleTask("Removing Startup Item: " + start.Key + (string.IsNullOrWhiteSpace(start.Username) == true ? "" : " (as " + start.Username + ")"), start.MachineID, null, 2, reg);
             }
         }
     }

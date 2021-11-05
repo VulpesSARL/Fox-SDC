@@ -103,7 +103,7 @@ namespace FoxSDC_MGMT
                     run.Parameters = "/x " + lt.ProductID + " /passive /quiet /norestart";
                     run.User = lt.Username;
 
-                    Program.net.SetSimpleTask("Uninstall: " + lt.Name + (string.IsNullOrWhiteSpace(lt.Username) == true ? "" : " (as " + lt.Username + ")"), lt.MachineID, 1, run);
+                    Program.net.SetSimpleTask("Uninstall: " + lt.Name + (string.IsNullOrWhiteSpace(lt.Username) == true ? "" : " (as " + lt.Username + ")"), lt.MachineID,null, 1, run);
                 }
             }
             else

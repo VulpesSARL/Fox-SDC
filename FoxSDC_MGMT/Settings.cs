@@ -32,6 +32,7 @@ namespace FoxSDC_MGMT
             public string LastUsername;
             public string LastServer;
             public bool EnableDebug;
+            public bool ShowActiveUsers;
 
             public void Load()
             {
@@ -41,6 +42,7 @@ namespace FoxSDC_MGMT
                 LastUsername = reg.GetValue("LastUsername", "").ToString();
                 LastServer = reg.GetValue("LastServer", "").ToString();
                 EnableDebug = reg.GetValue("EnableDebug", "0").ToString() == "1" ? true : false;
+                ShowActiveUsers = reg.GetValue("ShowActiveUsers", "0").ToString() == "1" ? true : false;
                 reg.Close();
             }
 
@@ -52,6 +54,7 @@ namespace FoxSDC_MGMT
 
                 reg.SetValue("LastUsername", LastUsername == null ? "" : LastUsername, RegistryValueKind.String);
                 reg.SetValue("LastServer", LastServer == null ? "" : LastServer, RegistryValueKind.String);
+                reg.SetValue("ShowActiveUsers", ShowActiveUsers == true ? 1 : 0, RegistryValueKind.DWord);
 
                 reg.Close();
             }

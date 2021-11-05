@@ -9,7 +9,7 @@ namespace FoxSDC_Server
 {
     class DBUpdate
     {
-        public const int DBVersion = 42;
+        public const int DBVersion = 43;
         static public bool UpdateDB(SQLLib sql)
         {
             try
@@ -818,7 +818,15 @@ namespace FoxSDC_Server
                         sql.ExecSQL("UPDATE CONFIG SET [Value]=@ver WHERE [Key]='Version'", new SQLParam("@ver", Version));
                         sql.CommitTransaction();
                         FoxEventLog.WriteEventLog("Updated DB to Version " + Version.ToString(), EventLogEntryType.Information);
-                        return (false);                        
+                        return (false);
+                    case 42:
+                        sql.BeginTransaction();
+                        sql.ExecSQL("ALTER TABLE SimpleTasks ADD ExecAfter DATETIME NULL");
+                        Version = 43;
+                        sql.ExecSQL("UPDATE CONFIG SET [Value]=@ver WHERE [Key]='Version'", new SQLParam("@ver", Version));
+                        sql.CommitTransaction();
+                        FoxEventLog.WriteEventLog("Updated DB to Version " + Version.ToString(), EventLogEntryType.Information); 
+                        return (false);
                         /*case 1:
                             sql.BeginTransaction();
                             sql.ExecSQL("...............");

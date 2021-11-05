@@ -68,6 +68,10 @@ namespace FoxSDC_Common
                 return (false);
             if (a.Attributes == null && b.Attributes == null)
                 return (true);
+            if (a.Attributes == null)
+                return (false);
+            if (b.Attributes == null)
+                return (false);
             if (a.Attributes.Count != b.Attributes.Count)
                 return (false);
             if (SkipAttributes == null)

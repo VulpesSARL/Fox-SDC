@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2026
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31729.503
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoxSDC_Server", "FoxSDC_Server\FoxSDC_Server.csproj", "{DE5687C8-9D45-45DB-8D67-3A2ED56D90FF}"
 	ProjectSection(ProjectDependencies) = postProject

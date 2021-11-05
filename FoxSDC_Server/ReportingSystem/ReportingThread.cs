@@ -38,6 +38,12 @@ namespace FoxSDC_Server
         static Thread RTT = null;
         static bool RunAdminNow = false;
 
+#if !TXTREPORT
+        const string ReportAttachementFilename = "Report.pdf";
+#else
+        const string ReportAttachementFilename = "Report.txt";
+#endif
+
         class ConcernedMachineIDsClient
         {
             public string MachineID;
@@ -126,7 +132,7 @@ namespace FoxSDC_Server
                     SqlDataReader dr;
                     List<string> ConcernedMachineIDs;
 
-                    #region Normal Admin Report
+#region Normal Admin Report
 
                     if (SettingsManager.Settings.LastScheduleRanAdmin == null)
                     {
@@ -175,7 +181,7 @@ namespace FoxSDC_Server
                                         Subject = Subject.Replace("{URGENT}", "").
                                             Replace("{NMACHINESS}", ConcernedMachineIDs.Count == 1 ? "" : "s").
                                             Replace("{NMACHINES}", ConcernedMachineIDs.Count.ToString());
-                                        if (MailSender.SendEMailAdmin(Subject, Text, new List<System.Net.Mail.Attachment> { new System.Net.Mail.Attachment(new MemoryStream(PDFFile), "Report.pdf") }, System.Net.Mail.MailPriority.Normal, out ErrorMessage, SettingsManager.Settings.EMailAdminIsHTML) == false)
+                                        if (MailSender.SendEMailAdmin(Subject, Text, new List<System.Net.Mail.Attachment> { new System.Net.Mail.Attachment(new MemoryStream(PDFFile), ReportAttachementFilename) }, System.Net.Mail.MailPriority.Normal, out ErrorMessage, SettingsManager.Settings.EMailAdminIsHTML) == false)
                                         {
                                             FoxEventLog.WriteEventLog("Cannot send Admin E-Mail: " + ErrorMessage, System.Diagnostics.EventLogEntryType.Error);
                                         }
@@ -194,9 +200,9 @@ namespace FoxSDC_Server
                         }
                     }
 
-                    #endregion
+#endregion
 
-                    #region Urgent Admin
+#region Urgent Admin
 
                     dr = sql.ExecSQLReader("Select distinct machineid from Reporting where (Flags & @f1)!=0 AND (Flags & @f2)=0",
                         new SQLParam("@f1", ReportingFlags.UrgentForAdmin),
@@ -227,16 +233,16 @@ namespace FoxSDC_Server
                             Subject = Subject.Replace("{URGENT}", "Urgent ").
                                 Replace("{NMACHINESS}", ConcernedMachineIDs.Count == 1 ? "" : "s").
                                 Replace("{NMACHINES}", ConcernedMachineIDs.Count.ToString());
-                            if (MailSender.SendEMailAdmin(Subject, Text, new List<System.Net.Mail.Attachment> { new System.Net.Mail.Attachment(new MemoryStream(PDFFile), "Report.pdf") }, System.Net.Mail.MailPriority.High, out ErrorMessage, SettingsManager.Settings.EMailAdminIsHTML) == false)
+                            if (MailSender.SendEMailAdmin(Subject, Text, new List<System.Net.Mail.Attachment> { new System.Net.Mail.Attachment(new MemoryStream(PDFFile), ReportAttachementFilename) }, System.Net.Mail.MailPriority.High, out ErrorMessage, SettingsManager.Settings.EMailAdminIsHTML) == false)
                             {
                                 FoxEventLog.WriteEventLog("Cannot send Urgent Admin E-Mail: " + ErrorMessage, System.Diagnostics.EventLogEntryType.Error);
                             }
                         }
                     }
 
-                    #endregion
+#endregion
 
-                    #region Normal Client Report
+#region Normal Client Report
 
                     if (Settings.Default.UseContract == true)
                     {
@@ -305,7 +311,7 @@ namespace FoxSDC_Server
                                                 Subject = Subject.Replace("{URGENT}", "").
                                                     Replace("{NMACHINESS}", ConcernedMachineIDsForClient.Count == 1 ? "" : "s").
                                                     Replace("{NMACHINES}", ConcernedMachineIDsForClient.Count.ToString());
-                                                if (MailSender.SendEMailClient(EMail, Subject, Text, new List<System.Net.Mail.Attachment> { new System.Net.Mail.Attachment(new MemoryStream(PDFFile), "Report.pdf") }, System.Net.Mail.MailPriority.High, out ErrorMessage, SettingsManager.Settings.EMailClientIsHTML) == false)
+                                                if (MailSender.SendEMailClient(EMail, Subject, Text, new List<System.Net.Mail.Attachment> { new System.Net.Mail.Attachment(new MemoryStream(PDFFile), ReportAttachementFilename) }, System.Net.Mail.MailPriority.High, out ErrorMessage, SettingsManager.Settings.EMailClientIsHTML) == false)
                                                 {
                                                     FoxEventLog.WriteEventLog("Cannot send Client E-Mail: " + ErrorMessage, System.Diagnostics.EventLogEntryType.Error);
                                                 }
@@ -323,9 +329,9 @@ namespace FoxSDC_Server
                         }
                     }
 
-                    #endregion
+#endregion
 
-                    #region Urgent Client
+#region Urgent Client
 
                     if (Settings.Default.UseContract == true)
                     {
@@ -382,7 +388,7 @@ namespace FoxSDC_Server
                                     Subject = Subject.Replace("{URGENT}", "Urgent ").
                                         Replace("{NMACHINESS}", ConcernedMachineIDsForClient.Count == 1 ? "" : "s").
                                         Replace("{NMACHINES}", ConcernedMachineIDsForClient.Count.ToString());
-                                    if (MailSender.SendEMailClient(EMail, Subject, Text, new List<System.Net.Mail.Attachment> { new System.Net.Mail.Attachment(new MemoryStream(PDFFile), "Report.pdf") }, System.Net.Mail.MailPriority.High, out ErrorMessage, SettingsManager.Settings.EMailClientIsHTML) == false)
+                                    if (MailSender.SendEMailClient(EMail, Subject, Text, new List<System.Net.Mail.Attachment> { new System.Net.Mail.Attachment(new MemoryStream(PDFFile), ReportAttachementFilename) }, System.Net.Mail.MailPriority.High, out ErrorMessage, SettingsManager.Settings.EMailClientIsHTML) == false)
                                     {
                                         FoxEventLog.WriteEventLog("Cannot send Urgent Client E-Mail: " + ErrorMessage, System.Diagnostics.EventLogEntryType.Error);
                                     }
@@ -391,7 +397,7 @@ namespace FoxSDC_Server
                         }
                     }
 
-                    #endregion
+#endregion
 
                 }
                 catch (Exception ee)

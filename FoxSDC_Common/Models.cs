@@ -800,6 +800,7 @@ namespace FoxSDC_Common
         public Int64 ID;
         public int Type;
         public string Name;
+        public DateTime? ExecAfter;
     }
 
     public class SimpleTaskLiteList
@@ -815,6 +816,7 @@ namespace FoxSDC_Common
         public string Name;
         public string Data;
         public DateTime TimeStampCheck;
+        public DateTime? ExecAfter;
     }
 
     public class SimpleTaskResult
