@@ -378,69 +378,72 @@ namespace FoxSDC_Server
 
         void ReportingThread(object AddRemoveProgramsListO)
         {
-            SQLLib sql = SQLTest.ConnectSQL("Fox SDC Server for AddRemovePrograms Data");
-            if (sql == null)
-            {
-                FoxEventLog.WriteEventLog("Cannot connect to SQL Server for AddRemovePrograms Reporting!", System.Diagnostics.EventLogEntryType.Error);
-                return;
-            }
             try
             {
-                AddRemoveProgramsLst AddRemoveProgramsList = (AddRemoveProgramsLst)AddRemoveProgramsListO;
-                ComputerData computerdata = Computers.GetComputerDetail(sql, AddRemoveProgramsList.MachineID);
-                if (computerdata == null)
+                using (SQLLib sql = SQLTest.ConnectSQL("Fox SDC Server for AddRemovePrograms Data"))
                 {
-                    FoxEventLog.WriteEventLog("Cannot get any computer data for AddRemovePrograms Reporting!", System.Diagnostics.EventLogEntryType.Error);
-                    return;
-                }
-
-                List<PolicyObject> Pol = Policies.GetPolicyForComputerInternal(sql, AddRemoveProgramsList.MachineID);
-                Dictionary<string, Int64> AlreadyReported = new Dictionary<string, long>();
-                foreach (PolicyObject PolO in Pol)
-                {
-                    if (PolO.Type != PolicyIDs.ReportingPolicy)
-                        continue;
-                    ReportingPolicyElement RepElementRoot = JsonConvert.DeserializeObject<ReportingPolicyElement>(Policies.GetPolicy(sql, PolO.ID).Data);
-                    if (RepElementRoot.Type != ReportingPolicyType.AddRemovePrograms)
-                        continue;
-                    if (RepElementRoot.ReportToAdmin == null)
-                        RepElementRoot.ReportToAdmin = false;
-                    if (RepElementRoot.ReportToClient == null)
-                        RepElementRoot.ReportToClient = false;
-                    if (RepElementRoot.UrgentForAdmin == null)
-                        RepElementRoot.UrgentForAdmin = false;
-                    if (RepElementRoot.UrgentForClient == null)
-                        RepElementRoot.UrgentForClient = false;
-                    if (RepElementRoot.ReportToAdmin == false && RepElementRoot.ReportToClient == false && RepElementRoot.UrgentForAdmin == false && RepElementRoot.UrgentForClient == false)
-                        continue;
-
-                    foreach (string Element in RepElementRoot.ReportingElements)
+                    if (sql == null)
                     {
-                        ReportingPolicyElementAddRemovePrograms arprep = JsonConvert.DeserializeObject<ReportingPolicyElementAddRemovePrograms>(Element);
-                        if (arprep.NotifyOnAdd == false && arprep.NotifyOnRemove == false && arprep.NotifyOnUpdate == false)
+                        FoxEventLog.WriteEventLog("Cannot connect to SQL Server for AddRemovePrograms Reporting!", System.Diagnostics.EventLogEntryType.Error);
+                        return;
+                    }
+
+                    AddRemoveProgramsLst AddRemoveProgramsList = (AddRemoveProgramsLst)AddRemoveProgramsListO;
+                    ComputerData computerdata = Computers.GetComputerDetail(sql, AddRemoveProgramsList.MachineID);
+                    if (computerdata == null)
+                    {
+                        FoxEventLog.WriteEventLog("Cannot get any computer data for AddRemovePrograms Reporting!", System.Diagnostics.EventLogEntryType.Error);
+                        return;
+                    }
+
+                    List<PolicyObject> Pol = Policies.GetPolicyForComputerInternal(sql, AddRemoveProgramsList.MachineID);
+                    Dictionary<string, Int64> AlreadyReported = new Dictionary<string, long>();
+                    foreach (PolicyObject PolO in Pol)
+                    {
+                        if (PolO.Type != PolicyIDs.ReportingPolicy)
+                            continue;
+                        ReportingPolicyElement RepElementRoot = JsonConvert.DeserializeObject<ReportingPolicyElement>(Policies.GetPolicy(sql, PolO.ID).Data);
+                        if (RepElementRoot.Type != ReportingPolicyType.AddRemovePrograms)
+                            continue;
+                        if (RepElementRoot.ReportToAdmin == null)
+                            RepElementRoot.ReportToAdmin = false;
+                        if (RepElementRoot.ReportToClient == null)
+                            RepElementRoot.ReportToClient = false;
+                        if (RepElementRoot.UrgentForAdmin == null)
+                            RepElementRoot.UrgentForAdmin = false;
+                        if (RepElementRoot.UrgentForClient == null)
+                            RepElementRoot.UrgentForClient = false;
+                        if (RepElementRoot.ReportToAdmin == false && RepElementRoot.ReportToClient == false && RepElementRoot.UrgentForAdmin == false && RepElementRoot.UrgentForClient == false)
                             continue;
 
-                        if (arprep.NotifyOnAdd == true)
+                        foreach (string Element in RepElementRoot.ReportingElements)
                         {
-                            foreach (AddRemoveApp ar in GetFilteredData(AddRemoveProgramsList.Added, computerdata, arprep))
-                            {
-                                ReportThings(sql, AddRemoveProgramsList.MachineID, "Add", ar, ref AlreadyReported, RepElementRoot);
-                            }
-                        }
+                            ReportingPolicyElementAddRemovePrograms arprep = JsonConvert.DeserializeObject<ReportingPolicyElementAddRemovePrograms>(Element);
+                            if (arprep.NotifyOnAdd == false && arprep.NotifyOnRemove == false && arprep.NotifyOnUpdate == false)
+                                continue;
 
-                        if (arprep.NotifyOnUpdate == true)
-                        {
-                            foreach (AddRemoveApp ar in GetFilteredData(AddRemoveProgramsList.Updated, computerdata, arprep))
+                            if (arprep.NotifyOnAdd == true)
                             {
-                                ReportThings(sql, AddRemoveProgramsList.MachineID, "Update", ar, ref AlreadyReported, RepElementRoot);
+                                foreach (AddRemoveApp ar in GetFilteredData(AddRemoveProgramsList.Added, computerdata, arprep))
+                                {
+                                    ReportThings(sql, AddRemoveProgramsList.MachineID, "Add", ar, ref AlreadyReported, RepElementRoot);
+                                }
                             }
-                        }
 
-                        if (arprep.NotifyOnRemove == true)
-                        {
-                            foreach (AddRemoveApp ar in GetFilteredData(AddRemoveProgramsList.Removed, computerdata, arprep))
+                            if (arprep.NotifyOnUpdate == true)
                             {
-                                ReportThings(sql, AddRemoveProgramsList.MachineID, "Remove", ar, ref AlreadyReported, RepElementRoot);
+                                foreach (AddRemoveApp ar in GetFilteredData(AddRemoveProgramsList.Updated, computerdata, arprep))
+                                {
+                                    ReportThings(sql, AddRemoveProgramsList.MachineID, "Update", ar, ref AlreadyReported, RepElementRoot);
+                                }
+                            }
+
+                            if (arprep.NotifyOnRemove == true)
+                            {
+                                foreach (AddRemoveApp ar in GetFilteredData(AddRemoveProgramsList.Removed, computerdata, arprep))
+                                {
+                                    ReportThings(sql, AddRemoveProgramsList.MachineID, "Remove", ar, ref AlreadyReported, RepElementRoot);
+                                }
                             }
                         }
                     }
@@ -449,17 +452,6 @@ namespace FoxSDC_Server
             catch (Exception ee)
             {
                 FoxEventLog.WriteEventLog("SEH in AddRemovePrograms Reporting " + ee.ToString(), System.Diagnostics.EventLogEntryType.Error);
-            }
-            finally
-            {
-                try
-                {
-                    sql.CloseConnection();
-                }
-                catch
-                {
-
-                }
             }
         }
 

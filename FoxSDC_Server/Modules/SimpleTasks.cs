@@ -228,8 +228,8 @@ namespace FoxSDC_Server
 
             lock (ni.sqllock)
             {
-                SqlDataReader dr = sql.ExecSQLReader("select top 1 * from SimpleTasks WHERE MachineID=@id AND GETUTCDATE()>isnull(execafter,'2010-01-01') ORDER BY ID asc", 
-                    new SQLParam("@id", ni.Username));
+                SqlDataReader dr = sql.ExecSQLReader("select top 1 * from SimpleTasks WHERE MachineID=@id AND GETUTCDATE()>isnull(execafter,'2010-01-01') ORDER BY ID asc",
+                new SQLParam("@id", ni.Username));
                 if (dr.HasRows == false)
                 {
                     dr.Close();
@@ -335,13 +335,13 @@ namespace FoxSDC_Server
             lock (ni.sqllock)
             {
                 STaskResult.Name = Convert.ToString(sql.ExecSQLScalar("SELECT Name FROM SimpleTasks WHERE ID=@id",
-                    new SQLParam("@id", STaskResult.ID)));
+                new SQLParam("@id", STaskResult.ID)));
             }
 
             lock (ni.sqllock)
             {
                 sql.ExecSQL("DELETE FROM SimpleTasks WHERE ID=@id",
-                    new SQLParam("@id", STaskResult.ID));
+                new SQLParam("@id", STaskResult.ID));
             }
 
             Thread t = new Thread(new ParameterizedThreadStart(new DReportingThread(ReportingThread)));
@@ -352,59 +352,50 @@ namespace FoxSDC_Server
 
         void ReportingThread(object SimpleTaskO)
         {
-            SQLLib sql = SQLTest.ConnectSQL("Fox SDC Server for SimpleTask Result Data");
-            if (sql == null)
-            {
-                FoxEventLog.WriteEventLog("Cannot connect to SQL Server for SimpleTask Result Reporting!", System.Diagnostics.EventLogEntryType.Error);
-                return;
-            }
             try
             {
-                SimpleTaskResult SimpleTask = (SimpleTaskResult)SimpleTaskO;
-
-                List<PolicyObject> Pol = Policies.GetPolicyForComputerInternal(sql, SimpleTask.MachineID);
-                Dictionary<string, Int64> AlreadyReported = new Dictionary<string, long>();
-                foreach (PolicyObject PolO in Pol)
+                using (SQLLib sql = SQLTest.ConnectSQL("Fox SDC Server for SimpleTask Result Data"))
                 {
-                    if (PolO.Type != PolicyIDs.ReportingPolicy)
-                        continue;
-                    ReportingPolicyElement RepElementRoot = JsonConvert.DeserializeObject<ReportingPolicyElement>(Policies.GetPolicy(sql, PolO.ID).Data);
-                    if (RepElementRoot.Type != ReportingPolicyType.SimpleTaskCompleted)
-                        continue;
-                    if (RepElementRoot.ReportToAdmin == null)
-                        RepElementRoot.ReportToAdmin = false;
-                    if (RepElementRoot.ReportToClient == null)
-                        RepElementRoot.ReportToClient = false;
-                    if (RepElementRoot.UrgentForAdmin == null)
-                        RepElementRoot.UrgentForAdmin = false;
-                    if (RepElementRoot.UrgentForClient == null)
-                        RepElementRoot.UrgentForClient = false;
-                    if (RepElementRoot.ReportToAdmin == false && RepElementRoot.ReportToClient == false && RepElementRoot.UrgentForAdmin == false &&
-                        RepElementRoot.UrgentForClient == false)
-                        continue;
-
-                    foreach (string Element in RepElementRoot.ReportingElements)
+                    if (sql == null)
                     {
-                        ReportingPolicyElementSimpleTaskCompleted arprep = JsonConvert.DeserializeObject<ReportingPolicyElementSimpleTaskCompleted>(Element);
+                        FoxEventLog.WriteEventLog("Cannot connect to SQL Server for SimpleTask Result Reporting!", System.Diagnostics.EventLogEntryType.Error);
+                        return;
+                    }
+                    SimpleTaskResult SimpleTask = (SimpleTaskResult)SimpleTaskO;
 
-                        ReportThings(sql, SimpleTask.MachineID, "Completed", SimpleTask, ref AlreadyReported, RepElementRoot);
+                    List<PolicyObject> Pol = Policies.GetPolicyForComputerInternal(sql, SimpleTask.MachineID);
+                    Dictionary<string, Int64> AlreadyReported = new Dictionary<string, long>();
+                    foreach (PolicyObject PolO in Pol)
+                    {
+                        if (PolO.Type != PolicyIDs.ReportingPolicy)
+                            continue;
+                        ReportingPolicyElement RepElementRoot = JsonConvert.DeserializeObject<ReportingPolicyElement>(Policies.GetPolicy(sql, PolO.ID).Data);
+                        if (RepElementRoot.Type != ReportingPolicyType.SimpleTaskCompleted)
+                            continue;
+                        if (RepElementRoot.ReportToAdmin == null)
+                            RepElementRoot.ReportToAdmin = false;
+                        if (RepElementRoot.ReportToClient == null)
+                            RepElementRoot.ReportToClient = false;
+                        if (RepElementRoot.UrgentForAdmin == null)
+                            RepElementRoot.UrgentForAdmin = false;
+                        if (RepElementRoot.UrgentForClient == null)
+                            RepElementRoot.UrgentForClient = false;
+                        if (RepElementRoot.ReportToAdmin == false && RepElementRoot.ReportToClient == false && RepElementRoot.UrgentForAdmin == false &&
+                            RepElementRoot.UrgentForClient == false)
+                            continue;
+
+                        foreach (string Element in RepElementRoot.ReportingElements)
+                        {
+                            ReportingPolicyElementSimpleTaskCompleted arprep = JsonConvert.DeserializeObject<ReportingPolicyElementSimpleTaskCompleted>(Element);
+
+                            ReportThings(sql, SimpleTask.MachineID, "Completed", SimpleTask, ref AlreadyReported, RepElementRoot);
+                        }
                     }
                 }
             }
             catch (Exception ee)
             {
                 FoxEventLog.WriteEventLog("SEH in SimpleTask Result Reporting " + ee.ToString(), System.Diagnostics.EventLogEntryType.Error);
-            }
-            finally
-            {
-                try
-                {
-                    sql.CloseConnection();
-                }
-                catch
-                {
-
-                }
             }
         }
 

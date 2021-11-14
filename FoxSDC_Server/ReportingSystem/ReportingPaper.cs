@@ -116,166 +116,168 @@ namespace FoxSDC_Server
 
             Settings.Default.Load();
 
-            SQLLib sql = SQLTest.ConnectSQL("Fox SDC Server for Reporting");
-            if (sql == null)
-                return (lst);
-
-            //Get some ComputerInfo
-            SqlDataReader dr = sql.ExecSQLReader("select * from ComputerAccounts Where MachineID=@m",
-                new SQLParam("@m", MachineID));
-            if (dr.HasRows == false)
+            using (SQLLib sql = SQLTest.ConnectSQL("Fox SDC Server for Reporting"))
             {
-                dr.Close();
-                sql.CloseConnection();
-                return (lst);
-            }
-
-            dr.Read();
-            ReportingPaperElements basicinfo = new ReportingPaperElements();
-            basicinfo.AgentVersion = Convert.ToString(dr["AgentVersion"]);
-            basicinfo.BIOSBootType = Convert.ToString(dr["BIOSType"]);
-            basicinfo.LastUpdated = SQLLib.GetDTUTC(dr["LastUpdated"]);
-            basicinfo.MachineID = Convert.ToString(dr["MachineID"]);
-            basicinfo.MachineName = Convert.ToString(dr["ComputerName"]);
-            basicinfo.OS = Convert.ToString(dr["OSName"]);
-            basicinfo.OSVersion = Convert.ToString(dr["OSVerMaj"]) + "." + Convert.ToString(dr["OSVerMin"]) + "." + Convert.ToString(dr["OSVerBuild"]);
-            basicinfo.OSWin10Version = Win10Version.GetWin10Version(basicinfo.OSVersion);
-            basicinfo.TotalPhysicalMemory = CommonUtilities.NiceSize(Convert.ToInt64(dr["TotalPhysicalMemory"]));
-            basicinfo.UCID = Convert.ToString(dr["UCID"]);
-            basicinfo.VendorBIOS = Convert.ToString(dr["BIOS"]);
-            basicinfo.VendorMake = Convert.ToString(dr["ComputerModel"]);
-            basicinfo.ContractID = Convert.ToString(dr["ContractID"]);
-            dr.Close();
-
-            string Query = "";
-            List<SQLParam> SQLParams = new List<SQLParam>();
-            switch ((ReportingFlagsPaper)ReportingPaper)
-            {
-                case ReportingFlagsPaper.UrgentAdmin:
-                    Query = "Select * from Reporting where machineid=@mid and (Flags & @f1)!=0 AND (Flags & @f2)=0 order by Reported desc";
-                    SQLParams.Add(new SQLParam("@mid", MachineID));
-                    SQLParams.Add(new SQLParam("@f1", ReportingFlags.UrgentForAdmin));
-                    SQLParams.Add(new SQLParam("@f2", ReportingFlags.UrgentAdminReported));
-                    break;
-                case ReportingFlagsPaper.UrgentClient:
-                    Query = "Select * from Reporting where machineid=@mid and (Flags & @f1)!=0 AND (Flags & @f2)=0 order by Reported desc";
-                    SQLParams.Add(new SQLParam("@mid", MachineID));
-                    SQLParams.Add(new SQLParam("@f1", ReportingFlags.UrgentForClient));
-                    SQLParams.Add(new SQLParam("@f2", ReportingFlags.UrgentClientReported));
-                    break;
-                case ReportingFlagsPaper.ReportAdmin:
-                    Query = "Select * from Reporting where machineid=@mid and (Flags & @f1)!=0 AND (Flags & @f2)=0 order by Reported desc";
-                    SQLParams.Add(new SQLParam("@mid", MachineID));
-                    SQLParams.Add(new SQLParam("@f1", ReportingFlags.ReportToAdmin));
-                    SQLParams.Add(new SQLParam("@f2", ReportingFlags.AdminReported));
-                    break;
-                case ReportingFlagsPaper.ReportClient:
-                    Query = "Select * from Reporting where machineid=@mid and (Flags & @f1)!=0 AND (Flags & @f2)=0 order by Reported desc";
-                    SQLParams.Add(new SQLParam("@mid", MachineID));
-                    SQLParams.Add(new SQLParam("@f1", ReportingFlags.ReportToClient));
-                    SQLParams.Add(new SQLParam("@f2", ReportingFlags.ClientReported));
-                    break;
-                case ReportingFlagsPaper.ReReport:
-                    if (From == null && To == null)
-                    {
-                        Query = "Select * from Reporting where machineid=@mid order by Reported desc";
-                        SQLParams.Add(new SQLParam("@mid", MachineID));
-                    }
-                    if (From != null && To == null)
-                    {
-                        Query = "Select * from Reporting where machineid=@mid AND Reported>=@d1 order by Reported desc";
-                        SQLParams.Add(new SQLParam("@mid", MachineID));
-                        SQLParams.Add(new SQLParam("@d1", From.Value));
-                    }
-                    if (From == null && To != null)
-                    {
-                        Query = "Select * from Reporting where machineid=@mid AND Reported<=@d1 order by Reported desc";
-                        SQLParams.Add(new SQLParam("@mid", MachineID));
-                        SQLParams.Add(new SQLParam("@d1", To.Value));
-                    }
-                    if (From != null && To != null)
-                    {
-                        Query = "Select * from Reporting where machineid=@mid and Reported between @d1 and @d2 order by Reported desc";
-                        SQLParams.Add(new SQLParam("@mid", MachineID));
-                        SQLParams.Add(new SQLParam("@d1", From.Value));
-                        SQLParams.Add(new SQLParam("@d2", To.Value));
-                    }
-                    break;
-                default:
+                if (sql == null)
                     return (lst);
-            }
 
-            List<Int64> ReportedIDs = new List<long>();
-
-            dr = sql.ExecSQLReader(Query, SQLParams.ToArray());
-            while (dr.Read())
-            {
-                ReportingPaperElements r = new ReportingPaperElements();
-                CopyBaseData(basicinfo, r);
-                ReportedIDs.Add(Convert.ToInt64(dr["ID"]));
-                r.ID = Convert.ToInt64(dr["ID"]);
-                r.Flags = Convert.ToInt64(dr["Flags"]);
-                r.ReportingType = Convert.ToInt32(dr["Type"]);
-                r.ReportedDate = SQLLib.GetDTUTC(dr["Reported"]);
-                r.StatusPicture = ReportingStatusPicture.GetPicture((int)((r.Flags & (Int64)ReportingFlags.IconFlags) >> (int)ReportingFlags.IconFlagsShift));
-                IReportingExplain explain = ReportingProcessor.FindExplainer(r.ReportingType);
-                if (explain != null)
+                //Get some ComputerInfo
+                SqlDataReader dr = sql.ExecSQLReader("select * from ComputerAccounts Where MachineID=@m",
+                    new SQLParam("@m", MachineID));
+                if (dr.HasRows == false)
                 {
-                    r.Text = explain.Explain(Convert.ToString(dr["Data"]));
-                    r.IconPicture = explain.GetIcon();
-                }
-                else
-                {
-                    r.Text = "Missing module for Type=" + r.ReportingType.ToString() + "; Text=" + Convert.ToString(dr["Data"]);
-                    r.IconPicture = Resources.Nix.ToBitmap();
-                }
-                lst.Add(r);
-            }
-            dr.Close();
-
-            if (ReportedIDs.Count > 0 && (ReportingFlagsPaper)ReportingPaper != ReportingFlagsPaper.ReReport)
-            {
-                string SQLIn = "";
-                foreach (Int64 i in ReportedIDs)
-                {
-                    SQLIn += i.ToString() + ",";
+                    dr.Close();
+                    sql.CloseConnection();
+                    return (lst);
                 }
 
-                if (SQLIn.EndsWith(",") == true)
-                    SQLIn = SQLIn.Substring(0, SQLIn.Length - 1);
+                dr.Read();
+                ReportingPaperElements basicinfo = new ReportingPaperElements();
+                basicinfo.AgentVersion = Convert.ToString(dr["AgentVersion"]);
+                basicinfo.BIOSBootType = Convert.ToString(dr["BIOSType"]);
+                basicinfo.LastUpdated = SQLLib.GetDTUTC(dr["LastUpdated"]);
+                basicinfo.MachineID = Convert.ToString(dr["MachineID"]);
+                basicinfo.MachineName = Convert.ToString(dr["ComputerName"]);
+                basicinfo.OS = Convert.ToString(dr["OSName"]);
+                basicinfo.OSVersion = Convert.ToString(dr["OSVerMaj"]) + "." + Convert.ToString(dr["OSVerMin"]) + "." + Convert.ToString(dr["OSVerBuild"]);
+                basicinfo.OSWin10Version = Win10Version.GetWin10Version(basicinfo.OSVersion);
+                basicinfo.TotalPhysicalMemory = CommonUtilities.NiceSize(Convert.ToInt64(dr["TotalPhysicalMemory"]));
+                basicinfo.UCID = Convert.ToString(dr["UCID"]);
+                basicinfo.VendorBIOS = Convert.ToString(dr["BIOS"]);
+                basicinfo.VendorMake = Convert.ToString(dr["ComputerModel"]);
+                basicinfo.ContractID = Convert.ToString(dr["ContractID"]);
+                dr.Close();
 
-                Query = "";
-                SQLParams = new List<SQLParam>();
-
+                string Query = "";
+                List<SQLParam> SQLParams = new List<SQLParam>();
                 switch ((ReportingFlagsPaper)ReportingPaper)
                 {
                     case ReportingFlagsPaper.UrgentAdmin:
-                        Query = "update Reporting set Flags = Flags | @f2 where machineid=@mid and Flags & @f1!=0 AND Flags & @f2=0";
+                        Query = "Select * from Reporting where machineid=@mid and (Flags & @f1)!=0 AND (Flags & @f2)=0 order by Reported desc";
                         SQLParams.Add(new SQLParam("@mid", MachineID));
                         SQLParams.Add(new SQLParam("@f1", ReportingFlags.UrgentForAdmin));
                         SQLParams.Add(new SQLParam("@f2", ReportingFlags.UrgentAdminReported));
                         break;
                     case ReportingFlagsPaper.UrgentClient:
-                        Query = "update Reporting set Flags = Flags | @f2 where machineid=@mid and Flags & @f1!=0 AND Flags & @f2=0";
+                        Query = "Select * from Reporting where machineid=@mid and (Flags & @f1)!=0 AND (Flags & @f2)=0 order by Reported desc";
                         SQLParams.Add(new SQLParam("@mid", MachineID));
                         SQLParams.Add(new SQLParam("@f1", ReportingFlags.UrgentForClient));
                         SQLParams.Add(new SQLParam("@f2", ReportingFlags.UrgentClientReported));
                         break;
                     case ReportingFlagsPaper.ReportAdmin:
-                        Query = "update Reporting set Flags = Flags | @f2 where machineid=@mid and Flags & @f1!=0 AND Flags & @f2=0";
+                        Query = "Select * from Reporting where machineid=@mid and (Flags & @f1)!=0 AND (Flags & @f2)=0 order by Reported desc";
                         SQLParams.Add(new SQLParam("@mid", MachineID));
                         SQLParams.Add(new SQLParam("@f1", ReportingFlags.ReportToAdmin));
                         SQLParams.Add(new SQLParam("@f2", ReportingFlags.AdminReported));
                         break;
                     case ReportingFlagsPaper.ReportClient:
-                        Query = "update Reporting set Flags = Flags | @f2 where machineid=@mid and Flags & @f1!=0 AND Flags & @f2=0";
+                        Query = "Select * from Reporting where machineid=@mid and (Flags & @f1)!=0 AND (Flags & @f2)=0 order by Reported desc";
                         SQLParams.Add(new SQLParam("@mid", MachineID));
                         SQLParams.Add(new SQLParam("@f1", ReportingFlags.ReportToClient));
                         SQLParams.Add(new SQLParam("@f2", ReportingFlags.ClientReported));
                         break;
+                    case ReportingFlagsPaper.ReReport:
+                        if (From == null && To == null)
+                        {
+                            Query = "Select * from Reporting where machineid=@mid order by Reported desc";
+                            SQLParams.Add(new SQLParam("@mid", MachineID));
+                        }
+                        if (From != null && To == null)
+                        {
+                            Query = "Select * from Reporting where machineid=@mid AND Reported>=@d1 order by Reported desc";
+                            SQLParams.Add(new SQLParam("@mid", MachineID));
+                            SQLParams.Add(new SQLParam("@d1", From.Value));
+                        }
+                        if (From == null && To != null)
+                        {
+                            Query = "Select * from Reporting where machineid=@mid AND Reported<=@d1 order by Reported desc";
+                            SQLParams.Add(new SQLParam("@mid", MachineID));
+                            SQLParams.Add(new SQLParam("@d1", To.Value));
+                        }
+                        if (From != null && To != null)
+                        {
+                            Query = "Select * from Reporting where machineid=@mid and Reported between @d1 and @d2 order by Reported desc";
+                            SQLParams.Add(new SQLParam("@mid", MachineID));
+                            SQLParams.Add(new SQLParam("@d1", From.Value));
+                            SQLParams.Add(new SQLParam("@d2", To.Value));
+                        }
+                        break;
+                    default:
+                        return (lst);
                 }
 
-                sql.ExecSQLNQ(Query, SQLParams.ToArray());
+                List<Int64> ReportedIDs = new List<long>();
+
+                dr = sql.ExecSQLReader(Query, SQLParams.ToArray());
+                while (dr.Read())
+                {
+                    ReportingPaperElements r = new ReportingPaperElements();
+                    CopyBaseData(basicinfo, r);
+                    ReportedIDs.Add(Convert.ToInt64(dr["ID"]));
+                    r.ID = Convert.ToInt64(dr["ID"]);
+                    r.Flags = Convert.ToInt64(dr["Flags"]);
+                    r.ReportingType = Convert.ToInt32(dr["Type"]);
+                    r.ReportedDate = SQLLib.GetDTUTC(dr["Reported"]);
+                    r.StatusPicture = ReportingStatusPicture.GetPicture((int)((r.Flags & (Int64)ReportingFlags.IconFlags) >> (int)ReportingFlags.IconFlagsShift));
+                    IReportingExplain explain = ReportingProcessor.FindExplainer(r.ReportingType);
+                    if (explain != null)
+                    {
+                        r.Text = explain.Explain(Convert.ToString(dr["Data"]));
+                        r.IconPicture = explain.GetIcon();
+                    }
+                    else
+                    {
+                        r.Text = "Missing module for Type=" + r.ReportingType.ToString() + "; Text=" + Convert.ToString(dr["Data"]);
+                        r.IconPicture = Resources.Nix.ToBitmap();
+                    }
+                    lst.Add(r);
+                }
+                dr.Close();
+
+                if (ReportedIDs.Count > 0 && (ReportingFlagsPaper)ReportingPaper != ReportingFlagsPaper.ReReport)
+                {
+                    string SQLIn = "";
+                    foreach (Int64 i in ReportedIDs)
+                    {
+                        SQLIn += i.ToString() + ",";
+                    }
+
+                    if (SQLIn.EndsWith(",") == true)
+                        SQLIn = SQLIn.Substring(0, SQLIn.Length - 1);
+
+                    Query = "";
+                    SQLParams = new List<SQLParam>();
+
+                    switch ((ReportingFlagsPaper)ReportingPaper)
+                    {
+                        case ReportingFlagsPaper.UrgentAdmin:
+                            Query = "update Reporting set Flags = Flags | @f2 where machineid=@mid and Flags & @f1!=0 AND Flags & @f2=0";
+                            SQLParams.Add(new SQLParam("@mid", MachineID));
+                            SQLParams.Add(new SQLParam("@f1", ReportingFlags.UrgentForAdmin));
+                            SQLParams.Add(new SQLParam("@f2", ReportingFlags.UrgentAdminReported));
+                            break;
+                        case ReportingFlagsPaper.UrgentClient:
+                            Query = "update Reporting set Flags = Flags | @f2 where machineid=@mid and Flags & @f1!=0 AND Flags & @f2=0";
+                            SQLParams.Add(new SQLParam("@mid", MachineID));
+                            SQLParams.Add(new SQLParam("@f1", ReportingFlags.UrgentForClient));
+                            SQLParams.Add(new SQLParam("@f2", ReportingFlags.UrgentClientReported));
+                            break;
+                        case ReportingFlagsPaper.ReportAdmin:
+                            Query = "update Reporting set Flags = Flags | @f2 where machineid=@mid and Flags & @f1!=0 AND Flags & @f2=0";
+                            SQLParams.Add(new SQLParam("@mid", MachineID));
+                            SQLParams.Add(new SQLParam("@f1", ReportingFlags.ReportToAdmin));
+                            SQLParams.Add(new SQLParam("@f2", ReportingFlags.AdminReported));
+                            break;
+                        case ReportingFlagsPaper.ReportClient:
+                            Query = "update Reporting set Flags = Flags | @f2 where machineid=@mid and Flags & @f1!=0 AND Flags & @f2=0";
+                            SQLParams.Add(new SQLParam("@mid", MachineID));
+                            SQLParams.Add(new SQLParam("@f1", ReportingFlags.ReportToClient));
+                            SQLParams.Add(new SQLParam("@f2", ReportingFlags.ClientReported));
+                            break;
+                    }
+
+                    sql.ExecSQLNQ(Query, SQLParams.ToArray());
+                }
             }
             return (lst);
         }

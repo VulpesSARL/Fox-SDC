@@ -20,6 +20,7 @@ namespace FoxSDC_MGMT
 
         void UpdateList()
         {
+#if ENABLECHAT
             lstComputers.Items.Clear();
             List<string> Machines = Program.net.GetPendingChats();
             if (Machines == null)
@@ -33,6 +34,7 @@ namespace FoxSDC_MGMT
                 l.SubItems.Add(cd.GroupingPath);
                 lstComputers.Items.Add(l);
             }
+#endif
         }
 
         private void timUpdate_Tick(object sender, EventArgs e)
@@ -47,10 +49,12 @@ namespace FoxSDC_MGMT
 
         private void lstComputers_DoubleClick(object sender, EventArgs e)
         {
+#if ENABLECHAT
             if (lstComputers.SelectedItems.Count == 0)
                 return;
             frmComputerInfo pc = new frmComputerInfo((string)lstComputers.SelectedItems[0].Tag);
             pc.Show();
+#endif
         }
 
         private void lstComputers_KeyDown(object sender, KeyEventArgs e)

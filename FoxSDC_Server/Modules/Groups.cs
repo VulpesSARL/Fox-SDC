@@ -72,7 +72,7 @@ namespace FoxSDC_Server
             lock (ni.sqllock)
             {
                 SqlDataReader dr = sql.ExecSQLReader("select * from Grouping WHERE ParentID=@p order by Name",
-                      new SQLParam("@p", id));
+                  new SQLParam("@p", id));
                 while (dr.Read())
                 {
                     GroupElement ge = new GroupElement();
@@ -138,14 +138,14 @@ namespace FoxSDC_Server
             lock (ni.sqllock)
             {
                 if (Convert.ToInt32(sql.ExecSQLScalar("SELECT COUNT(*) FROM Grouping WHERE ID=@id",
-                new SQLParam("@id", id))) == 0)
+                    new SQLParam("@id", id))) == 0)
                 {
                     ni.Error = "Group does not exist";
                     ni.ErrorID = ErrorFlags.InvalidData;
                     return (RESTStatus.NotFound);
                 }
             }
-            
+
             if (Rename.Data == null)
             {
                 ni.Error = "Invalid data";
@@ -164,7 +164,7 @@ namespace FoxSDC_Server
             lock (ni.sqllock)
             {
                 object P = sql.ExecSQLScalar("SELECT ParentID FROM Grouping WHERE ID=@id",
-                new SQLParam("@id", id));
+            new SQLParam("@id", id));
                 Parent = P is DBNull ? (Int64?)null : Convert.ToInt64(P);
             }
 
@@ -184,8 +184,8 @@ namespace FoxSDC_Server
             lock (ni.sqllock)
             {
                 sql.ExecSQL("UPDATE Grouping SET Name=@n WHERE ID=@id",
-                new SQLParam("@n", Rename.Data.Trim()),
-                new SQLParam("@id", id));
+                    new SQLParam("@n", Rename.Data.Trim()),
+                    new SQLParam("@id", id));
             }
 
             return (RESTStatus.Success);
@@ -221,7 +221,7 @@ namespace FoxSDC_Server
                 lock (ni.sqllock)
                 {
                     if (Convert.ToInt32(sql.ExecSQLScalar("SELECT COUNT(*) FROM Grouping WHERE ID=@id",
-                    new SQLParam("@id", GroupName.ToParent))) == 0)
+                new SQLParam("@id", GroupName.ToParent))) == 0)
                     {
                         ni.Error = "Group does not exist";
                         ni.ErrorID = ErrorFlags.InvalidData;
@@ -233,8 +233,8 @@ namespace FoxSDC_Server
             lock (ni.sqllock)
             {
                 if (Convert.ToInt32(sql.ExecSQLScalar("SELECT COUNT(*) FROM Grouping WHERE ParentID=@pid AND Name=@n",
-                new SQLParam("@pid", GroupName.ToParent),
-                new SQLParam("@n", GroupName.Name.Trim()))) > 0)
+            new SQLParam("@pid", GroupName.ToParent),
+            new SQLParam("@n", GroupName.Name.Trim()))) > 0)
                 {
                     ni.Error = "Duplicate name";
                     ni.ErrorID = ErrorFlags.DuplicateElement;
@@ -248,8 +248,8 @@ namespace FoxSDC_Server
             lock (ni.sqllock)
             {
                 nid = sql.InsertMultiDataID("Grouping",
-                    new SQLData("Name", GroupName.Name.Trim()),
-                    new SQLData("ParentID", GroupName.ToParent));
+                new SQLData("Name", GroupName.Name.Trim()),
+                new SQLData("ParentID", GroupName.ToParent));
             }
 
             if (nid == null)
@@ -277,7 +277,7 @@ namespace FoxSDC_Server
             lock (ni.sqllock)
             {
                 if (Convert.ToInt32(sql.ExecSQLScalar("SELECT COUNT(*) FROM Grouping WHERE ID=@id",
-                  new SQLParam("@id", id))) == 0)
+              new SQLParam("@id", id))) == 0)
                 {
                     ni.Error = "Group does not exist";
                     ni.ErrorID = ErrorFlags.InvalidData;

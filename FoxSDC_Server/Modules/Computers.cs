@@ -122,7 +122,7 @@ namespace FoxSDC_Server
                 INNER JOIN GroupingRecursive
                 ON GroupingRecursive.ID = d.ParentID)
                 select *,(SELECT Path FROM GroupingRecursive WHERE ID=ComputerAccounts.Grouping) as Path from ComputerAccounts " + where + group + " order by ComputerName",
-                    new SQLParam("@group", Group));
+                new SQLParam("@group", Group));
                 while (dr.Read())
                 {
                     ComputerData cd = new ComputerData();
@@ -173,7 +173,7 @@ namespace FoxSDC_Server
                 INNER JOIN GroupingRecursive
                 ON GroupingRecursive.ID = d.ParentID)
                 select *,(SELECT Path FROM GroupingRecursive WHERE ID=ComputerAccounts.Grouping) as Path from ComputerAccounts WHERE MachineID=@id order by ComputerName",
-                    new SQLParam("@id", id));
+                new SQLParam("@id", id));
                 ComputerData cd = null;
                 while (dr.Read())
                 {
@@ -250,8 +250,8 @@ namespace FoxSDC_Server
             lock (ni.sqllock)
             {
                 sql.ExecSQL("UPDATE ComputerAccounts SET Comments=@c WHERE MachineID=@m",
-                new SQLParam("@m", id),
-                new SQLParam("@c", comments.Data));
+                    new SQLParam("@m", id),
+                    new SQLParam("@c", comments.Data));
             }
 
             return (RESTStatus.NoContent);
@@ -291,9 +291,9 @@ namespace FoxSDC_Server
             lock (ni.sqllock)
             {
                 sql.ExecSQL("UPDATE ComputerAccounts SET Accepted=@a,Grouping=@g WHERE MachineID=@m",
-                new SQLParam("@m", id),
-                new SQLParam("@g", state.Group),
-                new SQLParam("@a", state.State == true ? 1 : 0));
+                    new SQLParam("@m", id),
+                    new SQLParam("@g", state.Group),
+                    new SQLParam("@a", state.State == true ? 1 : 0));
             }
             return (RESTStatus.NoContent);
         }
@@ -340,7 +340,7 @@ namespace FoxSDC_Server
                             END
 
                             Select @Deleted_Rows_Total",
-                            new SQLParam("@m", id));
+                        new SQLParam("@m", id));
             }
             lock (ni.sqllock)
                 sql.ExecSQL("UPDATE Policies SET MachineID=null, Enabled=0 WHERE MachineID=@m", new SQLParam("@m", id));

@@ -274,13 +274,13 @@ namespace FoxSDC_Server.Modules
                         lock (ni.sqllock)
                         {
                             NewID = sql.InsertMultiDataID("Packages",
-                                new SQLData("PackageID", pki.PackageInfoData.PackageID),
-                                new SQLData("Version", pki.PackageInfoData.VersionID),
-                                new SQLData("Title", pki.PackageInfoData.Title),
-                                new SQLData("Description", pki.PackageInfoData.Description),
-                                new SQLData("Filename", Filename),
-                                new SQLData("MetaFilename", FilenameMeta),
-                                new SQLData("Size", ni.Upload.Size));
+                            new SQLData("PackageID", pki.PackageInfoData.PackageID),
+                            new SQLData("Version", pki.PackageInfoData.VersionID),
+                            new SQLData("Title", pki.PackageInfoData.Title),
+                            new SQLData("Description", pki.PackageInfoData.Description),
+                            new SQLData("Filename", Filename),
+                            new SQLData("MetaFilename", FilenameMeta),
+                            new SQLData("Size", ni.Upload.Size));
                         }
 
                         if (NewID == null)

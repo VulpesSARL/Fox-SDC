@@ -63,8 +63,8 @@ namespace FoxSDC_Server.Modules
             lock (ni.sqllock)
             {
                 SqlDataReader dr = sql.ExecSQLReader("SELECT * FROM FileTransfers WHERE ID=@id AND MachineID=@mid AND Direction in (0,1)",
-                    new SQLParam("@mid", ni.Username),
-                    new SQLParam("@id", ID));
+                new SQLParam("@mid", ni.Username),
+                new SQLParam("@id", ID));
 
                 if (dr.HasRows == false)
                 {
@@ -106,8 +106,8 @@ namespace FoxSDC_Server.Modules
             lock (ni.sqllock)
             {
                 SqlDataReader dr = sql.ExecSQLReader("SELECT * FROM FileTransfers WHERE ID=@id AND MachineID=@mid AND Size=ProgressSize AND Direction=0 AND RequestOnly=0",
-                    new SQLParam("@mid", ni.Username),
-                    new SQLParam("@id", ID));
+                new SQLParam("@mid", ni.Username),
+                new SQLParam("@id", ID));
 
                 if (dr.HasRows == false)
                 {
@@ -172,8 +172,8 @@ namespace FoxSDC_Server.Modules
             lock (ni.sqllock)
             {
                 if (Convert.ToInt32(sql.ExecSQLScalar("SELECT COUNT(*) FROM FileTransfers WHERE ID=@id AND MachineID=@mid AND Direction in (0,1)",
-                new SQLParam("@mid", ni.Username),
-                new SQLParam("@id", ID))) == 0)
+                    new SQLParam("@mid", ni.Username),
+                    new SQLParam("@id", ID))) == 0)
                 {
                     ni.Error = "Invalid ID";
                     ni.ErrorID = ErrorFlags.InvalidData;
@@ -186,8 +186,8 @@ namespace FoxSDC_Server.Modules
             lock (ni.sqllock)
             {
                 Filename = Settings.Default.DataPath + Convert.ToString(sql.ExecSQLScalar("SELECT ServerFile FROM FileTransfers WHERE ID=@id AND MachineID=@mid",
-                    new SQLParam("@mid", ni.Username),
-                    new SQLParam("@id", ID)));
+                new SQLParam("@mid", ni.Username),
+                new SQLParam("@id", ID)));
             }
 
             if (File.Exists(Filename) == true)
@@ -203,8 +203,8 @@ namespace FoxSDC_Server.Modules
             lock (ni.sqllock)
             {
                 sql.ExecSQLScalar("DELETE FROM FileTransfers WHERE ID=@id AND MachineID=@mid",
-                    new SQLParam("@mid", ni.Username),
-                    new SQLParam("@id", ID));
+                new SQLParam("@mid", ni.Username),
+                new SQLParam("@id", ID));
             }
 
             return (RESTStatus.Success);
@@ -251,8 +251,8 @@ namespace FoxSDC_Server.Modules
             lock (ni.sqllock)
             {
                 if (Convert.ToInt32(sql.ExecSQLScalar("SELECT COUNT(*) FROM FileTransfers WHERE ID=@id AND MachineID=@mid AND [Size]!=[ProgressSize] AND Direction=1 AND RequestOnly=0",
-                new SQLParam("@mid", ni.Username),
-                new SQLParam("@id", upload.ID))) == 0)
+                    new SQLParam("@mid", ni.Username),
+                    new SQLParam("@id", upload.ID))) == 0)
                 {
                     ni.Error = "Invalid ID";
                     ni.ErrorID = ErrorFlags.InvalidData;
@@ -264,8 +264,8 @@ namespace FoxSDC_Server.Modules
             lock (ni.sqllock)
             {
                 TotalSZ = Convert.ToInt64(sql.ExecSQLScalar("SELECT [Size] FROM FileTransfers WHERE ID=@id AND MachineID=@mid",
-                new SQLParam("@mid", ni.Username),
-                new SQLParam("@id", upload.ID)));
+                    new SQLParam("@mid", ni.Username),
+                    new SQLParam("@id", upload.ID)));
                 ProgressSize = Convert.ToInt64(sql.ExecSQLScalar("SELECT ProgressSize FROM FileTransfers WHERE ID=@id AND MachineID=@mid",
                     new SQLParam("@mid", ni.Username),
                     new SQLParam("@id", upload.ID)));
@@ -282,8 +282,8 @@ namespace FoxSDC_Server.Modules
             lock (ni.sqllock)
             {
                 Filename = Settings.Default.DataPath + Convert.ToString(sql.ExecSQLScalar("SELECT ServerFile FROM FileTransfers WHERE ID=@id AND MachineID=@mid",
-                   new SQLParam("@mid", ni.Username),
-                   new SQLParam("@id", upload.ID)));
+               new SQLParam("@mid", ni.Username),
+               new SQLParam("@id", upload.ID)));
             }
 
             if (File.Exists(Filename) == false)
@@ -313,9 +313,9 @@ namespace FoxSDC_Server.Modules
             lock (ni.sqllock)
             {
                 sql.ExecSQL("UPDATE FileTransfers SET ProgressSize=@psz, DTUpdated=getutcdate() WHERE ID=@id AND MachineID=@mid",
-                    new SQLParam("@mid", ni.Username),
-                    new SQLParam("@psz", fi.Length),
-                    new SQLParam("@id", upload.ID));
+                new SQLParam("@mid", ni.Username),
+                new SQLParam("@psz", fi.Length),
+                new SQLParam("@id", upload.ID));
             }
 
             if (fi.Length == TotalSZ)
@@ -326,8 +326,8 @@ namespace FoxSDC_Server.Modules
                 lock (ni.sqllock)
                 {
                     MD5DB = Convert.ToString(sql.ExecSQLScalar("SELECT MD5Sum FROM FileTransfers WHERE ID=@id AND MachineID=@mid",
-                      new SQLParam("@mid", ni.Username),
-                      new SQLParam("@id", upload.ID)));
+                  new SQLParam("@mid", ni.Username),
+                  new SQLParam("@id", upload.ID)));
                 }
                 if (MD5.ToLower() != MD5DB.ToLower())
                 {
@@ -339,8 +339,8 @@ namespace FoxSDC_Server.Modules
                 lock (ni.sqllock)
                 {
                     sql.ExecSQL("UPDATE FileTransfers SET Direction=2 WHERE ID=@id AND MachineID=@mid",
-                    new SQLParam("@mid", ni.Username),
-                    new SQLParam("@id", upload.ID));
+                new SQLParam("@mid", ni.Username),
+                new SQLParam("@id", upload.ID));
                 }
             }
 
@@ -367,7 +367,7 @@ namespace FoxSDC_Server.Modules
             lock (ni.sqllock)
             {
                 SqlDataReader dr = sql.ExecSQLReader("SELECT ID FROM FileTransfers WHERE MachineID=@mid AND ((Size=ProgressSize AND Direction=0) OR (Direction=1)) ORDER BY RequestOnly ASC, ID ASC",
-                new SQLParam("@mid", ni.Username));
+                    new SQLParam("@mid", ni.Username));
                 while (dr.Read())
                 {
                     Int64List.data.data.Add(Convert.ToInt64(dr["ID"]));
@@ -527,17 +527,17 @@ namespace FoxSDC_Server.Modules
             lock (ni.sqllock)
             {
                 id = sql.InsertMultiDataID("FileTransfers",
-                    new SQLData("MachineID", uploadreq.MachineID),
-                    new SQLData("RemoteFileLocation", uploadreq.RemoteFileLocation),
-                    new SQLData("ServerFile", ServerFilename),
-                    new SQLData("Direction", 3),
-                    new SQLData("MD5Sum", uploadreq.MD5CheckSum),
-                    new SQLData("Size", uploadreq.Size),
-                    new SQLData("ProgressSize", 0),
-                    new SQLData("DTUpdated", DateTime.UtcNow),
-                    new SQLData("RequestOnly", 0),
-                    new SQLData("OverrideMeteredConnection", uploadreq.OverrideMeteredConnection),
-                    new SQLData("FileLastModified", uploadreq.FileLastModified));
+                new SQLData("MachineID", uploadreq.MachineID),
+                new SQLData("RemoteFileLocation", uploadreq.RemoteFileLocation),
+                new SQLData("ServerFile", ServerFilename),
+                new SQLData("Direction", 3),
+                new SQLData("MD5Sum", uploadreq.MD5CheckSum),
+                new SQLData("Size", uploadreq.Size),
+                new SQLData("ProgressSize", 0),
+                new SQLData("DTUpdated", DateTime.UtcNow),
+                new SQLData("RequestOnly", 0),
+                new SQLData("OverrideMeteredConnection", uploadreq.OverrideMeteredConnection),
+                new SQLData("FileLastModified", uploadreq.FileLastModified));
             }
 
             if (id == null)
@@ -593,17 +593,17 @@ namespace FoxSDC_Server.Modules
             lock (ni.sqllock)
             {
                 id = sql.InsertMultiDataID("FileTransfers",
-                    new SQLData("MachineID", uploadreq.MachineID),
-                    new SQLData("RemoteFileLocation", uploadreq.RemoteFileLocation),
-                    new SQLData("ServerFile", ""),
-                    new SQLData("Direction", 1),
-                    new SQLData("MD5Sum", ""),
-                    new SQLData("Size", 0),
-                    new SQLData("ProgressSize", 0),
-                    new SQLData("DTUpdated", DateTime.UtcNow),
-                    new SQLData("RequestOnly", 1),
-                    new SQLData("OverrideMeteredConnection", uploadreq.OverrideMeteredConnection),
-                    new SQLData("FileLastModified", DateTime.UtcNow));
+                new SQLData("MachineID", uploadreq.MachineID),
+                new SQLData("RemoteFileLocation", uploadreq.RemoteFileLocation),
+                new SQLData("ServerFile", ""),
+                new SQLData("Direction", 1),
+                new SQLData("MD5Sum", ""),
+                new SQLData("Size", 0),
+                new SQLData("ProgressSize", 0),
+                new SQLData("DTUpdated", DateTime.UtcNow),
+                new SQLData("RequestOnly", 1),
+                new SQLData("OverrideMeteredConnection", uploadreq.OverrideMeteredConnection),
+                new SQLData("FileLastModified", DateTime.UtcNow));
             }
             if (id == null)
             {
@@ -634,7 +634,7 @@ namespace FoxSDC_Server.Modules
             lock (ni.sqllock)
             {
                 SqlDataReader dr = sql.ExecSQLReader("SELECT COUNT(*) FROM FileTransfers WHERE ID=@id",
-                    new SQLParam("@id", ID));
+                new SQLParam("@id", ID));
                 if (dr.HasRows == false)
                 {
                     ni.Error = "Not found";
@@ -667,7 +667,7 @@ namespace FoxSDC_Server.Modules
             lock (ni.sqllock)
             {
                 if (Convert.ToInt32(sql.ExecSQLScalar("SELECT COUNT(*) FROM FileTransfers WHERE ID=@id",
-                new SQLParam("@id", ID))) == 0)
+                    new SQLParam("@id", ID))) == 0)
                 {
                     ni.Error = "Invalid ID";
                     ni.ErrorID = ErrorFlags.InvalidData;
@@ -680,7 +680,7 @@ namespace FoxSDC_Server.Modules
             lock (ni.sqllock)
             {
                 Filename = Settings.Default.DataPath + Convert.ToString(sql.ExecSQLScalar("SELECT ServerFile FROM FileTransfers WHERE ID=@id",
-                    new SQLParam("@id", ID)));
+                new SQLParam("@id", ID)));
             }
 
             if (File.Exists(Filename) == true)
@@ -696,7 +696,7 @@ namespace FoxSDC_Server.Modules
             lock (ni.sqllock)
             {
                 sql.ExecSQLScalar("DELETE FROM FileTransfers WHERE ID=@id",
-                    new SQLParam("@id", ID));
+                new SQLParam("@id", ID));
             }
             return (RESTStatus.Success);
         }
@@ -753,8 +753,8 @@ namespace FoxSDC_Server.Modules
             lock (ni.sqllock)
             {
                 if (Convert.ToInt32(sql.ExecSQLScalar("SELECT COUNT(*) FROM FileTransfers WHERE ID=@id AND MachineID=@mid AND [Size]!=[ProgressSize] AND Direction=3",
-                new SQLParam("@mid", upload.MachineID),
-                new SQLParam("@id", upload.ID))) == 0)
+            new SQLParam("@mid", upload.MachineID),
+            new SQLParam("@id", upload.ID))) == 0)
                 {
                     ni.Error = "Invalid ID";
                     ni.ErrorID = ErrorFlags.InvalidData;
@@ -766,15 +766,15 @@ namespace FoxSDC_Server.Modules
             lock (ni.sqllock)
             {
                 TotalSZ = Convert.ToInt64(sql.ExecSQLScalar("SELECT [Size] FROM FileTransfers WHERE ID=@id AND MachineID=@mid",
-                    new SQLParam("@mid", upload.MachineID),
-                    new SQLParam("@id", upload.ID)));
+                new SQLParam("@mid", upload.MachineID),
+                new SQLParam("@id", upload.ID)));
             }
 
             lock (ni.sqllock)
             {
                 ProgressSize = Convert.ToInt64(sql.ExecSQLScalar("SELECT ProgressSize FROM FileTransfers WHERE ID=@id AND MachineID=@mid",
-                    new SQLParam("@mid", upload.MachineID),
-                    new SQLParam("@id", upload.ID)));
+                new SQLParam("@mid", upload.MachineID),
+                new SQLParam("@id", upload.ID)));
             }
 
             if (ProgressSize + upload.Size > TotalSZ)
@@ -789,8 +789,8 @@ namespace FoxSDC_Server.Modules
             lock (ni.sqllock)
             {
                 Filename = Settings.Default.DataPath + Convert.ToString(sql.ExecSQLScalar("SELECT ServerFile FROM FileTransfers WHERE ID=@id AND MachineID=@mid",
-                    new SQLParam("@mid", upload.MachineID),
-                    new SQLParam("@id", upload.ID)));
+                new SQLParam("@mid", upload.MachineID),
+                new SQLParam("@id", upload.ID)));
             }
 
             if (File.Exists(Filename) == false)
@@ -820,9 +820,9 @@ namespace FoxSDC_Server.Modules
             lock (ni.sqllock)
             {
                 sql.ExecSQL("UPDATE FileTransfers SET ProgressSize=@psz, DTUpdated=getutcdate() WHERE ID=@id AND MachineID=@mid",
-                    new SQLParam("@mid", upload.MachineID),
-                    new SQLParam("@psz", fi.Length),
-                    new SQLParam("@id", upload.ID));
+                new SQLParam("@mid", upload.MachineID),
+                new SQLParam("@psz", fi.Length),
+                new SQLParam("@id", upload.ID));
             }
 
             if (fi.Length == TotalSZ)
@@ -832,8 +832,8 @@ namespace FoxSDC_Server.Modules
                 lock (ni.sqllock)
                 {
                     MD5DB = Convert.ToString(sql.ExecSQLScalar("SELECT MD5Sum FROM FileTransfers WHERE ID=@id AND MachineID=@mid",
-                        new SQLParam("@mid", upload.MachineID),
-                        new SQLParam("@id", upload.ID)));
+                    new SQLParam("@mid", upload.MachineID),
+                    new SQLParam("@id", upload.ID)));
                 }
                 if (MD5.ToLower() != MD5DB.ToLower())
                 {
@@ -845,8 +845,8 @@ namespace FoxSDC_Server.Modules
                 lock (ni.sqllock)
                 {
                     sql.ExecSQL("UPDATE FileTransfers SET Direction=0 WHERE ID=@id AND MachineID=@mid",
-                        new SQLParam("@mid", upload.MachineID),
-                        new SQLParam("@id", upload.ID));
+                    new SQLParam("@mid", upload.MachineID),
+                    new SQLParam("@id", upload.ID));
                 }
             }
             return (RESTStatus.Success);
@@ -993,7 +993,7 @@ namespace FoxSDC_Server.Modules
                 lock (ni.sqllock)
                 {
                     if (Convert.ToString(sql.ExecSQLScalar("SELECT MachineID FROM FileTransfers WHERE ID=@id AND Size=ProgressSize AND (Direction=0 OR Direction=2)",
-                    new SQLParam("@id", id))) != ni.Username)
+                new SQLParam("@id", id))) != ni.Username)
                     {
                         ni.Error = "Invalid data";
                         ni.ErrorID = ErrorFlags.InvalidID;
@@ -1015,7 +1015,7 @@ namespace FoxSDC_Server.Modules
             lock (ni.sqllock)
             {
                 Filename = Convert.ToString(sql.ExecSQLScalar("SELECT ServerFile FROM FileTransfers WHERE ID=@id",
-                    new SQLParam("@id", id)));
+                new SQLParam("@id", id)));
             }
 
             if (File.Exists(Settings.Default.DataPath + Filename) == false)

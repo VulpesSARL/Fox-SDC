@@ -372,7 +372,7 @@ namespace FoxSDC_Server
 #if DEBUG
                             data = Encoding.UTF8.GetBytes("500 - Server Error. Bad param definition");
 #else
-                            //data = Encoding.UTF8.GetBytes("500 - Server Error.");
+                                //data = Encoding.UTF8.GetBytes("500 - Server Error.");
 #endif
                             return (true);
                         }
@@ -389,7 +389,7 @@ namespace FoxSDC_Server
 #if DEBUG
                             data = Encoding.UTF8.GetBytes("404 - Not found. " + ee.ToString());
 #else
-                            //data = Encoding.UTF8.GetBytes("404 - Not found.");
+                                //data = Encoding.UTF8.GetBytes("404 - Not found.");
 #endif
                             return (true);
                         }
@@ -416,7 +416,7 @@ namespace FoxSDC_Server
                             ni.RWLock.EnterReadLock();
                             res = (RESTStatus)(CurrentR.Method.Invoke(instance, Params.ToArray()));
                         }
-                        catch(Exception ee)
+                        catch (Exception ee)
                         {
                             Debug.WriteLine(ee.ToString());
                             throw;
@@ -518,10 +518,11 @@ namespace FoxSDC_Server
                         }
                         return (true);
                 }
-
             }
             catch (Exception ee)
             {
+                FoxEventLog.WriteEventLog("REST SEH: " + ee.ToString(), EventLogEntryType.Error);
+
                 Debug.WriteLine(ee.ToString());
                 try
                 {

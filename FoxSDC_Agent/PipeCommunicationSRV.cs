@@ -19,10 +19,12 @@ namespace FoxSDC_Agent
             Number = Status.CustomNumber;
         }
 
+#if ENABLECHAT
         public PushChatMessage PopChatMessage()
         {
             return (Push.PushMain10.PopMessage());
         }
+#endif
 
         public void ResponseMessage(long ID, MessageResponse Response)
         {
@@ -136,6 +138,7 @@ namespace FoxSDC_Agent
             return (res);
         }
 
+#if ENABLECHAT
         public bool SendChatMessage(string Message)
         {
             Network net = Utilities.ConnectNetwork(-1);
@@ -155,6 +158,7 @@ namespace FoxSDC_Agent
             net.CloseConnection();
             return (res);
         }
+#endif
     }
 
     class PipeCommunicationSRV

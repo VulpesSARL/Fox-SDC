@@ -38,7 +38,7 @@ namespace FoxSDC_Server
             lock (ni.sqllock)
             {
                 if (Convert.ToInt32(sql.ExecSQLScalar("SELECT COUNT(*) FROM ComputerAccounts WHERE MachineID=@m",
-                    new SQLParam("@m", EventLogList.MachineID))) == 0)
+                new SQLParam("@m", EventLogList.MachineID))) == 0)
                 {
                     ni.Error = "Invalid MachineID";
                     ni.ErrorID = ErrorFlags.InvalidValue;
@@ -315,117 +315,59 @@ namespace FoxSDC_Server
 
         void ReportingThread(object EventDataListO)
         {
-            SQLLib sql = SQLTest.ConnectSQL("Fox SDC Server for EventLog Data");
-            if (sql == null)
-            {
-                FoxEventLog.WriteEventLog("Cannot connect to SQL Server for Event Log Data Reporting!", System.Diagnostics.EventLogEntryType.Error);
-                return;
-            }
             try
             {
-                List<EventLogReportFull> EventDataList = (List<EventLogReportFull>)EventDataListO;
-                if (EventDataList.Count == 0)
-                    return;
-                List<PolicyObject> Pol = Policies.GetPolicyForComputerInternal(sql, EventDataList[0].MachineID);
-                Dictionary<string, Int64> AlreadyReported = new Dictionary<string, long>();
-                foreach (PolicyObject PolO in Pol)
+                using (SQLLib sql = SQLTest.ConnectSQL("Fox SDC Server for EventLog Data"))
                 {
-                    if (PolO.Type != PolicyIDs.ReportingPolicy)
-                        continue;
-                    ReportingPolicyElement RepElementRoot = JsonConvert.DeserializeObject<ReportingPolicyElement>(Policies.GetPolicy(sql, PolO.ID).Data);
-                    if (RepElementRoot.Type != ReportingPolicyType.EventLog)
-                        continue;
-                    if (RepElementRoot.ReportToAdmin == null)
-                        RepElementRoot.ReportToAdmin = false;
-                    if (RepElementRoot.ReportToClient == null)
-                        RepElementRoot.ReportToClient = false;
-                    if (RepElementRoot.UrgentForAdmin == null)
-                        RepElementRoot.UrgentForAdmin = false;
-                    if (RepElementRoot.UrgentForClient == null)
-                        RepElementRoot.UrgentForClient = false;
-                    if (RepElementRoot.ReportToAdmin == false && RepElementRoot.ReportToClient == false && RepElementRoot.UrgentForAdmin == false && RepElementRoot.UrgentForClient == false)
-                        continue;
-
-                    foreach (string Element in RepElementRoot.ReportingElements)
+                    if (sql == null)
                     {
-                        ReportingPolicyElementEventLog evrep = JsonConvert.DeserializeObject<ReportingPolicyElementEventLog>(Element);
-                        if (evrep.Book == null)
-                            evrep.Book = new List<string>();
-                        if (evrep.CategoryNumbers == null)
-                            evrep.CategoryNumbers = new List<int>();
-                        if (evrep.EventLogTypes == null)
-                            evrep.EventLogTypes = new List<int>();
-                        if (evrep.Sources == null)
-                            evrep.Sources = new List<string>();
-                        if (evrep.Book.Count == 0 && evrep.CategoryNumbers.Count == 0 && evrep.EventLogTypes.Count == 0 && evrep.Sources.Count == 0)
+                        FoxEventLog.WriteEventLog("Cannot connect to SQL Server for Event Log Data Reporting!", System.Diagnostics.EventLogEntryType.Error);
+                        return;
+                    }
+                    List<EventLogReportFull> EventDataList = (List<EventLogReportFull>)EventDataListO;
+                    if (EventDataList.Count == 0)
+                        return;
+                    List<PolicyObject> Pol = Policies.GetPolicyForComputerInternal(sql, EventDataList[0].MachineID);
+                    Dictionary<string, Int64> AlreadyReported = new Dictionary<string, long>();
+                    foreach (PolicyObject PolO in Pol)
+                    {
+                        if (PolO.Type != PolicyIDs.ReportingPolicy)
                             continue;
-                        foreach (EventLogReportFull EV in EventDataList)
-                        {
-                            if (evrep.Book.Count != 0)
-                            {
-                                bool Match = false;
-                                foreach (string Book in evrep.Book)
-                                {
-                                    if (Book.ToLower() == EV.EventLog.ToLower())
-                                    {
-                                        Match = true;
-                                        break;
-                                    }
-                                }
-                                if (Match == false)
-                                    continue;
-                            }
-                            if (evrep.Sources.Count != 0)
-                            {
-                                bool Match = false;
-                                foreach (string Source in evrep.Sources)
-                                {
-                                    if (Source.ToLower() == EV.Source.ToLower())
-                                    {
-                                        Match = true;
-                                        break;
-                                    }
-                                }
-                                if (Match == false)
-                                    continue;
-                            }
-                            if (evrep.EventLogTypes.Count != 0)
-                            {
-                                bool Match = false;
-                                foreach (int EVLType in evrep.EventLogTypes)
-                                {
-                                    if (EVLType == EV.EventLogType)
-                                    {
-                                        Match = true;
-                                        break;
-                                    }
-                                }
-                                if (Match == false)
-                                    continue;
-                            }
-                            if (evrep.CategoryNumbers.Count != 0)
-                            {
-                                bool Match = false;
-                                foreach (int Cat in evrep.CategoryNumbers)
-                                {
-                                    if (Cat == (EV.InstanceID & 0x3FFFFFFF))
-                                    {
-                                        Match = true;
-                                        break;
-                                    }
-                                }
-                                if (Match == false)
-                                    continue;
-                            }
+                        ReportingPolicyElement RepElementRoot = JsonConvert.DeserializeObject<ReportingPolicyElement>(Policies.GetPolicy(sql, PolO.ID).Data);
+                        if (RepElementRoot.Type != ReportingPolicyType.EventLog)
+                            continue;
+                        if (RepElementRoot.ReportToAdmin == null)
+                            RepElementRoot.ReportToAdmin = false;
+                        if (RepElementRoot.ReportToClient == null)
+                            RepElementRoot.ReportToClient = false;
+                        if (RepElementRoot.UrgentForAdmin == null)
+                            RepElementRoot.UrgentForAdmin = false;
+                        if (RepElementRoot.UrgentForClient == null)
+                            RepElementRoot.UrgentForClient = false;
+                        if (RepElementRoot.ReportToAdmin == false && RepElementRoot.ReportToClient == false && RepElementRoot.UrgentForAdmin == false && RepElementRoot.UrgentForClient == false)
+                            continue;
 
-                            if (evrep.IncludeExclude == 1) //include
+                        foreach (string Element in RepElementRoot.ReportingElements)
+                        {
+                            ReportingPolicyElementEventLog evrep = JsonConvert.DeserializeObject<ReportingPolicyElementEventLog>(Element);
+                            if (evrep.Book == null)
+                                evrep.Book = new List<string>();
+                            if (evrep.CategoryNumbers == null)
+                                evrep.CategoryNumbers = new List<int>();
+                            if (evrep.EventLogTypes == null)
+                                evrep.EventLogTypes = new List<int>();
+                            if (evrep.Sources == null)
+                                evrep.Sources = new List<string>();
+                            if (evrep.Book.Count == 0 && evrep.CategoryNumbers.Count == 0 && evrep.EventLogTypes.Count == 0 && evrep.Sources.Count == 0)
+                                continue;
+                            foreach (EventLogReportFull EV in EventDataList)
                             {
-                                if (evrep.IncludeExcludeTexts != null)
+                                if (evrep.Book.Count != 0)
                                 {
                                     bool Match = false;
-                                    foreach (string s in evrep.IncludeExcludeTexts)
+                                    foreach (string Book in evrep.Book)
                                     {
-                                        if (EV.Message.ToLower().Contains(s.ToLower()) == true)
+                                        if (Book.ToLower() == EV.EventLog.ToLower())
                                         {
                                             Match = true;
                                             break;
@@ -434,76 +376,136 @@ namespace FoxSDC_Server
                                     if (Match == false)
                                         continue;
                                 }
-                            }
-
-                            if (evrep.IncludeExclude == 2) //exclude
-                            {
-                                if (evrep.IncludeExcludeTexts != null)
+                                if (evrep.Sources.Count != 0)
                                 {
-                                    bool Match = true;
-                                    foreach (string s in evrep.IncludeExcludeTexts)
+                                    bool Match = false;
+                                    foreach (string Source in evrep.Sources)
                                     {
-                                        if (EV.Message.ToLower().Contains(s.ToLower()) == true)
+                                        if (Source.ToLower() == EV.Source.ToLower())
                                         {
-                                            Match = false;
+                                            Match = true;
                                             break;
                                         }
                                     }
                                     if (Match == false)
                                         continue;
                                 }
-                            }
+                                if (evrep.EventLogTypes.Count != 0)
+                                {
+                                    bool Match = false;
+                                    foreach (int EVLType in evrep.EventLogTypes)
+                                    {
+                                        if (EVLType == EV.EventLogType)
+                                        {
+                                            Match = true;
+                                            break;
+                                        }
+                                    }
+                                    if (Match == false)
+                                        continue;
+                                }
+                                if (evrep.CategoryNumbers.Count != 0)
+                                {
+                                    bool Match = false;
+                                    foreach (int Cat in evrep.CategoryNumbers)
+                                    {
+                                        if (Cat == (EV.InstanceID & 0x3FFFFFFF))
+                                        {
+                                            Match = true;
+                                            break;
+                                        }
+                                    }
+                                    if (Match == false)
+                                        continue;
+                                }
 
-                            bool ReportToAdmin = RepElementRoot.ReportToAdmin.Value;
-                            bool ReportToClient = RepElementRoot.ReportToClient.Value;
-                            bool UrgentForAdmin = RepElementRoot.UrgentForAdmin.Value;
-                            bool UrgentForClient = RepElementRoot.UrgentForClient.Value;
+                                if (evrep.IncludeExclude == 1) //include
+                                {
+                                    if (evrep.IncludeExcludeTexts != null)
+                                    {
+                                        bool Match = false;
+                                        foreach (string s in evrep.IncludeExcludeTexts)
+                                        {
+                                            if (EV.Message.ToLower().Contains(s.ToLower()) == true)
+                                            {
+                                                Match = true;
+                                                break;
+                                            }
+                                        }
+                                        if (Match == false)
+                                            continue;
+                                    }
+                                }
 
-                            if (AlreadyReported.ContainsKey(EV.LogID) == true)
-                            {
-                                if ((AlreadyReported[EV.LogID] & (Int64)ReportingFlags.ReportToAdmin) != 0)
-                                    ReportToAdmin = false;
-                                if ((AlreadyReported[EV.LogID] & (Int64)ReportingFlags.ReportToClient) != 0)
-                                    ReportToClient = false;
-                                if ((AlreadyReported[EV.LogID] & (Int64)ReportingFlags.UrgentForAdmin) != 0)
-                                    UrgentForAdmin = false;
-                                if ((AlreadyReported[EV.LogID] & (Int64)ReportingFlags.UrgentForClient) != 0)
-                                    UrgentForClient = false;
-                            }
+                                if (evrep.IncludeExclude == 2) //exclude
+                                {
+                                    if (evrep.IncludeExcludeTexts != null)
+                                    {
+                                        bool Match = true;
+                                        foreach (string s in evrep.IncludeExcludeTexts)
+                                        {
+                                            if (EV.Message.ToLower().Contains(s.ToLower()) == true)
+                                            {
+                                                Match = false;
+                                                break;
+                                            }
+                                        }
+                                        if (Match == false)
+                                            continue;
+                                    }
+                                }
 
-                            if (ReportToAdmin == false && ReportToClient == false && UrgentForAdmin == false && UrgentForClient == false)
-                                continue;
-                            ReportingFlags Flags = (ReportToAdmin == true ? ReportingFlags.ReportToAdmin : 0) |
-                                (ReportToClient == true ? ReportingFlags.ReportToClient : 0) |
-                                (UrgentForAdmin == true ? ReportingFlags.UrgentForAdmin : 0) |
-                                (UrgentForClient == true ? ReportingFlags.UrgentForClient : 0);
-                            switch ((EventLogEntryType)EV.EventLogType)
-                            {
-                                case 0:
-                                case EventLogEntryType.Information:
-                                    Flags = (ReportingFlags)((Int64)Flags | ((Int64)ReportingStatusPictureEnum.Info << (int)ReportingFlags.IconFlagsShift));
-                                    break;
-                                case EventLogEntryType.Warning:
-                                    Flags = (ReportingFlags)((Int64)Flags | ((Int64)ReportingStatusPictureEnum.Exclamation << (int)ReportingFlags.IconFlagsShift));
-                                    break;
-                                case EventLogEntryType.Error:
-                                    Flags = (ReportingFlags)((Int64)Flags | ((Int64)ReportingStatusPictureEnum.Stop << (int)ReportingFlags.IconFlagsShift));
-                                    break;
-                                case EventLogEntryType.SuccessAudit:
-                                    Flags = (ReportingFlags)((Int64)Flags | ((Int64)ReportingStatusPictureEnum.Key << (int)ReportingFlags.IconFlagsShift));
-                                    break;
-                                case EventLogEntryType.FailureAudit:
-                                    Flags = (ReportingFlags)((Int64)Flags | ((Int64)ReportingStatusPictureEnum.NoKey << (int)ReportingFlags.IconFlagsShift));
-                                    break;
-                            }
-                            ReportingProcessor.ReportEventLog(sql, EV.MachineID, EV, Flags);
-                            if (AlreadyReported.ContainsKey(EV.LogID) == true)
-                            {
-                                AlreadyReported[EV.LogID] |= (Int64)Flags;
-                            }
-                            else
-                            {
-                                AlreadyReported.Add(EV.LogID, (Int64)Flags);
+                                bool ReportToAdmin = RepElementRoot.ReportToAdmin.Value;
+                                bool ReportToClient = RepElementRoot.ReportToClient.Value;
+                                bool UrgentForAdmin = RepElementRoot.UrgentForAdmin.Value;
+                                bool UrgentForClient = RepElementRoot.UrgentForClient.Value;
+
+                                if (AlreadyReported.ContainsKey(EV.LogID) == true)
+                                {
+                                    if ((AlreadyReported[EV.LogID] & (Int64)ReportingFlags.ReportToAdmin) != 0)
+                                        ReportToAdmin = false;
+                                    if ((AlreadyReported[EV.LogID] & (Int64)ReportingFlags.ReportToClient) != 0)
+                                        ReportToClient = false;
+                                    if ((AlreadyReported[EV.LogID] & (Int64)ReportingFlags.UrgentForAdmin) != 0)
+                                        UrgentForAdmin = false;
+                                    if ((AlreadyReported[EV.LogID] & (Int64)ReportingFlags.UrgentForClient) != 0)
+                                        UrgentForClient = false;
+                                }
+
+                                if (ReportToAdmin == false && ReportToClient == false && UrgentForAdmin == false && UrgentForClient == false)
+                                    continue;
+                                ReportingFlags Flags = (ReportToAdmin == true ? ReportingFlags.ReportToAdmin : 0) |
+                                    (ReportToClient == true ? ReportingFlags.ReportToClient : 0) |
+                                    (UrgentForAdmin == true ? ReportingFlags.UrgentForAdmin : 0) |
+                                    (UrgentForClient == true ? ReportingFlags.UrgentForClient : 0);
+                                switch ((EventLogEntryType)EV.EventLogType)
+                                {
+                                    case 0:
+                                    case EventLogEntryType.Information:
+                                        Flags = (ReportingFlags)((Int64)Flags | ((Int64)ReportingStatusPictureEnum.Info << (int)ReportingFlags.IconFlagsShift));
+                                        break;
+                                    case EventLogEntryType.Warning:
+                                        Flags = (ReportingFlags)((Int64)Flags | ((Int64)ReportingStatusPictureEnum.Exclamation << (int)ReportingFlags.IconFlagsShift));
+                                        break;
+                                    case EventLogEntryType.Error:
+                                        Flags = (ReportingFlags)((Int64)Flags | ((Int64)ReportingStatusPictureEnum.Stop << (int)ReportingFlags.IconFlagsShift));
+                                        break;
+                                    case EventLogEntryType.SuccessAudit:
+                                        Flags = (ReportingFlags)((Int64)Flags | ((Int64)ReportingStatusPictureEnum.Key << (int)ReportingFlags.IconFlagsShift));
+                                        break;
+                                    case EventLogEntryType.FailureAudit:
+                                        Flags = (ReportingFlags)((Int64)Flags | ((Int64)ReportingStatusPictureEnum.NoKey << (int)ReportingFlags.IconFlagsShift));
+                                        break;
+                                }
+                                ReportingProcessor.ReportEventLog(sql, EV.MachineID, EV, Flags);
+                                if (AlreadyReported.ContainsKey(EV.LogID) == true)
+                                {
+                                    AlreadyReported[EV.LogID] |= (Int64)Flags;
+                                }
+                                else
+                                {
+                                    AlreadyReported.Add(EV.LogID, (Int64)Flags);
+                                }
                             }
                         }
                     }
@@ -512,18 +514,7 @@ namespace FoxSDC_Server
             catch (Exception ee)
             {
                 FoxEventLog.WriteEventLog("SEH in Event Data Reporting " + ee.ToString(), System.Diagnostics.EventLogEntryType.Error);
-            }
-            finally
-            {
-                try
-                {
-                    sql.CloseConnection();
-                }
-                catch
-                {
-
-                }
-            }
+            }           
         }
 
 

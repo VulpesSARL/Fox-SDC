@@ -78,327 +78,306 @@ namespace FoxSDC_Server
 
         static void RThread()
         {
-            bool SQLConnected = false;
-
-            SQLLib sql = null;
             do
             {
-                if (SQLConnected == false)
-                {
-                    sql = SQLTest.ConnectSQL("Fox SDC Server for Reporting", 0);
-                    if (sql == null)
-                    {
-                        Pause();
-                        if (StopThread == true)
-                            break;
-                    }
-                    SQLConnected = true;
-                }
-
                 try
                 {
-                    if (Convert.ToInt32(sql.ExecSQLScalar("SELECT 1")) != 1)
-                    {
-                        sql.CloseConnection();
-                        SQLConnected = false;
-                        continue;
-                    }
-                }
-                catch
-                {
-                    SQLConnected = false;
-                    continue;
-                }
 
-                try
-                {
-                    string ErrorMessage;
-                    if (MailSender.CheckConfig() == false)
+                    using (SQLLib sql = SQLTest.ConnectSQL("Fox SDC Server for Reporting", 0))
                     {
-                        Pause();
-                        if (StopThread == true)
-                            break;
-                        continue;
-                    }
-
-                    if (string.IsNullOrWhiteSpace(SettingsManager.Settings.EMailAdminTo) == true)
-                    {
-                        Pause();
-                        if (StopThread == true)
-                            break;
-                        continue;
-                    }
-
-                    SqlDataReader dr;
-                    List<string> ConcernedMachineIDs;
-
-#region Normal Admin Report
-
-                    if (SettingsManager.Settings.LastScheduleRanAdmin == null)
-                    {
-                        SettingsManager.Settings.LastScheduleRanAdmin = DateTime.UtcNow;
-                        SettingsManager.SaveApplySettings2(sql, SettingsManager.Settings);
-                    }
-                    else
-                    {
-                        DateTime? Planned = Scheduler.GetNextRunDate(SettingsManager.Settings.LastScheduleRanAdmin.Value, SettingsManager.Settings.EMailAdminScheduling);
-                        if (RunAdminNow == true)
+                        if (sql == null)
                         {
-                            Planned = DateTime.UtcNow.AddMinutes(-1);
-                            RunAdminNow = false;
+                            Pause();
+                            if (StopThread == true)
+                                break;
+                        }
+                        string ErrorMessage;
+                        if (MailSender.CheckConfig() == false)
+                        {
+                            Pause();
+                            if (StopThread == true)
+                                break;
+                            continue;
                         }
 
-                        if (Planned != null)
+                        if (string.IsNullOrWhiteSpace(SettingsManager.Settings.EMailAdminTo) == true)
                         {
-                            if (Planned.Value < DateTime.UtcNow) //is in the past - run now (may also be a "miss")
-                            {
-                                dr = sql.ExecSQLReader("Select distinct machineid from Reporting where (Flags & @f1)!=0 AND (Flags & @f2)=0",
-                                    new SQLParam("@f1", ReportingFlags.ReportToAdmin),
-                                    new SQLParam("@f2", ReportingFlags.AdminReported));
-
-                                ConcernedMachineIDs = new List<string>();
-
-                                while (dr.Read())
-                                {
-                                    ConcernedMachineIDs.Add(Convert.ToString(dr["MachineID"]));
-                                }
-                                dr.Close();
-
-                                if (ConcernedMachineIDs.Count > 0)
-                                {
-                                    byte[] PDFFile = RenderReport.RenderMachineReport(sql, ConcernedMachineIDs, null, null, ReportingFlagsPaper.ReportAdmin, "PDF");
-                                    if (PDFFile == null)
-                                    {
-                                        FoxEventLog.WriteEventLog("Admin Report has no data.", System.Diagnostics.EventLogEntryType.Error);
-                                    }
-                                    else
-                                    {
-                                        string Text = SettingsManager.Settings.EMailAdminText;
-                                        string Subject = SettingsManager.Settings.EMailAdminSubject;
-                                        Text = Text.Replace("{URGENT}", "").
-                                            Replace("{NMACHINESS}", ConcernedMachineIDs.Count == 1 ? "" : "s").
-                                            Replace("{NMACHINES}", ConcernedMachineIDs.Count.ToString());
-                                        Subject = Subject.Replace("{URGENT}", "").
-                                            Replace("{NMACHINESS}", ConcernedMachineIDs.Count == 1 ? "" : "s").
-                                            Replace("{NMACHINES}", ConcernedMachineIDs.Count.ToString());
-                                        if (MailSender.SendEMailAdmin(Subject, Text, new List<System.Net.Mail.Attachment> { new System.Net.Mail.Attachment(new MemoryStream(PDFFile), ReportAttachementFilename) }, System.Net.Mail.MailPriority.Normal, out ErrorMessage, SettingsManager.Settings.EMailAdminIsHTML) == false)
-                                        {
-                                            FoxEventLog.WriteEventLog("Cannot send Admin E-Mail: " + ErrorMessage, System.Diagnostics.EventLogEntryType.Error);
-                                        }
-                                    }
-                                }
-
-                                SettingsManager.Settings.LastScheduleRanAdmin = DateTime.UtcNow;
-                                SettingsManager.SaveApplySettings2(sql, SettingsManager.Settings);
-                            }
+                            Pause();
+                            if (StopThread == true)
+                                break;
+                            continue;
                         }
-                        else
+
+                        SqlDataReader dr;
+                        List<string> ConcernedMachineIDs;
+
+                        #region Normal Admin Report
+
+                        if (SettingsManager.Settings.LastScheduleRanAdmin == null)
                         {
-                            //update anyways
                             SettingsManager.Settings.LastScheduleRanAdmin = DateTime.UtcNow;
                             SettingsManager.SaveApplySettings2(sql, SettingsManager.Settings);
                         }
-                    }
-
-#endregion
-
-#region Urgent Admin
-
-                    dr = sql.ExecSQLReader("Select distinct machineid from Reporting where (Flags & @f1)!=0 AND (Flags & @f2)=0",
-                        new SQLParam("@f1", ReportingFlags.UrgentForAdmin),
-                        new SQLParam("@f2", ReportingFlags.UrgentAdminReported));
-
-                    ConcernedMachineIDs = new List<string>();
-
-                    while (dr.Read())
-                    {
-                        ConcernedMachineIDs.Add(Convert.ToString(dr["MachineID"]));
-                    }
-                    dr.Close();
-
-                    if (ConcernedMachineIDs.Count > 0)
-                    {
-                        byte[] PDFFile = RenderReport.RenderMachineReport(sql, ConcernedMachineIDs, null, null, ReportingFlagsPaper.UrgentAdmin, "PDF");
-                        if (PDFFile == null)
-                        {
-                            FoxEventLog.WriteEventLog("Urgent Admin Report has no data.", System.Diagnostics.EventLogEntryType.Error);
-                        }
                         else
                         {
-                            string Text = SettingsManager.Settings.EMailAdminText;
-                            string Subject = SettingsManager.Settings.EMailAdminSubject;
-                            Text = Text.Replace("{URGENT}", "Urgent ").
-                                Replace("{NMACHINESS}", ConcernedMachineIDs.Count == 1 ? "" : "s").
-                                Replace("{NMACHINES}", ConcernedMachineIDs.Count.ToString());
-                            Subject = Subject.Replace("{URGENT}", "Urgent ").
-                                Replace("{NMACHINESS}", ConcernedMachineIDs.Count == 1 ? "" : "s").
-                                Replace("{NMACHINES}", ConcernedMachineIDs.Count.ToString());
-                            if (MailSender.SendEMailAdmin(Subject, Text, new List<System.Net.Mail.Attachment> { new System.Net.Mail.Attachment(new MemoryStream(PDFFile), ReportAttachementFilename) }, System.Net.Mail.MailPriority.High, out ErrorMessage, SettingsManager.Settings.EMailAdminIsHTML) == false)
+                            DateTime? Planned = Scheduler.GetNextRunDate(SettingsManager.Settings.LastScheduleRanAdmin.Value, SettingsManager.Settings.EMailAdminScheduling);
+                            if (RunAdminNow == true)
                             {
-                                FoxEventLog.WriteEventLog("Cannot send Urgent Admin E-Mail: " + ErrorMessage, System.Diagnostics.EventLogEntryType.Error);
+                                Planned = DateTime.UtcNow.AddMinutes(-1);
+                                RunAdminNow = false;
                             }
-                        }
-                    }
 
-#endregion
-
-#region Normal Client Report
-
-                    if (Settings.Default.UseContract == true)
-                    {
-                        if (SettingsManager.Settings.LastScheduleRanClient == null)
-                        {
-                            SettingsManager.Settings.LastScheduleRanClient = DateTime.UtcNow;
-                            SettingsManager.SaveApplySettings2(sql, SettingsManager.Settings);
-                        }
-                        else
-                        {
-                            DateTime? Planned = Scheduler.GetNextRunDate(SettingsManager.Settings.LastScheduleRanClient.Value, SettingsManager.Settings.EMailClientScheduling);
                             if (Planned != null)
                             {
                                 if (Planned.Value < DateTime.UtcNow) //is in the past - run now (may also be a "miss")
                                 {
-                                    dr = sql.ExecSQLReader(@"select ComputerAccounts.MachineID,ComputerAccounts.ContractID,EMail from ComputerAccounts
-                                        inner join Contracts on Contracts.ContractID = ComputerAccounts.ContractID
-                                        where Disabled = 0 and MachineID in (Select distinct machineid from Reporting where (Flags & @f1) != 0 AND(Flags & @f2) = 0) and EMail is not null and EMail !=''",
-                                        new SQLParam("@f1", ReportingFlags.ReportToClient),
-                                        new SQLParam("@f2", ReportingFlags.ClientReported));
+                                    dr = sql.ExecSQLReader("Select distinct machineid from Reporting where (Flags & @f1)!=0 AND (Flags & @f2)=0",
+                                        new SQLParam("@f1", ReportingFlags.ReportToAdmin),
+                                        new SQLParam("@f2", ReportingFlags.AdminReported));
 
-                                    List<ConcernedMachineIDsClient> ConcernedMachineIDC = new List<ConcernedMachineIDsClient>();
-                                    List<string> ContractIDs = new List<string>();
+                                    ConcernedMachineIDs = new List<string>();
 
                                     while (dr.Read())
                                     {
-                                        ConcernedMachineIDsClient m = new ConcernedMachineIDsClient();
-                                        m.ContractID = Convert.ToString(dr["ContractID"]);
-                                        m.MachineID = Convert.ToString(dr["MachineID"]);
-                                        m.EMail = Convert.ToString(dr["EMail"]);
-                                        ConcernedMachineIDC.Add(m);
-                                        if (ContractIDs.Contains(m.ContractID) == false)
-                                            ContractIDs.Add(m.ContractID);
+                                        ConcernedMachineIDs.Add(Convert.ToString(dr["MachineID"]));
                                     }
                                     dr.Close();
 
-                                    foreach (string ContractID in ContractIDs)
+                                    if (ConcernedMachineIDs.Count > 0)
                                     {
-                                        List<string> ConcernedMachineIDsForClient = new List<string>();
-                                        string EMail = "";
-                                        foreach (ConcernedMachineIDsClient m in ConcernedMachineIDC)
+                                        byte[] PDFFile = RenderReport.RenderMachineReport(sql, ConcernedMachineIDs, null, null, ReportingFlagsPaper.ReportAdmin, "PDF");
+                                        if (PDFFile == null)
                                         {
-                                            if (m.ContractID == ContractID)
-                                                ConcernedMachineIDsForClient.Add(m.MachineID);
-                                            if (string.IsNullOrWhiteSpace(EMail) == true)
-                                                EMail = m.EMail;
+                                            FoxEventLog.WriteEventLog("Admin Report has no data.", System.Diagnostics.EventLogEntryType.Error);
                                         }
-
-                                        if (string.IsNullOrWhiteSpace(EMail) == true)
-                                            continue;
-
-                                        if (ConcernedMachineIDsForClient.Count > 0)
+                                        else
                                         {
-                                            byte[] PDFFile = RenderReport.RenderMachineReport(sql, ConcernedMachineIDsForClient, null, null, ReportingFlagsPaper.ReportClient, "PDF");
-                                            if (PDFFile == null)
+                                            string Text = SettingsManager.Settings.EMailAdminText;
+                                            string Subject = SettingsManager.Settings.EMailAdminSubject;
+                                            Text = Text.Replace("{URGENT}", "").
+                                                Replace("{NMACHINESS}", ConcernedMachineIDs.Count == 1 ? "" : "s").
+                                                Replace("{NMACHINES}", ConcernedMachineIDs.Count.ToString());
+                                            Subject = Subject.Replace("{URGENT}", "").
+                                                Replace("{NMACHINESS}", ConcernedMachineIDs.Count == 1 ? "" : "s").
+                                                Replace("{NMACHINES}", ConcernedMachineIDs.Count.ToString());
+                                            if (MailSender.SendEMailAdmin(Subject, Text, new List<System.Net.Mail.Attachment> { new System.Net.Mail.Attachment(new MemoryStream(PDFFile), ReportAttachementFilename) }, System.Net.Mail.MailPriority.Normal, out ErrorMessage, SettingsManager.Settings.EMailAdminIsHTML) == false)
                                             {
-                                                FoxEventLog.WriteEventLog("Client Report has no data.", System.Diagnostics.EventLogEntryType.Error);
-                                            }
-                                            else
-                                            {
-                                                string Text = SettingsManager.Settings.EMailClientText;
-                                                string Subject = SettingsManager.Settings.EMailClientSubject;
-                                                Text = Text.Replace("{URGENT}", "").
-                                                    Replace("{NMACHINESS}", ConcernedMachineIDsForClient.Count == 1 ? "" : "s").
-                                                    Replace("{NMACHINES}", ConcernedMachineIDsForClient.Count.ToString());
-                                                Subject = Subject.Replace("{URGENT}", "").
-                                                    Replace("{NMACHINESS}", ConcernedMachineIDsForClient.Count == 1 ? "" : "s").
-                                                    Replace("{NMACHINES}", ConcernedMachineIDsForClient.Count.ToString());
-                                                if (MailSender.SendEMailClient(EMail, Subject, Text, new List<System.Net.Mail.Attachment> { new System.Net.Mail.Attachment(new MemoryStream(PDFFile), ReportAttachementFilename) }, System.Net.Mail.MailPriority.High, out ErrorMessage, SettingsManager.Settings.EMailClientIsHTML) == false)
-                                                {
-                                                    FoxEventLog.WriteEventLog("Cannot send Client E-Mail: " + ErrorMessage, System.Diagnostics.EventLogEntryType.Error);
-                                                }
+                                                FoxEventLog.WriteEventLog("Cannot send Admin E-Mail: " + ErrorMessage, System.Diagnostics.EventLogEntryType.Error);
                                             }
                                         }
                                     }
+
+                                    SettingsManager.Settings.LastScheduleRanAdmin = DateTime.UtcNow;
+                                    SettingsManager.SaveApplySettings2(sql, SettingsManager.Settings);
                                 }
                             }
                             else
                             {
                                 //update anyways
-                                SettingsManager.Settings.LastScheduleRanClient = DateTime.UtcNow;
+                                SettingsManager.Settings.LastScheduleRanAdmin = DateTime.UtcNow;
                                 SettingsManager.SaveApplySettings2(sql, SettingsManager.Settings);
                             }
                         }
-                    }
 
-#endregion
+                        #endregion
 
-#region Urgent Client
+                        #region Urgent Admin
 
-                    if (Settings.Default.UseContract == true)
-                    {
-                        dr = sql.ExecSQLReader(@"select ComputerAccounts.MachineID,ComputerAccounts.ContractID,EMail from ComputerAccounts
-                                inner join Contracts on Contracts.ContractID = ComputerAccounts.ContractID
-                                where Disabled = 0 and MachineID in (Select distinct machineid from Reporting where (Flags & @f1) != 0 AND(Flags & @f2) = 0) and EMail is not null and EMail !=''",
-                            new SQLParam("@f1", ReportingFlags.UrgentForClient),
-                            new SQLParam("@f2", ReportingFlags.UrgentClientReported));
+                        dr = sql.ExecSQLReader("Select distinct machineid from Reporting where (Flags & @f1)!=0 AND (Flags & @f2)=0",
+                            new SQLParam("@f1", ReportingFlags.UrgentForAdmin),
+                            new SQLParam("@f2", ReportingFlags.UrgentAdminReported));
 
-                        List<ConcernedMachineIDsClient> ConcernedMachineIDC = new List<ConcernedMachineIDsClient>();
-                        List<string> ContractIDs = new List<string>();
+                        ConcernedMachineIDs = new List<string>();
 
                         while (dr.Read())
                         {
-                            ConcernedMachineIDsClient m = new ConcernedMachineIDsClient();
-                            m.ContractID = Convert.ToString(dr["ContractID"]);
-                            m.MachineID = Convert.ToString(dr["MachineID"]);
-                            m.EMail = Convert.ToString(dr["EMail"]);
-                            ConcernedMachineIDC.Add(m);
-                            if (ContractIDs.Contains(m.ContractID) == false)
-                                ContractIDs.Add(m.ContractID);
+                            ConcernedMachineIDs.Add(Convert.ToString(dr["MachineID"]));
                         }
                         dr.Close();
 
-                        foreach (string ContractID in ContractIDs)
+                        if (ConcernedMachineIDs.Count > 0)
                         {
-                            List<string> ConcernedMachineIDsForClient = new List<string>();
-                            string EMail = "";
-                            foreach (ConcernedMachineIDsClient m in ConcernedMachineIDC)
+                            byte[] PDFFile = RenderReport.RenderMachineReport(sql, ConcernedMachineIDs, null, null, ReportingFlagsPaper.UrgentAdmin, "PDF");
+                            if (PDFFile == null)
                             {
-                                if (m.ContractID == ContractID)
-                                    ConcernedMachineIDsForClient.Add(m.MachineID);
-                                if (string.IsNullOrWhiteSpace(EMail) == true)
-                                    EMail = m.EMail;
+                                FoxEventLog.WriteEventLog("Urgent Admin Report has no data.", System.Diagnostics.EventLogEntryType.Error);
                             }
-
-                            if (string.IsNullOrWhiteSpace(EMail) == true)
-                                continue;
-
-                            if (ConcernedMachineIDsForClient.Count > 0)
+                            else
                             {
-                                byte[] PDFFile = RenderReport.RenderMachineReport(sql, ConcernedMachineIDsForClient, null, null, ReportingFlagsPaper.UrgentClient, "PDF");
-                                if (PDFFile == null)
+                                string Text = SettingsManager.Settings.EMailAdminText;
+                                string Subject = SettingsManager.Settings.EMailAdminSubject;
+                                Text = Text.Replace("{URGENT}", "Urgent ").
+                                    Replace("{NMACHINESS}", ConcernedMachineIDs.Count == 1 ? "" : "s").
+                                    Replace("{NMACHINES}", ConcernedMachineIDs.Count.ToString());
+                                Subject = Subject.Replace("{URGENT}", "Urgent ").
+                                    Replace("{NMACHINESS}", ConcernedMachineIDs.Count == 1 ? "" : "s").
+                                    Replace("{NMACHINES}", ConcernedMachineIDs.Count.ToString());
+                                if (MailSender.SendEMailAdmin(Subject, Text, new List<System.Net.Mail.Attachment> { new System.Net.Mail.Attachment(new MemoryStream(PDFFile), ReportAttachementFilename) }, System.Net.Mail.MailPriority.High, out ErrorMessage, SettingsManager.Settings.EMailAdminIsHTML) == false)
                                 {
-                                    FoxEventLog.WriteEventLog("Urgent Client Report has no data.", System.Diagnostics.EventLogEntryType.Error);
+                                    FoxEventLog.WriteEventLog("Cannot send Urgent Admin E-Mail: " + ErrorMessage, System.Diagnostics.EventLogEntryType.Error);
+                                }
+                            }
+                        }
+
+                        #endregion
+
+                        #region Normal Client Report
+
+                        if (Settings.Default.UseContract == true)
+                        {
+                            if (SettingsManager.Settings.LastScheduleRanClient == null)
+                            {
+                                SettingsManager.Settings.LastScheduleRanClient = DateTime.UtcNow;
+                                SettingsManager.SaveApplySettings2(sql, SettingsManager.Settings);
+                            }
+                            else
+                            {
+                                DateTime? Planned = Scheduler.GetNextRunDate(SettingsManager.Settings.LastScheduleRanClient.Value, SettingsManager.Settings.EMailClientScheduling);
+                                if (Planned != null)
+                                {
+                                    if (Planned.Value < DateTime.UtcNow) //is in the past - run now (may also be a "miss")
+                                    {
+                                        dr = sql.ExecSQLReader(@"select ComputerAccounts.MachineID,ComputerAccounts.ContractID,EMail from ComputerAccounts
+                                        inner join Contracts on Contracts.ContractID = ComputerAccounts.ContractID
+                                        where Disabled = 0 and MachineID in (Select distinct machineid from Reporting where (Flags & @f1) != 0 AND(Flags & @f2) = 0) and EMail is not null and EMail !=''",
+                                            new SQLParam("@f1", ReportingFlags.ReportToClient),
+                                            new SQLParam("@f2", ReportingFlags.ClientReported));
+
+                                        List<ConcernedMachineIDsClient> ConcernedMachineIDC = new List<ConcernedMachineIDsClient>();
+                                        List<string> ContractIDs = new List<string>();
+
+                                        while (dr.Read())
+                                        {
+                                            ConcernedMachineIDsClient m = new ConcernedMachineIDsClient();
+                                            m.ContractID = Convert.ToString(dr["ContractID"]);
+                                            m.MachineID = Convert.ToString(dr["MachineID"]);
+                                            m.EMail = Convert.ToString(dr["EMail"]);
+                                            ConcernedMachineIDC.Add(m);
+                                            if (ContractIDs.Contains(m.ContractID) == false)
+                                                ContractIDs.Add(m.ContractID);
+                                        }
+                                        dr.Close();
+
+                                        foreach (string ContractID in ContractIDs)
+                                        {
+                                            List<string> ConcernedMachineIDsForClient = new List<string>();
+                                            string EMail = "";
+                                            foreach (ConcernedMachineIDsClient m in ConcernedMachineIDC)
+                                            {
+                                                if (m.ContractID == ContractID)
+                                                    ConcernedMachineIDsForClient.Add(m.MachineID);
+                                                if (string.IsNullOrWhiteSpace(EMail) == true)
+                                                    EMail = m.EMail;
+                                            }
+
+                                            if (string.IsNullOrWhiteSpace(EMail) == true)
+                                                continue;
+
+                                            if (ConcernedMachineIDsForClient.Count > 0)
+                                            {
+                                                byte[] PDFFile = RenderReport.RenderMachineReport(sql, ConcernedMachineIDsForClient, null, null, ReportingFlagsPaper.ReportClient, "PDF");
+                                                if (PDFFile == null)
+                                                {
+                                                    FoxEventLog.WriteEventLog("Client Report has no data.", System.Diagnostics.EventLogEntryType.Error);
+                                                }
+                                                else
+                                                {
+                                                    string Text = SettingsManager.Settings.EMailClientText;
+                                                    string Subject = SettingsManager.Settings.EMailClientSubject;
+                                                    Text = Text.Replace("{URGENT}", "").
+                                                        Replace("{NMACHINESS}", ConcernedMachineIDsForClient.Count == 1 ? "" : "s").
+                                                        Replace("{NMACHINES}", ConcernedMachineIDsForClient.Count.ToString());
+                                                    Subject = Subject.Replace("{URGENT}", "").
+                                                        Replace("{NMACHINESS}", ConcernedMachineIDsForClient.Count == 1 ? "" : "s").
+                                                        Replace("{NMACHINES}", ConcernedMachineIDsForClient.Count.ToString());
+                                                    if (MailSender.SendEMailClient(EMail, Subject, Text, new List<System.Net.Mail.Attachment> { new System.Net.Mail.Attachment(new MemoryStream(PDFFile), ReportAttachementFilename) }, System.Net.Mail.MailPriority.High, out ErrorMessage, SettingsManager.Settings.EMailClientIsHTML) == false)
+                                                    {
+                                                        FoxEventLog.WriteEventLog("Cannot send Client E-Mail: " + ErrorMessage, System.Diagnostics.EventLogEntryType.Error);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                                 else
                                 {
-                                    string Text = SettingsManager.Settings.EMailClientText;
-                                    string Subject = SettingsManager.Settings.EMailClientSubject;
-                                    Text = Text.Replace("{URGENT}", "Urgent ").
-                                        Replace("{NMACHINESS}", ConcernedMachineIDsForClient.Count == 1 ? "" : "s").
-                                        Replace("{NMACHINES}", ConcernedMachineIDsForClient.Count.ToString());
-                                    Subject = Subject.Replace("{URGENT}", "Urgent ").
-                                        Replace("{NMACHINESS}", ConcernedMachineIDsForClient.Count == 1 ? "" : "s").
-                                        Replace("{NMACHINES}", ConcernedMachineIDsForClient.Count.ToString());
-                                    if (MailSender.SendEMailClient(EMail, Subject, Text, new List<System.Net.Mail.Attachment> { new System.Net.Mail.Attachment(new MemoryStream(PDFFile), ReportAttachementFilename) }, System.Net.Mail.MailPriority.High, out ErrorMessage, SettingsManager.Settings.EMailClientIsHTML) == false)
+                                    //update anyways
+                                    SettingsManager.Settings.LastScheduleRanClient = DateTime.UtcNow;
+                                    SettingsManager.SaveApplySettings2(sql, SettingsManager.Settings);
+                                }
+                            }
+                        }
+
+                        #endregion
+
+                        #region Urgent Client
+
+                        if (Settings.Default.UseContract == true)
+                        {
+                            dr = sql.ExecSQLReader(@"select ComputerAccounts.MachineID,ComputerAccounts.ContractID,EMail from ComputerAccounts
+                                inner join Contracts on Contracts.ContractID = ComputerAccounts.ContractID
+                                where Disabled = 0 and MachineID in (Select distinct machineid from Reporting where (Flags & @f1) != 0 AND(Flags & @f2) = 0) and EMail is not null and EMail !=''",
+                                new SQLParam("@f1", ReportingFlags.UrgentForClient),
+                                new SQLParam("@f2", ReportingFlags.UrgentClientReported));
+
+                            List<ConcernedMachineIDsClient> ConcernedMachineIDC = new List<ConcernedMachineIDsClient>();
+                            List<string> ContractIDs = new List<string>();
+
+                            while (dr.Read())
+                            {
+                                ConcernedMachineIDsClient m = new ConcernedMachineIDsClient();
+                                m.ContractID = Convert.ToString(dr["ContractID"]);
+                                m.MachineID = Convert.ToString(dr["MachineID"]);
+                                m.EMail = Convert.ToString(dr["EMail"]);
+                                ConcernedMachineIDC.Add(m);
+                                if (ContractIDs.Contains(m.ContractID) == false)
+                                    ContractIDs.Add(m.ContractID);
+                            }
+                            dr.Close();
+
+                            foreach (string ContractID in ContractIDs)
+                            {
+                                List<string> ConcernedMachineIDsForClient = new List<string>();
+                                string EMail = "";
+                                foreach (ConcernedMachineIDsClient m in ConcernedMachineIDC)
+                                {
+                                    if (m.ContractID == ContractID)
+                                        ConcernedMachineIDsForClient.Add(m.MachineID);
+                                    if (string.IsNullOrWhiteSpace(EMail) == true)
+                                        EMail = m.EMail;
+                                }
+
+                                if (string.IsNullOrWhiteSpace(EMail) == true)
+                                    continue;
+
+                                if (ConcernedMachineIDsForClient.Count > 0)
+                                {
+                                    byte[] PDFFile = RenderReport.RenderMachineReport(sql, ConcernedMachineIDsForClient, null, null, ReportingFlagsPaper.UrgentClient, "PDF");
+                                    if (PDFFile == null)
                                     {
-                                        FoxEventLog.WriteEventLog("Cannot send Urgent Client E-Mail: " + ErrorMessage, System.Diagnostics.EventLogEntryType.Error);
+                                        FoxEventLog.WriteEventLog("Urgent Client Report has no data.", System.Diagnostics.EventLogEntryType.Error);
+                                    }
+                                    else
+                                    {
+                                        string Text = SettingsManager.Settings.EMailClientText;
+                                        string Subject = SettingsManager.Settings.EMailClientSubject;
+                                        Text = Text.Replace("{URGENT}", "Urgent ").
+                                            Replace("{NMACHINESS}", ConcernedMachineIDsForClient.Count == 1 ? "" : "s").
+                                            Replace("{NMACHINES}", ConcernedMachineIDsForClient.Count.ToString());
+                                        Subject = Subject.Replace("{URGENT}", "Urgent ").
+                                            Replace("{NMACHINESS}", ConcernedMachineIDsForClient.Count == 1 ? "" : "s").
+                                            Replace("{NMACHINES}", ConcernedMachineIDsForClient.Count.ToString());
+                                        if (MailSender.SendEMailClient(EMail, Subject, Text, new List<System.Net.Mail.Attachment> { new System.Net.Mail.Attachment(new MemoryStream(PDFFile), ReportAttachementFilename) }, System.Net.Mail.MailPriority.High, out ErrorMessage, SettingsManager.Settings.EMailClientIsHTML) == false)
+                                        {
+                                            FoxEventLog.WriteEventLog("Cannot send Urgent Client E-Mail: " + ErrorMessage, System.Diagnostics.EventLogEntryType.Error);
+                                        }
                                     }
                                 }
                             }
                         }
+
+                        #endregion
                     }
-
-#endregion
-
                 }
                 catch (Exception ee)
                 {

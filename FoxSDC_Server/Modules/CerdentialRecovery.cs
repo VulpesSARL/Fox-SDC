@@ -55,7 +55,7 @@ namespace FoxSDC_Server.Modules
             }
 
             sql = ni.sql;
-
+            
             if (Settings.Default.UseContract == true)
             {
                 if (Convert.ToInt32(sql.ExecSQLScalar("SELECT Count(*) FROM Contracts WHERE ContractID=@id AND ContractPassword=@pw AND Disabled=0",

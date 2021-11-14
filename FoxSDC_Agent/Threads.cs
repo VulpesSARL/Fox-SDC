@@ -47,7 +47,9 @@ namespace FoxSDC_Agent
             PushMain0.StartPushThread();
             PushMain1.StartPushThread();
             PushMain2.StartPushThread();
+#if ENABLECHAT
             PushMain10.StartPushThread();
+#endif
             UpdateCheck.RunUpdateCheckAndHouseKeepingThread();
             DownloadSystemFSData.StartThread();
             if (SystemInfos.SysInfo.RunningInWindowsPE == false || SystemInfos.SysInfo.RunningInWindowsPE == null)
@@ -78,7 +80,9 @@ namespace FoxSDC_Agent
             PushMain0.StopPushThread();
             PushMain1.StopPushThread();
             PushMain2.StopPushThread();
+#if ENABLECHAT
             PushMain10.StopPushThread();
+#endif
             UpdateCheck.StopUpdateThread();
             DownloadSystemFSData.StopThread();
             FoxEventLog.VerboseWriteEventLog("StopAllThreads() - Done", System.Diagnostics.EventLogEntryType.Information);
@@ -129,7 +133,7 @@ namespace FoxSDC_Agent
                 {
                     SyncPolicy.DoSyncPolicy();
 
-                    #region Prevent criss cross with reportings wait until done!
+#region Prevent criss cross with reportings wait until done!
                     do
                     {
                         lock (LockLock1)
@@ -149,19 +153,19 @@ namespace FoxSDC_Agent
                         }
                     } while (true);
 
-                    #endregion
+#endregion
 
                     if (StopThreads == false)
                     {
                         SyncPolicy.ApplyPolicy(SyncPolicy.ApplyPolicyFunction.ApplySystem);
                     }
 
-                    #region Prevent criss cross with reportings wait until done!
+#region Prevent criss cross with reportings wait until done!
                     lock (LockLock1)
                     {
                         LockReportingUpdate1 = false;
                     }
-                    #endregion
+#endregion
                 }
                 catch (Exception ee)
                 {

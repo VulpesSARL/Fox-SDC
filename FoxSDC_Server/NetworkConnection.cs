@@ -92,7 +92,7 @@ namespace FoxSDC_Server
         {
             if (Connections.ContainsKey(Session) == true)
             {
-                NetworkConnectionProcessor.DeInitNi(Connections[Session], 
+                NetworkConnectionProcessor.DeInitNi(Connections[Session],
                     !AnotherNiPushRunningSameMachine(Session, Connections[Session].Username, Connections[Session].PushChannel));
                 lock (Connections)
                     Connections.Remove(Session);

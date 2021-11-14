@@ -33,7 +33,7 @@ namespace FoxSDC_Server
             lock (ni.sqllock)
             {
                 if (Convert.ToInt32(sql.ExecSQLScalar("SELECT COUNT(*) FROM ComputerAccounts WHERE MachineID=@m",
-                new SQLParam("@m", devices.MachineID))) == 0)
+            new SQLParam("@m", devices.MachineID))) == 0)
                 {
                     ni.Error = "Invalid MachineID";
                     ni.ErrorID = ErrorFlags.InvalidValue;
@@ -61,29 +61,29 @@ namespace FoxSDC_Server
                 lock (ni.sqllock)
                 {
                     sql.InsertMultiData("DevicesConfig",
-                        new SQLData("MachineID", devices.MachineID),
-                        new SQLData("Index", Counter),
-                        new SQLData("Availability", dev.Availability),
-                        new SQLData("Caption", dev.Caption == null ? "" : dev.Caption),
-                        new SQLData("ClassGuid", dev.ClassGuid == null ? "" : dev.ClassGuid),
-                        new SQLData("CompatibleID", JsonConvert.SerializeObject(dev.CompatibleID)),
-                        new SQLData("ConfigManagerErrorCode", dev.ConfigManagerErrorCode),
-                        new SQLData("ConfigManagerUserConfig", dev.ConfigManagerUserConfig),
-                        new SQLData("CreationClassName", dev.CreationClassName == null ? "" : dev.CreationClassName),
-                        new SQLData("Description", dev.Description == null ? "" : dev.Description),
-                        new SQLData("ErrorCleared", dev.ErrorCleared),
-                        new SQLData("ErrorDescription", dev.ErrorDescription == null ? "" : dev.ErrorDescription),
-                        new SQLData("HardwareID", JsonConvert.SerializeObject(dev.HardwareID)),
-                        new SQLData("InstallDate", dev.InstallDate),
-                        new SQLData("LastErrorCode", dev.LastErrorCode),
-                        new SQLData("Manufacturer", dev.Manufacturer == null ? "" : dev.Manufacturer),
-                        new SQLData("Name", dev.Name == null ? "" : dev.Name),
-                        new SQLData("PNPClass", dev.PNPClass == null ? "" : dev.PNPClass),
-                        new SQLData("PNPDeviceID", dev.PNPDeviceID == null ? "" : dev.PNPDeviceID),
-                        new SQLData("Present", dev.Present),
-                        new SQLData("Service", dev.Service == null ? "" : dev.Service),
-                        new SQLData("Status", dev.Status == null ? "" : dev.Status),
-                        new SQLData("StatusInfo", dev.StatusInfo));
+                    new SQLData("MachineID", devices.MachineID),
+                    new SQLData("Index", Counter),
+                    new SQLData("Availability", dev.Availability),
+                    new SQLData("Caption", dev.Caption == null ? "" : dev.Caption),
+                    new SQLData("ClassGuid", dev.ClassGuid == null ? "" : dev.ClassGuid),
+                    new SQLData("CompatibleID", JsonConvert.SerializeObject(dev.CompatibleID)),
+                    new SQLData("ConfigManagerErrorCode", dev.ConfigManagerErrorCode),
+                    new SQLData("ConfigManagerUserConfig", dev.ConfigManagerUserConfig),
+                    new SQLData("CreationClassName", dev.CreationClassName == null ? "" : dev.CreationClassName),
+                    new SQLData("Description", dev.Description == null ? "" : dev.Description),
+                    new SQLData("ErrorCleared", dev.ErrorCleared),
+                    new SQLData("ErrorDescription", dev.ErrorDescription == null ? "" : dev.ErrorDescription),
+                    new SQLData("HardwareID", JsonConvert.SerializeObject(dev.HardwareID)),
+                    new SQLData("InstallDate", dev.InstallDate),
+                    new SQLData("LastErrorCode", dev.LastErrorCode),
+                    new SQLData("Manufacturer", dev.Manufacturer == null ? "" : dev.Manufacturer),
+                    new SQLData("Name", dev.Name == null ? "" : dev.Name),
+                    new SQLData("PNPClass", dev.PNPClass == null ? "" : dev.PNPClass),
+                    new SQLData("PNPDeviceID", dev.PNPDeviceID == null ? "" : dev.PNPDeviceID),
+                    new SQLData("Present", dev.Present),
+                    new SQLData("Service", dev.Service == null ? "" : dev.Service),
+                    new SQLData("Status", dev.Status == null ? "" : dev.Status),
+                    new SQLData("StatusInfo", dev.StatusInfo));
                 }
                 Counter++;
             }

@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace FoxSDC_Agent.Push
 {
+#if ENABLECHAT
     class PushMain10
     {
         class PushDataForThreadRunner
@@ -253,4 +254,5 @@ namespace FoxSDC_Agent.Push
             } while (StopThread == false);
         }
     }
+#endif
 }

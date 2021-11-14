@@ -39,20 +39,21 @@ namespace FoxSDC_Server
         {
             do
             {
-                SQLLib sql = SQLTest.ConnectSQL("Fox SDC Server for Maintenance", 0);
-                if (sql == null)
+                using (SQLLib sql = SQLTest.ConnectSQL("Fox SDC Server for Maintenance", 0))
                 {
-                    Pause();
-                    if (StopThread == true)
-                        break;
-                }
-
-                try
-                {
-                    if (SettingsManager.Settings.KeepEventLogDays > 0)
+                    if (sql == null)
                     {
-                        DateTime now = DateTime.UtcNow;
-                        Int64 res = Convert.ToInt64(sql.ExecSQLScalar(@"DECLARE @Deleted_Rows INT
+                        Pause();
+                        if (StopThread == true)
+                            break;
+                    }
+
+                    try
+                    {
+                        if (SettingsManager.Settings.KeepEventLogDays > 0)
+                        {
+                            DateTime now = DateTime.UtcNow;
+                            Int64 res = Convert.ToInt64(sql.ExecSQLScalar(@"DECLARE @Deleted_Rows INT
                             DECLARE @Deleted_Rows_Total INT
                             SET @Deleted_Rows = 1
                             SET @Deleted_Rows_Total = 0
@@ -65,49 +66,50 @@ namespace FoxSDC_Server
                             END
 
                             Select @Deleted_Rows_Total",
-                            new SQLParam("@d", 0 - SettingsManager.Settings.KeepEventLogDays)));
-                        Int64 secs = Convert.ToInt64((DateTime.UtcNow - now).TotalSeconds);
-                        FoxEventLog.WriteEventLog("Eventlog data Maintenance completed: " + res.ToString() + " entr" + (res == 1 ? "y" : "ies") + " deleted\nTime needed: " + secs + " second" + (secs == 1 ? "" : "s"), System.Diagnostics.EventLogEntryType.Information);
+                                new SQLParam("@d", 0 - SettingsManager.Settings.KeepEventLogDays)));
+                            Int64 secs = Convert.ToInt64((DateTime.UtcNow - now).TotalSeconds);
+                            FoxEventLog.WriteEventLog("Eventlog data Maintenance completed: " + res.ToString() + " entr" + (res == 1 ? "y" : "ies") + " deleted\nTime needed: " + secs + " second" + (secs == 1 ? "" : "s"), System.Diagnostics.EventLogEntryType.Information);
+                        }
+                        if (SettingsManager.Settings.KeepNonPresentDisks > 0)
+                        {
+                            DateTime now = DateTime.UtcNow;
+                            int res = sql.ExecSQLNQ("delete from DiskData where DevicePresent!=1 AND LastUpdated<DATEADD(day, @d, getutcdate())",
+                                new SQLParam("@d", 0 - SettingsManager.Settings.KeepNonPresentDisks));
+                            Int64 secs = Convert.ToInt64((DateTime.UtcNow - now).TotalSeconds);
+                            FoxEventLog.WriteEventLog("Nonpresent disk data Maintenance completed: " + res.ToString() + " entr" + (res == 1 ? "y" : "ies") + " deleted\nTime needed: " + secs + " second" + (secs == 1 ? "" : "s"), System.Diagnostics.EventLogEntryType.Information);
+                        }
+                        if (SettingsManager.Settings.KeepReports > 0)
+                        {
+                            DateTime now = DateTime.UtcNow;
+                            int res = sql.ExecSQLNQ("delete from Reporting where Reported<DATEADD(day, @d, getutcdate())",
+                                new SQLParam("@d", 0 - SettingsManager.Settings.KeepReports));
+                            Int64 secs = Convert.ToInt64((DateTime.UtcNow - now).TotalSeconds);
+                            FoxEventLog.WriteEventLog("Report Maintenance completed: " + res.ToString() + " entr" + (res == 1 ? "y" : "ies") + " deleted\nTime needed: " + secs + " second" + (secs == 1 ? "" : "s"), System.Diagnostics.EventLogEntryType.Information);
+                        }
+                        if (SettingsManager.Settings.KeepBitlockerRK > 0)
+                        {
+                            DateTime now = DateTime.UtcNow;
+                            int res = sql.ExecSQLNQ("delete from BitlockerRK where Reported<DATEADD(day, @d, getutcdate())",
+                                new SQLParam("@d", 0 - SettingsManager.Settings.KeepBitlockerRK));
+                            Int64 secs = Convert.ToInt64((DateTime.UtcNow - now).TotalSeconds);
+                            FoxEventLog.WriteEventLog("Old BitlockerRK Maintenance completed: " + res.ToString() + " entr" + (res == 1 ? "y" : "ies") + " deleted\nTime needed: " + secs + " second" + (secs == 1 ? "" : "s"), System.Diagnostics.EventLogEntryType.Information);
+                        }
+                        if (SettingsManager.Settings.KeepChatLogs > 0)
+                        {
+                            DateTime now = DateTime.UtcNow;
+                            int res = sql.ExecSQLNQ("delete from Chats where DT<DATEADD(day, @d, getutcdate())",
+                                new SQLParam("@d", 0 - SettingsManager.Settings.KeepChatLogs));
+                            Int64 secs = Convert.ToInt64((DateTime.UtcNow - now).TotalSeconds);
+                            FoxEventLog.WriteEventLog("Old Chat Logs Maintenance completed: " + res.ToString() + " entr" + (res == 1 ? "y" : "ies") + " deleted\nTime needed: " + secs + " second" + (secs == 1 ? "" : "s"), System.Diagnostics.EventLogEntryType.Information);
+                        }
                     }
-                    if (SettingsManager.Settings.KeepNonPresentDisks > 0)
+                    catch (Exception ee)
                     {
-                        DateTime now = DateTime.UtcNow;
-                        int res = sql.ExecSQLNQ("delete from DiskData where DevicePresent!=1 AND LastUpdated<DATEADD(day, @d, getutcdate())",
-                            new SQLParam("@d", 0 - SettingsManager.Settings.KeepNonPresentDisks));
-                        Int64 secs = Convert.ToInt64((DateTime.UtcNow - now).TotalSeconds);
-                        FoxEventLog.WriteEventLog("Nonpresent disk data Maintenance completed: " + res.ToString() + " entr" + (res == 1 ? "y" : "ies") + " deleted\nTime needed: " + secs + " second" + (secs == 1 ? "" : "s"), System.Diagnostics.EventLogEntryType.Information);
+                        FoxEventLog.WriteEventLog("Cannot delete Eventlog data\n" + ee.ToString(), System.Diagnostics.EventLogEntryType.Error);
                     }
-                    if (SettingsManager.Settings.KeepReports > 0)
-                    {
-                        DateTime now = DateTime.UtcNow;
-                        int res = sql.ExecSQLNQ("delete from Reporting where Reported<DATEADD(day, @d, getutcdate())",
-                            new SQLParam("@d", 0 - SettingsManager.Settings.KeepReports));
-                        Int64 secs = Convert.ToInt64((DateTime.UtcNow - now).TotalSeconds);
-                        FoxEventLog.WriteEventLog("Report Maintenance completed: " + res.ToString() + " entr" + (res == 1 ? "y" : "ies") + " deleted\nTime needed: " + secs + " second" + (secs == 1 ? "" : "s"), System.Diagnostics.EventLogEntryType.Information);
-                    }
-                    if (SettingsManager.Settings.KeepBitlockerRK > 0)
-                    {
-                        DateTime now = DateTime.UtcNow;
-                        int res = sql.ExecSQLNQ("delete from BitlockerRK where Reported<DATEADD(day, @d, getutcdate())",
-                            new SQLParam("@d", 0 - SettingsManager.Settings.KeepBitlockerRK));
-                        Int64 secs = Convert.ToInt64((DateTime.UtcNow - now).TotalSeconds);
-                        FoxEventLog.WriteEventLog("Old BitlockerRK Maintenance completed: " + res.ToString() + " entr" + (res == 1 ? "y" : "ies") + " deleted\nTime needed: " + secs + " second" + (secs == 1 ? "" : "s"), System.Diagnostics.EventLogEntryType.Information);
-                    }
-                    if (SettingsManager.Settings.KeepChatLogs > 0)
-                    {
-                        DateTime now = DateTime.UtcNow;
-                        int res = sql.ExecSQLNQ("delete from Chats where DT<DATEADD(day, @d, getutcdate())",
-                            new SQLParam("@d", 0 - SettingsManager.Settings.KeepChatLogs));
-                        Int64 secs = Convert.ToInt64((DateTime.UtcNow - now).TotalSeconds);
-                        FoxEventLog.WriteEventLog("Old Chat Logs Maintenance completed: " + res.ToString() + " entr" + (res == 1 ? "y" : "ies") + " deleted\nTime needed: " + secs + " second" + (secs == 1 ? "" : "s"), System.Diagnostics.EventLogEntryType.Information);
-                    }
-                }
-                catch (Exception ee)
-                {
-                    FoxEventLog.WriteEventLog("Cannot delete Eventlog data\n" + ee.ToString(), System.Diagnostics.EventLogEntryType.Error);
-                }
 
-                sql.CloseConnection();
+                    sql.CloseConnection();
+                }
                 Pause();
                 if (StopThread == true)
                     break;

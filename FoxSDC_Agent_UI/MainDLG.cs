@@ -22,7 +22,9 @@ namespace FoxSDC_Agent_UI
         [DllImport("user32.dll", SetLastError = true)]
         static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
 
+#if ENABLECHAT
         int TimerCounter = 0;
+#endif
 
         protected override void SetVisibleCore(bool value)
         {
@@ -40,10 +42,12 @@ namespace FoxSDC_Agent_UI
                 Program.NT3.Show();
             }
 
+#if ENABLECHAT
             System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
             timer.Interval = 1000;
             timer.Enabled = true;
             timer.Tick += Timer_Tick;
+#endif
 
             if (Environment.OSVersion.Version.Major == 6)
             {
@@ -69,6 +73,7 @@ Vulpes stellt demnächst den Support für Windows 7 & Windows 8.0 über das Soft
             }
         }
 
+#if ENABLECHAT
         private void Timer_Tick(object sender, EventArgs e)
         {
             TimerCounter++;
@@ -89,10 +94,19 @@ Vulpes stellt demnächst den Support für Windows 7 & Windows 8.0 über das Soft
                 }
             }
         }
+#endif
 
         private void MainDLG_Load(object sender, EventArgs e)
         {
             timUpdate.Enabled = true;
+#if !ENABLECHAT
+            startChatWithVulpesToolStripMenuItem.Visible = false;
+            startChatWithVulpesToolStripMenuItem1.Visible = false;
+            startChatWithVulpesToolStripMenuItem.Enabled = false;
+            startChatWithVulpesToolStripMenuItem1.Enabled = false;
+            settingsToolStripMenuItem.Visible = false;
+            settingsToolStripMenuItem.Enabled = false;
+#endif
         }
 
         private void cmdClose_Click(object sender, EventArgs e)
@@ -237,6 +251,7 @@ Vulpes stellt demnächst den Support für Windows 7 & Windows 8.0 über das Soft
 
         private void startChatWithVulpesToolStripMenuItem_Click(object sender, EventArgs e)
         {
+#if ENABLECHAT
             if (Program.Chat == null)
             {
                 Program.Chat = new frmChat(null);
@@ -247,6 +262,7 @@ Vulpes stellt demnächst den Support für Windows 7 & Windows 8.0 über das Soft
                 Program.Chat.BringToFront();
                 Program.Chat.Activate();
             }
+#endif
         }
 
         private void startChatWithVulpesToolStripMenuItem1_Click(object sender, EventArgs e)

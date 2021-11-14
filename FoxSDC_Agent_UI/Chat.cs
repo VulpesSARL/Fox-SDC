@@ -8,14 +8,19 @@ namespace FoxSDC_Agent_UI
 {
     public partial class frmChat : FForm
     {
+#if ENABLECHAT
         PushChatMessage initialchat;
+#endif
 
         public frmChat(PushChatMessage initialchat)
         {
+#if ENABLECHAT
             this.initialchat = initialchat;
+#endif
             InitializeComponent();
         }
 
+#if ENABLECHAT
         void AppendText(PushChatMessage chat)
         {
             txtRecvText.Text += chat.DT.ToLocalTime().ToLongDateString() + " " + chat.DT.ToLocalTime().ToLongTimeString() +
@@ -55,9 +60,11 @@ namespace FoxSDC_Agent_UI
                     }
             }
         }
+#endif
 
         private void frmChat_Load(object sender, EventArgs e)
         {
+#if ENABLECHAT
             this.Top = Screen.PrimaryScreen.WorkingArea.Height - this.Height;
             this.Left = Screen.PrimaryScreen.WorkingArea.Width - this.Width;
             if (initialchat != null)
@@ -68,10 +75,12 @@ namespace FoxSDC_Agent_UI
             }
             timPull.Enabled = true;
             UpdateAOT();
+#endif
         }
 
         private void cmdSend_Click(object sender, EventArgs e)
         {
+#if ENABLECHAT
             if (txtSendText.Text.Trim() == "")
                 return;
             Status.SendChatMessage(txtSendText.Text.Trim());
@@ -82,21 +91,26 @@ namespace FoxSDC_Agent_UI
             c.ID = 0;
             AppendText(c);
             txtSendText.Text = "";
+#endif
         }
 
         private void timPull_Tick(object sender, EventArgs e)
         {
+#if ENABLECHAT
             PushChatMessage msg = Status.PopChatMessage();
             if (msg == null)
                 return;
             AppendText(msg);
             Status.ConfirmChatMessage(msg.ID);
             GetNotice();
+#endif
         }
 
         private void frmChat_FormClosing(object sender, FormClosingEventArgs e)
         {
+#if ENABLECHAT
             Program.Chat = null;
+#endif
         }
     }
 }

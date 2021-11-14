@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Data.SqlClient;
 using System.Data;
+using System.Data.SqlClient;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace FoxSDC_Server
 {
-    public partial class SQLLib
+    public partial class SQLLib : IDisposable
     {
         private SqlConnection Connection = null;
         private SqlTransaction trans = null;
@@ -32,11 +33,22 @@ namespace FoxSDC_Server
             }
         }
 
-        ~SQLLib()
+        public void Dispose()
         {
-            /*if (Connection != null)
-                Connection.Close();*/
+            try
+            {
+                if (Connection != null)
+                {
+                    Connection.Close();
+                    Connection.Dispose();
+                }
+            }
+            catch (Exception ee)
+            {
+                Debug.WriteLine(ee.ToString());
+            }
         }
+
 
         public int SqlCommandTimeout = 600;
 
@@ -101,8 +113,9 @@ namespace FoxSDC_Server
             }
             catch (Exception ee)
             {
+                Debug.WriteLine(ee.ToString());
                 if (SEHError == true)
-                    throw ee;
+                    throw;
                 return (false);
             }
 #endif
@@ -131,8 +144,9 @@ namespace FoxSDC_Server
             }
             catch (Exception ee)
             {
+                Debug.WriteLine(ee.ToString());
                 if (SEHError == true)
-                    throw ee;
+                    throw;
                 return (false);
             }
 #endif
@@ -142,6 +156,28 @@ namespace FoxSDC_Server
         public bool ConnectDatabase(string server, string database)
         {
             return (ConnectDatabase(server, database, "", ""));
+        }
+
+        public bool ConnectDatabase(string DirectConnectionString)
+        {
+            System.Diagnostics.Debug.WriteLine("SQLCONNECT: " + DirectConnectionString);
+#if !DEBUGDB
+            try
+            {
+#endif
+                Connection = new SqlConnection(DirectConnectionString);
+                Connection.Open();
+#if !DEBUGDB
+            }
+            catch (Exception ee)
+            {
+                Debug.WriteLine(ee.ToString());
+                if (SEHError == true)
+                    throw;
+                return (false);
+            }
+#endif
+            return (true);
         }
 
         public bool ConnectDatabase(string server, string database, bool UseWinAuth)
@@ -162,12 +198,15 @@ namespace FoxSDC_Server
                 conn["Server"] = server;
                 conn["Database"] = database;
                 conn["Integrated Security"] = "SSPI";
+                conn["Max Pool Size"] = 1024;
+                conn["Pooling"] = ConnectionPooling == true ? "true" : "false";
                 Connection = new SqlConnection(conn.ConnectionString);
                 Connection.Open();
 #if !DEBUGDB
             }
             catch (Exception ee)
             {
+                Debug.WriteLine(ee.ToString());
                 if (SEHError == true)
                     throw ee;
                 return (false);
@@ -191,6 +230,8 @@ namespace FoxSDC_Server
                 conn["Connection Timeout"] = 180;
                 conn["Server"] = server;
                 conn["Database"] = database;
+                conn["Max Pool Size"] = 1024;
+                conn["Pooling"] = ConnectionPooling == true ? "true" : "false";
                 if (Username.Trim() != "")
                     conn["User ID"] = Username;
                 if (Password != "")
@@ -201,8 +242,9 @@ namespace FoxSDC_Server
             }
             catch (Exception ee)
             {
+                Debug.WriteLine(ee.ToString());
                 if (SEHError == true)
-                    throw ee;
+                    throw;
                 return (false);
             }
 #endif
@@ -236,7 +278,7 @@ namespace FoxSDC_Server
             {
                 Debug.WriteLine(ee.ToString());
                 if (SEHError == true)
-                    throw ee;
+                    throw;
                 return (false);
             }
 #endif
@@ -273,8 +315,9 @@ namespace FoxSDC_Server
             }
             catch (Exception ee)
             {
+                Debug.WriteLine(ee.ToString());
                 if (SEHError == true)
-                    throw ee;
+                    throw;
                 return (0);
             }
 #endif
@@ -304,8 +347,9 @@ namespace FoxSDC_Server
             }
             catch (Exception ee)
             {
+                Debug.WriteLine(ee.ToString());
                 if (SEHError == true)
-                    throw ee;
+                    throw;
                 return (null);
             }
 #endif
@@ -335,8 +379,9 @@ namespace FoxSDC_Server
             }
             catch (Exception ee)
             {
+                Debug.WriteLine(ee.ToString());
                 if (SEHError == true)
-                    throw ee;
+                    throw;
                 return (null);
             }
 #endif
@@ -371,8 +416,9 @@ namespace FoxSDC_Server
             }
             catch (Exception ee)
             {
+                Debug.WriteLine(ee.ToString());
                 if (SEHError == true)
-                    throw ee;
+                    throw;
                 return (null);
             }
 #endif
@@ -406,8 +452,9 @@ namespace FoxSDC_Server
             }
             catch (Exception ee)
             {
+                Debug.WriteLine(ee.ToString());
                 if (SEHError == true)
-                    throw ee;
+                    throw;
                 return (null);
             }
 #endif
@@ -433,8 +480,9 @@ namespace FoxSDC_Server
             }
             catch (Exception ee)
             {
+                Debug.WriteLine(ee.ToString());
                 if (SEHError == true)
-                    throw ee;
+                    throw;
                 return (false);
             }
 #endif
@@ -460,8 +508,9 @@ namespace FoxSDC_Server
             }
             catch (Exception ee)
             {
+                Debug.WriteLine(ee.ToString());
                 if (SEHError == true)
-                    throw ee;
+                    throw;
                 return (false);
             }
 #endif
@@ -527,7 +576,7 @@ namespace FoxSDC_Server
             {
                 Debug.WriteLine(ee.ToString());
                 if (SEHError == true)
-                    throw ee;
+                    throw;
                 return (false);
             }
 #endif
@@ -593,7 +642,7 @@ namespace FoxSDC_Server
             {
                 Debug.WriteLine(ee.ToString());
                 if (SEHError == true)
-                    throw ee;
+                    throw;
                 return (null);
             }
 #endif
@@ -623,8 +672,9 @@ namespace FoxSDC_Server
             }
             catch (Exception ee)
             {
+                Debug.WriteLine(ee.ToString());
                 if (SEHError == true)
-                    throw ee;
+                    throw;
                 return (false);
             }
 #endif
@@ -688,7 +738,7 @@ namespace FoxSDC_Server
             {
                 Debug.WriteLine(ee.ToString());
                 if (SEHError == true)
-                    throw ee;
+                    throw;
                 return (false);
             }
             return (true);
@@ -726,7 +776,7 @@ namespace FoxSDC_Server
             {
                 Debug.WriteLine(ee.ToString());
                 if (SEHError == true)
-                    throw ee;
+                    throw;
                 return (null);
             }
 
@@ -739,6 +789,17 @@ namespace FoxSDC_Server
             if (Data == null)
                 return (false);
             return (InsertMultiData(Table, Data));
+        }
+
+        public string GetConstraint(string Table, string Column)
+        {
+            return (Convert.ToString(this.ExecSQLScalar(@"SELECT df.name as CN, t.name as TN, c.NAME as CN
+                FROM sys.default_constraints as df
+                INNER JOIN sys.tables as t ON df.parent_object_id = t.object_id
+                INNER JOIN sys.columns as c ON df.parent_object_id = c.object_id AND df.parent_column_id = c.column_id
+                where t.name=@table and c.name=@column",
+                    new SQLParam("@table", Table),
+                    new SQLParam("@column", Column))));
         }
 
         public bool BulkInsertMultiData(string Table, List<List<SQLData>> datas)
@@ -770,16 +831,9 @@ namespace FoxSDC_Server
                 {
                     DataRow row = table.NewRow();
 
-                    foreach (DataColumn col in table.Columns)
+                    foreach (SQLData d in data)
                     {
-                        foreach (SQLData d in data)
-                        {
-                            if (d.Column == col.ColumnName)
-                            {
-                                row[d.Column] = d.Data == null ? (object)DBNull.Value : d.Data;
-                                break;
-                            }
-                        }
+                        row[d.Column] = d.Data == null ? (object)DBNull.Value : d.Data;
                     }
 
                     table.Rows.Add(row);
@@ -796,7 +850,7 @@ namespace FoxSDC_Server
             {
                 Debug.WriteLine(ee.ToString());
                 if (SEHError == true)
-                    throw ee;
+                    throw;
                 return (false);
             }
 
@@ -840,12 +894,6 @@ namespace FoxSDC_Server
         {
             this.Column = Column;
             this.Data = data == null ? DBNull.Value : data;
-        }
-        public SQLData(string Column, object data, Type datatype)
-        {
-            this.Column = Column;
-            this.Data = data == null ? DBNull.Value : data;
-            this.DataType = datatype;
         }
     }
 }

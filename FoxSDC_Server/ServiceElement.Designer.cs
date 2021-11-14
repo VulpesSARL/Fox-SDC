@@ -31,6 +31,7 @@
             // 
             // FoxSDCASrvService
             // 
+            this.AutoLog = false;
             this.ServiceName = "ServiceElement";
 
         }

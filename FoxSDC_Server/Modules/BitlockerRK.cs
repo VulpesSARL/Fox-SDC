@@ -29,7 +29,7 @@ namespace FoxSDC_Server
             lock (ni.sqllock)
             {
                 if (Convert.ToInt32(sql.ExecSQLScalar("SELECT COUNT(*) FROM ComputerAccounts WHERE MachineID=@m",
-                   new SQLParam("@m", BitLockerRK.MachineID))) == 0)
+                    new SQLParam("@m", BitLockerRK.MachineID))) == 0)
                 {
                     ni.Error = "Invalid MachineID";
                     ni.ErrorID = ErrorFlags.InvalidValue;
@@ -69,18 +69,18 @@ namespace FoxSDC_Server
                     lock (ni.sqllock)
                     {
                         sql.ExecSQL("DELETE FROM BitLockerRK WHERE MachineID=@m AND DeviceID=@d",
-                            new SQLParam("@m", BitLockerRK.MachineID),
-                            new SQLParam("@d", disk.DeviceID));
+                        new SQLParam("@m", BitLockerRK.MachineID),
+                        new SQLParam("@d", disk.DeviceID));
                     }
                 }
                 lock (ni.sqllock)
                 {
                     sql.InsertMultiData("BitLockerRK",
-                        new SQLData("MachineID", BitLockerRK.MachineID),
-                        new SQLData("DeviceID", disk.DeviceID),
-                        new SQLData("DriveLetter", disk.DriveLetter == null ? "" : disk.DriveLetter),
-                        new SQLData("Keys", RKs),
-                        new SQLData("Reported", DateTime.UtcNow));
+                    new SQLData("MachineID", BitLockerRK.MachineID),
+                    new SQLData("DeviceID", disk.DeviceID),
+                    new SQLData("DriveLetter", disk.DriveLetter == null ? "" : disk.DriveLetter),
+                    new SQLData("Keys", RKs),
+                    new SQLData("Reported", DateTime.UtcNow));
                 }
             }
 
@@ -122,7 +122,7 @@ namespace FoxSDC_Server
             lock (ni.sqllock)
             {
                 SqlDataReader dr = sql.ExecSQLReader("SELECT * FROM BitlockerRK WHERE MachineID=@m",
-                    new SQLParam("@m", id));
+                new SQLParam("@m", id));
                 while (dr.Read())
                 {
                     BitlockerRK rk = new BitlockerRK();

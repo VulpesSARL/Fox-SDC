@@ -31,7 +31,7 @@ namespace FoxSDC_Server
             lock (ni.sqllock)
             {
                 if (Convert.ToInt32(sql.ExecSQLScalar("SELECT COUNT(*) FROM ComputerAccounts WHERE MachineID=@m",
-                    new SQLParam("@m", DiskDataList.MachineID))) == 0)
+                new SQLParam("@m", DiskDataList.MachineID))) == 0)
                 {
                     ni.Error = "Invalid MachineID";
                     ni.ErrorID = ErrorFlags.InvalidValue;
@@ -51,14 +51,13 @@ namespace FoxSDC_Server
                 sql.ExecSQL("UPDATE DiskData SET DevicePresent=0 WHERE MachineID=@m",
                     new SQLParam("@m", DiskDataList.MachineID));
             }
-
             foreach (DiskDataReport dr in DiskDataList.Items)
             {
                 lock (ni.sqllock)
                 {
                     sql.ExecSQL("DELETE FROM DiskData WHERE MachineID=@m AND DeviceID=@d",
-                        new SQLParam("@d", dr.DeviceID),
-                        new SQLParam("@m", DiskDataList.MachineID));
+                    new SQLParam("@d", dr.DeviceID),
+                    new SQLParam("@m", DiskDataList.MachineID));
                 }
             }
 
@@ -129,99 +128,101 @@ namespace FoxSDC_Server
 
         void ReportingThread(object DiskDataListO)
         {
-            SQLLib sql = SQLTest.ConnectSQL("Fox SDC Server for DiskData");
-            if (sql == null)
-            {
-                FoxEventLog.WriteEventLog("Cannot connect to SQL Server for Disk Data Reporting!", System.Diagnostics.EventLogEntryType.Error);
-                return;
-            }
             try
             {
-                ListDiskDataReport DiskDataList = (ListDiskDataReport)DiskDataListO;
-                List<PolicyObject> Pol = Policies.GetPolicyForComputerInternal(sql, DiskDataList.MachineID);
-
-                Dictionary<string, Int64> AlreadyReported = new Dictionary<string, long>();
-                foreach (PolicyObject PolO in Pol)
+                using (SQLLib sql = SQLTest.ConnectSQL("Fox SDC Server for DiskData"))
                 {
-                    if (PolO.Type != PolicyIDs.ReportingPolicy)
-                        continue;
-                    ReportingPolicyElement RepElementRoot = JsonConvert.DeserializeObject<ReportingPolicyElement>(Policies.GetPolicy(sql, PolO.ID).Data);
-                    if (RepElementRoot.Type != ReportingPolicyType.Disk)
-                        continue;
-
-                    foreach (string Element in RepElementRoot.ReportingElements)
+                    if (sql == null)
                     {
-                        ReportingPolicyElementDisk diskrep = JsonConvert.DeserializeObject<ReportingPolicyElementDisk>(Element);
-                        if (diskrep.DriveLetter == null)
+                        FoxEventLog.WriteEventLog("Cannot connect to SQL Server for Disk Data Reporting!", System.Diagnostics.EventLogEntryType.Error);
+                        return;
+                    }
+                    ListDiskDataReport DiskDataList = (ListDiskDataReport)DiskDataListO;
+                    List<PolicyObject> Pol = Policies.GetPolicyForComputerInternal(sql, DiskDataList.MachineID);
+
+                    Dictionary<string, Int64> AlreadyReported = new Dictionary<string, long>();
+                    foreach (PolicyObject PolO in Pol)
+                    {
+                        if (PolO.Type != PolicyIDs.ReportingPolicy)
                             continue;
-                        if (diskrep.DriveLetter.Length != 1)
+                        ReportingPolicyElement RepElementRoot = JsonConvert.DeserializeObject<ReportingPolicyElement>(Policies.GetPolicy(sql, PolO.ID).Data);
+                        if (RepElementRoot.Type != ReportingPolicyType.Disk)
                             continue;
 
-                        foreach (DiskDataReport DD in DiskDataList.Items)
+                        foreach (string Element in RepElementRoot.ReportingElements)
                         {
-                            string Drive = diskrep.DriveLetter;
+                            ReportingPolicyElementDisk diskrep = JsonConvert.DeserializeObject<ReportingPolicyElementDisk>(Element);
+                            if (diskrep.DriveLetter == null)
+                                continue;
+                            if (diskrep.DriveLetter.Length != 1)
+                                continue;
 
-                            if (diskrep.DriveLetter == "$")
+                            foreach (DiskDataReport DD in DiskDataList.Items)
                             {
-                                ComputerData d = Computers.GetComputerDetail(sql, DiskDataList.MachineID);
-                                if (d != null)
+                                string Drive = diskrep.DriveLetter;
+
+                                if (diskrep.DriveLetter == "$")
                                 {
-                                    if (string.IsNullOrWhiteSpace(d.SystemRoot) == false)
+                                    ComputerData d = Computers.GetComputerDetail(sql, DiskDataList.MachineID);
+                                    if (d != null)
                                     {
-                                        Drive = d.SystemRoot.Substring(0, 1);
+                                        if (string.IsNullOrWhiteSpace(d.SystemRoot) == false)
+                                        {
+                                            Drive = d.SystemRoot.Substring(0, 1);
+                                        }
                                     }
                                 }
-                            }
 
-                            if (string.IsNullOrWhiteSpace(DD.DriveLetter) == true)
-                                continue;
-                            if (DD.DriveLetter.ToLower().Substring(0, 1) != Drive.ToLower())
-                                continue;
-
-                            Int64 SZLimit;
-
-                            if (diskrep.Method == 1)
-                            {
-                                SZLimit = (Int64)((100m / (decimal)DD.Capacity) * (decimal)diskrep.MinimumSize);
-                            }
-                            else
-                            {
-                                SZLimit = diskrep.MinimumSize;
-                            }
-
-                            if (DD.FreeSpace < SZLimit)
-                            {
-                                bool ReportToAdmin = RepElementRoot.ReportToAdmin.Value;
-                                bool ReportToClient = RepElementRoot.ReportToClient.Value;
-                                bool UrgentForAdmin = RepElementRoot.UrgentForAdmin.Value;
-                                bool UrgentForClient = RepElementRoot.UrgentForClient.Value;
-
-                                if (AlreadyReported.ContainsKey(DD.DriveLetter) == true)
-                                {
-                                    if ((AlreadyReported[DD.DriveLetter] & (Int64)ReportingFlags.ReportToAdmin) != 0)
-                                        ReportToAdmin = false;
-                                    if ((AlreadyReported[DD.DriveLetter] & (Int64)ReportingFlags.ReportToClient) != 0)
-                                        ReportToClient = false;
-                                    if ((AlreadyReported[DD.DriveLetter] & (Int64)ReportingFlags.UrgentForAdmin) != 0)
-                                        UrgentForAdmin = false;
-                                    if ((AlreadyReported[DD.DriveLetter] & (Int64)ReportingFlags.UrgentForClient) != 0)
-                                        UrgentForClient = false;
-                                }
-
-                                if (ReportToAdmin == false && ReportToClient == false && UrgentForAdmin == false && UrgentForClient == false)
+                                if (string.IsNullOrWhiteSpace(DD.DriveLetter) == true)
                                     continue;
-                                ReportingFlags Flags = (ReportToAdmin == true ? ReportingFlags.ReportToAdmin : 0) |
-                                    (ReportToClient == true ? ReportingFlags.ReportToClient : 0) |
-                                    (UrgentForAdmin == true ? ReportingFlags.UrgentForAdmin : 0) |
-                                    (UrgentForClient == true ? ReportingFlags.UrgentForClient : 0);
-                                ReportingProcessor.ReportDiskData(sql, DiskDataList.MachineID, DD.DriveLetter, SZLimit, DD.FreeSpace, DD.Capacity, Flags);
-                                if (AlreadyReported.ContainsKey(DD.DriveLetter) == true)
+                                if (DD.DriveLetter.ToLower().Substring(0, 1) != Drive.ToLower())
+                                    continue;
+
+                                Int64 SZLimit;
+
+                                if (diskrep.Method == 1)
                                 {
-                                    AlreadyReported[DD.DriveLetter] |= (Int64)Flags;
+                                    SZLimit = (Int64)((100m / (decimal)DD.Capacity) * (decimal)diskrep.MinimumSize);
                                 }
                                 else
                                 {
-                                    AlreadyReported.Add(DD.DriveLetter, (Int64)Flags);
+                                    SZLimit = diskrep.MinimumSize;
+                                }
+
+                                if (DD.FreeSpace < SZLimit)
+                                {
+                                    bool ReportToAdmin = RepElementRoot.ReportToAdmin.Value;
+                                    bool ReportToClient = RepElementRoot.ReportToClient.Value;
+                                    bool UrgentForAdmin = RepElementRoot.UrgentForAdmin.Value;
+                                    bool UrgentForClient = RepElementRoot.UrgentForClient.Value;
+
+                                    if (AlreadyReported.ContainsKey(DD.DriveLetter) == true)
+                                    {
+                                        if ((AlreadyReported[DD.DriveLetter] & (Int64)ReportingFlags.ReportToAdmin) != 0)
+                                            ReportToAdmin = false;
+                                        if ((AlreadyReported[DD.DriveLetter] & (Int64)ReportingFlags.ReportToClient) != 0)
+                                            ReportToClient = false;
+                                        if ((AlreadyReported[DD.DriveLetter] & (Int64)ReportingFlags.UrgentForAdmin) != 0)
+                                            UrgentForAdmin = false;
+                                        if ((AlreadyReported[DD.DriveLetter] & (Int64)ReportingFlags.UrgentForClient) != 0)
+                                            UrgentForClient = false;
+                                    }
+
+                                    if (ReportToAdmin == false && ReportToClient == false && UrgentForAdmin == false && UrgentForClient == false)
+                                        continue;
+                                    ReportingFlags Flags = (ReportToAdmin == true ? ReportingFlags.ReportToAdmin : 0) |
+                                        (ReportToClient == true ? ReportingFlags.ReportToClient : 0) |
+                                        (UrgentForAdmin == true ? ReportingFlags.UrgentForAdmin : 0) |
+                                        (UrgentForClient == true ? ReportingFlags.UrgentForClient : 0);
+                                    ReportingProcessor.ReportDiskData(sql, DiskDataList.MachineID, DD.DriveLetter, SZLimit, DD.FreeSpace, DD.Capacity, Flags);
+                                    if (AlreadyReported.ContainsKey(DD.DriveLetter) == true)
+                                    {
+                                        AlreadyReported[DD.DriveLetter] |= (Int64)Flags;
+                                    }
+                                    else
+                                    {
+                                        AlreadyReported.Add(DD.DriveLetter, (Int64)Flags);
+                                    }
                                 }
                             }
                         }
@@ -231,17 +232,6 @@ namespace FoxSDC_Server
             catch (Exception ee)
             {
                 FoxEventLog.WriteEventLog("SEH in Disk Data Reporting " + ee.ToString(), System.Diagnostics.EventLogEntryType.Error);
-            }
-            finally
-            {
-                try
-                {
-                    sql.CloseConnection();
-                }
-                catch
-                {
-
-                }
             }
         }
 

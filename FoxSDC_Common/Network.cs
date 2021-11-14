@@ -1189,6 +1189,7 @@ namespace FoxSDC_Common
             return (resb);
         }
 
+#if ENABLECHAT
         public bool ReportChatMessage(string Name, string Message)
         {
             PushChatMessage message = new PushChatMessage();
@@ -1232,6 +1233,7 @@ namespace FoxSDC_Common
             bool resb = SendReq("api/reports/confirmchitchat/" + ID.ToString(), Verb.GET, out res, 300);
             return (resb);
         }
+#endif
 
         public FileUploadDataSigned File_Agent_GetFileData(Int64 ID)
         {

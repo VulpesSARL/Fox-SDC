@@ -521,7 +521,7 @@ namespace FoxSDC_Server
                 return (RESTStatus.ServerError);
             }
             sql = ni.sql;
-
+            
             ni.Permissions = 0;
             ni.Error = "";
             ni.ErrorID = ErrorFlags.NoError;

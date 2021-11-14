@@ -100,14 +100,14 @@ namespace FoxSDC_Server
             lock (ni.sqllock)
             {
                 res = sql.InsertMultiDataID("Policies",
-                    new SQLData("Type", request.Type),
-                    new SQLData("Name", request.Name),
-                    new SQLData("Grouping", request.Grouping),
-                    new SQLData("MachineID", request.MachineID),
-                    new SQLData("DataBlob", request.Data),
-                    new SQLData("DT", DateTime.Now),
-                    new SQLData("Version", 1),
-                    new SQLData("Enabled", 0));
+                new SQLData("Type", request.Type),
+                new SQLData("Name", request.Name),
+                new SQLData("Grouping", request.Grouping),
+                new SQLData("MachineID", request.MachineID),
+                new SQLData("DataBlob", request.Data),
+                new SQLData("DT", DateTime.Now),
+                new SQLData("Version", 1),
+                new SQLData("Enabled", 0));
             }
             if (res == null)
             {
@@ -249,11 +249,11 @@ namespace FoxSDC_Server
                     lock (ni.sqllock)
                     {
                         sql.ExecSQL("Update Policies SET Name=@n, Grouping=@g, MachineID=@m, DataBlob=@blob, DT=Getutcdate(), Version=Version+1 WHERE ID=@id",
-                            new SQLParam("@id", request.ID),
-                            new SQLParam("@n", request.Name),
-                            new SQLParam("@g", request.Grouping),
-                            new SQLParam("@m", request.MachineID),
-                            new SQLParam("@blob", request.Data));
+                        new SQLParam("@id", request.ID),
+                        new SQLParam("@n", request.Name),
+                        new SQLParam("@g", request.Grouping),
+                        new SQLParam("@m", request.MachineID),
+                        new SQLParam("@blob", request.Data));
                     }
                 }
                 else
@@ -261,8 +261,8 @@ namespace FoxSDC_Server
                     lock (ni.sqllock)
                     {
                         sql.ExecSQL("Update Policies SET DataBlob=@blob, DT=Getutcdate(), Version=Version+1 WHERE ID=@id",
-                            new SQLParam("@id", request.ID),
-                            new SQLParam("@blob", request.Data));
+                        new SQLParam("@id", request.ID),
+                        new SQLParam("@blob", request.Data));
                     }
                 }
             }
@@ -386,8 +386,8 @@ namespace FoxSDC_Server
             lock (ni.sqllock)
             {
                 sql.ExecSQL("UPDATE Policies SET Enabled=@en WHERE ID=@id",
-                new SQLParam("@id", id),
-                new SQLParam("@en", request.Enable));
+                    new SQLParam("@id", id),
+                    new SQLParam("@en", request.Enable));
             }
 
             return (RESTStatus.Success);
@@ -504,7 +504,7 @@ namespace FoxSDC_Server
             lock (ni.sqllock)
             {
                 SqlDataReader dr = sql.ExecSQLReader("SELECT * FROM Policies WHERE MachineID=@m AND Enabled=1 AND Type not in (" + PolicyIDs.HiddenPoliciesSQLINClause + ")",
-                    new SQLParam("@m", MachineID));
+                new SQLParam("@m", MachineID));
                 while (dr.Read())
                 {
                     PolicyObject obj = LoadPolicyDB(dr, false, true);
@@ -535,7 +535,7 @@ namespace FoxSDC_Server
                 lock (ni.sqllock)
                 {
                     SqlDataReader dr = sql.ExecSQLReader("SELECT * FROM Policies WHERE " + (GroupID == null ? "Grouping is NULL" : "Grouping=@g") + " AND Enabled=1 AND Type NOT IN (" + PolicyIDs.HiddenPoliciesSQLINClause + ")",
-                    new SQLParam("@g", GroupID));
+                new SQLParam("@g", GroupID));
                     while (dr.Read())
                     {
                         PolicyObject obj = LoadPolicyDB(dr, false, true);
@@ -606,7 +606,7 @@ namespace FoxSDC_Server
                         lock (ni.sqllock)
                         {
                             po.Data = Convert.ToString(sql.ExecSQLScalar("SELECT DataBlob FROM Policies WHERE ID=@id",
-                                new SQLParam("@id", po.ID)));
+                            new SQLParam("@id", po.ID)));
                         }
 
                         Int64 PolID;
@@ -636,7 +636,7 @@ namespace FoxSDC_Server
                         lock (ni.sqllock)
                         {
                             SqlDataReader dr = sql.ExecSQLReader("SELECT * FROM Policies WHERE ID=@id",
-                                new SQLParam("@id", PolID));
+                            new SQLParam("@id", PolID));
                             dr.Read();
                             po = LoadPolicyDB(dr, false, true);
                             dr.Close();

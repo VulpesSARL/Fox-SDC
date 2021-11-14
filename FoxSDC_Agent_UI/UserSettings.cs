@@ -52,8 +52,10 @@ namespace FoxSDC_Agent_UI
                 RegistryData.ChatAudible = chkAudibleAlert.Checked == true ? 3 : 0;
             else
                 RegistryData.ChatAudible = chkAudibleAlert.Checked == true ? 1 : 0;
+#if ENABLECHAT
             if (Program.Chat != null)
                 Program.Chat.UpdateAOT();
+#endif
             this.Close();
         }
 

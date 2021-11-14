@@ -183,6 +183,7 @@ namespace FoxSDC_Agent_UI
             }
         }
 
+#if ENABLECHAT
         static public PushChatMessage PopChatMessage()
         {
             try
@@ -254,6 +255,7 @@ namespace FoxSDC_Agent_UI
                 return (false);
             }
         }
+#endif
 
         static public string GetUCID()
         {

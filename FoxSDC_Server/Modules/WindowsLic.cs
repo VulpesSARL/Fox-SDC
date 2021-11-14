@@ -29,7 +29,7 @@ namespace FoxSDC_Server
             lock (ni.sqllock)
             {
                 if (Convert.ToInt32(sql.ExecSQLScalar("SELECT COUNT(*) FROM ComputerAccounts WHERE MachineID=@m",
-                new SQLParam("@m", WinLic.MachineID))) == 0)
+            new SQLParam("@m", WinLic.MachineID))) == 0)
                 {
                     ni.Error = "Invalid MachineID";
                     ni.ErrorID = ErrorFlags.InvalidValue;
@@ -40,7 +40,7 @@ namespace FoxSDC_Server
             lock (ni.sqllock)
             {
                 sql.ExecSQL("DELETE FROM WindowsLic WHERE MachineID=@m",
-                    new SQLParam("@m", WinLic.MachineID));
+                new SQLParam("@m", WinLic.MachineID));
             }
 
             if (NullTest.Test(WinLic) == false)
@@ -53,17 +53,17 @@ namespace FoxSDC_Server
             lock (ni.sqllock)
             {
                 sql.InsertMultiData("WindowsLic",
-                    new SQLData("MachineID", WinLic.MachineID),
-                    new SQLData("Name", WinLic.Name),
-                    new SQLData("Description", WinLic.Description),
-                    new SQLData("GracePeriodRemaining", WinLic.GracePeriodRemaining),
-                    new SQLData("PartialProductKey", WinLic.PartialProductKey),
-                    new SQLData("ProductKeyID", WinLic.ProductKeyID),
-                    new SQLData("ProductKeyID2", WinLic.ProductKeyID2),
-                    new SQLData("LicenseFamily", WinLic.LicenseFamily),
-                    new SQLData("ProductKeyChannel", WinLic.ProductKeyChannel),
-                    new SQLData("LicenseStatus", WinLic.LicenseStatus),
-                    new SQLData("LicenseStatusText", WinLic.LicenseStatusText));
+                new SQLData("MachineID", WinLic.MachineID),
+                new SQLData("Name", WinLic.Name),
+                new SQLData("Description", WinLic.Description),
+                new SQLData("GracePeriodRemaining", WinLic.GracePeriodRemaining),
+                new SQLData("PartialProductKey", WinLic.PartialProductKey),
+                new SQLData("ProductKeyID", WinLic.ProductKeyID),
+                new SQLData("ProductKeyID2", WinLic.ProductKeyID2),
+                new SQLData("LicenseFamily", WinLic.LicenseFamily),
+                new SQLData("ProductKeyChannel", WinLic.ProductKeyChannel),
+                new SQLData("LicenseStatus", WinLic.LicenseStatus),
+                new SQLData("LicenseStatusText", WinLic.LicenseStatusText));
             }
 
             return (RESTStatus.Success);
@@ -100,7 +100,7 @@ namespace FoxSDC_Server
             lock (ni.sqllock)
             {
                 SqlDataReader dr = sql.ExecSQLReader("SELECT * FROM WindowsLic WHERE MachineID=@m",
-                new SQLParam("@m", id));
+                    new SQLParam("@m", id));
                 if (dr.HasRows == false)
                 {
                     dr.Close();

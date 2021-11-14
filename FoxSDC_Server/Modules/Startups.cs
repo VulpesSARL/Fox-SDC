@@ -32,7 +32,7 @@ namespace FoxSDC_Server
             lock (ni.sqllock)
             {
                 if (Convert.ToInt32(sql.ExecSQLScalar("SELECT COUNT(*) FROM ComputerAccounts WHERE MachineID=@m",
-                    new SQLParam("@m", StartupList.MachineID))) == 0)
+                new SQLParam("@m", StartupList.MachineID))) == 0)
                 {
                     ni.Error = "Invalid MachineID";
                     ni.ErrorID = ErrorFlags.InvalidValue;
@@ -328,69 +328,71 @@ namespace FoxSDC_Server
 
         void ReportingThread(object StartupListO)
         {
-            SQLLib sql = SQLTest.ConnectSQL("Fox SDC Server for Startup Data");
-            if (sql == null)
-            {
-                FoxEventLog.WriteEventLog("Cannot connect to SQL Server for Startup Reporting!", System.Diagnostics.EventLogEntryType.Error);
-                return;
-            }
             try
             {
-                StartupLst StartupList = (StartupLst)StartupListO;
-                ComputerData computerdata = Computers.GetComputerDetail(sql, StartupList.MachineID);
-                if (computerdata == null)
+                using (SQLLib sql = SQLTest.ConnectSQL("Fox SDC Server for Startup Data"))
                 {
-                    FoxEventLog.WriteEventLog("Cannot get any computer data for Startup Reporting!", System.Diagnostics.EventLogEntryType.Error);
-                    return;
-                }
-
-                List<PolicyObject> Pol = Policies.GetPolicyForComputerInternal(sql, StartupList.MachineID);
-                Dictionary<string, Int64> AlreadyReported = new Dictionary<string, long>();
-                foreach (PolicyObject PolO in Pol)
-                {
-                    if (PolO.Type != PolicyIDs.ReportingPolicy)
-                        continue;
-                    ReportingPolicyElement RepElementRoot = JsonConvert.DeserializeObject<ReportingPolicyElement>(Policies.GetPolicy(sql, PolO.ID).Data);
-                    if (RepElementRoot.Type != ReportingPolicyType.Startup)
-                        continue;
-                    if (RepElementRoot.ReportToAdmin == null)
-                        RepElementRoot.ReportToAdmin = false;
-                    if (RepElementRoot.ReportToClient == null)
-                        RepElementRoot.ReportToClient = false;
-                    if (RepElementRoot.UrgentForAdmin == null)
-                        RepElementRoot.UrgentForAdmin = false;
-                    if (RepElementRoot.UrgentForClient == null)
-                        RepElementRoot.UrgentForClient = false;
-                    if (RepElementRoot.ReportToAdmin == false && RepElementRoot.ReportToClient == false && RepElementRoot.UrgentForAdmin == false && RepElementRoot.UrgentForClient == false)
-                        continue;
-
-                    foreach (string Element in RepElementRoot.ReportingElements)
+                    if (sql == null)
                     {
-                        ReportingPolicyElementStartup arprep = JsonConvert.DeserializeObject<ReportingPolicyElementStartup>(Element);
-                        if (arprep.NotifyOnAdd == false && arprep.NotifyOnRemove == false && arprep.NotifyOnUpdate == false)
+                        FoxEventLog.WriteEventLog("Cannot connect to SQL Server for Startup Reporting!", System.Diagnostics.EventLogEntryType.Error);
+                        return;
+                    }
+                    StartupLst StartupList = (StartupLst)StartupListO;
+                    ComputerData computerdata = Computers.GetComputerDetail(sql, StartupList.MachineID);
+                    if (computerdata == null)
+                    {
+                        FoxEventLog.WriteEventLog("Cannot get any computer data for Startup Reporting!", System.Diagnostics.EventLogEntryType.Error);
+                        return;
+                    }
+
+                    List<PolicyObject> Pol = Policies.GetPolicyForComputerInternal(sql, StartupList.MachineID);
+                    Dictionary<string, Int64> AlreadyReported = new Dictionary<string, long>();
+                    foreach (PolicyObject PolO in Pol)
+                    {
+                        if (PolO.Type != PolicyIDs.ReportingPolicy)
+                            continue;
+                        ReportingPolicyElement RepElementRoot = JsonConvert.DeserializeObject<ReportingPolicyElement>(Policies.GetPolicy(sql, PolO.ID).Data);
+                        if (RepElementRoot.Type != ReportingPolicyType.Startup)
+                            continue;
+                        if (RepElementRoot.ReportToAdmin == null)
+                            RepElementRoot.ReportToAdmin = false;
+                        if (RepElementRoot.ReportToClient == null)
+                            RepElementRoot.ReportToClient = false;
+                        if (RepElementRoot.UrgentForAdmin == null)
+                            RepElementRoot.UrgentForAdmin = false;
+                        if (RepElementRoot.UrgentForClient == null)
+                            RepElementRoot.UrgentForClient = false;
+                        if (RepElementRoot.ReportToAdmin == false && RepElementRoot.ReportToClient == false && RepElementRoot.UrgentForAdmin == false && RepElementRoot.UrgentForClient == false)
                             continue;
 
-                        if (arprep.NotifyOnAdd == true)
+                        foreach (string Element in RepElementRoot.ReportingElements)
                         {
-                            foreach (StartupItem ar in GetFilteredData(StartupList.Added, computerdata, arprep))
-                            {
-                                ReportThings(sql, StartupList.MachineID, "Add", ar, ref AlreadyReported, RepElementRoot);
-                            }
-                        }
+                            ReportingPolicyElementStartup arprep = JsonConvert.DeserializeObject<ReportingPolicyElementStartup>(Element);
+                            if (arprep.NotifyOnAdd == false && arprep.NotifyOnRemove == false && arprep.NotifyOnUpdate == false)
+                                continue;
 
-                        if (arprep.NotifyOnUpdate == true)
-                        {
-                            foreach (StartupItem ar in GetFilteredData(StartupList.Updated, computerdata, arprep))
+                            if (arprep.NotifyOnAdd == true)
                             {
-                                ReportThings(sql, StartupList.MachineID, "Update", ar, ref AlreadyReported, RepElementRoot);
+                                foreach (StartupItem ar in GetFilteredData(StartupList.Added, computerdata, arprep))
+                                {
+                                    ReportThings(sql, StartupList.MachineID, "Add", ar, ref AlreadyReported, RepElementRoot);
+                                }
                             }
-                        }
 
-                        if (arprep.NotifyOnRemove == true)
-                        {
-                            foreach (StartupItem ar in GetFilteredData(StartupList.Removed, computerdata, arprep))
+                            if (arprep.NotifyOnUpdate == true)
                             {
-                                ReportThings(sql, StartupList.MachineID, "Remove", ar, ref AlreadyReported, RepElementRoot);
+                                foreach (StartupItem ar in GetFilteredData(StartupList.Updated, computerdata, arprep))
+                                {
+                                    ReportThings(sql, StartupList.MachineID, "Update", ar, ref AlreadyReported, RepElementRoot);
+                                }
+                            }
+
+                            if (arprep.NotifyOnRemove == true)
+                            {
+                                foreach (StartupItem ar in GetFilteredData(StartupList.Removed, computerdata, arprep))
+                                {
+                                    ReportThings(sql, StartupList.MachineID, "Remove", ar, ref AlreadyReported, RepElementRoot);
+                                }
                             }
                         }
                     }
@@ -399,17 +401,6 @@ namespace FoxSDC_Server
             catch (Exception ee)
             {
                 FoxEventLog.WriteEventLog("SEH in Startup Reporting " + ee.ToString(), System.Diagnostics.EventLogEntryType.Error);
-            }
-            finally
-            {
-                try
-                {
-                    sql.CloseConnection();
-                }
-                catch
-                {
-
-                }
             }
         }
 

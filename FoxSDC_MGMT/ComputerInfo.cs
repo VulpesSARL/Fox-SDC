@@ -70,6 +70,10 @@ namespace FoxSDC_MGMT
 
             this.Text = "Computer information: " + data.Computername;
 
+#if !ENABLECHAT
+            tabControl1.TabPages.Remove(tabPage6);
+#endif
+
             AddTab(new ctlServices(MID), "Services");
             AddTab(new ctlEventLogs(MID), "Event Log");
             AddTab(new ctlAddRemovePrograms(MID), "Programs");
@@ -603,6 +607,7 @@ namespace FoxSDC_MGMT
             Utilities.ConnectToScreen(this, MID, Control.ModifierKeys == Keys.Control ? true : false);
         }
 
+#if ENABLECHAT
         void AppendText(PushChatMessage chat)
         {
             txtRecvText.Text += chat.DT.ToLocalTime().ToLongDateString() + " " + chat.DT.ToLocalTime().ToLongTimeString() +
@@ -640,7 +645,6 @@ namespace FoxSDC_MGMT
             txtSendText.Text = "";
         }
 
-        private void txtSendText_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Alt == false && e.Control == false && e.Shift == false && (e.KeyCode == Keys.Return || e.KeyCode == Keys.Enter))
             {
@@ -648,6 +652,17 @@ namespace FoxSDC_MGMT
                 e.Handled = true;
             }
         }
+#else
+        private void txtSendText_KeyDown(object sender, KeyEventArgs e)
+        { 
+        }
+        private void cmdSend_Click(object sender, EventArgs e)
+        {
+        }
+        private void timChat_Tick(object sender, EventArgs e)
+        {
+        }
+#endif
 
         private void cmdBootNext_Click(object sender, EventArgs e)
         {

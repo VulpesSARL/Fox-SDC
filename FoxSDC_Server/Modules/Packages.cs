@@ -54,7 +54,7 @@ namespace FoxSDC_Server
             lock (ni.sqllock)
             {
                 SqlDataReader dr = sql.ExecSQLReader("Select * FROM Packages WHERE ID=@id",
-                new SQLParam("@id", id));
+            new SQLParam("@id", id));
                 dr.Read();
 
                 PackageData = new PackageData();
@@ -89,7 +89,7 @@ namespace FoxSDC_Server
             lock (ni.sqllock)
             {
                 SqlDataReader dr = sql.ExecSQLReader("Select * FROM Packages WHERE ID=@id",
-                new SQLParam("@id", id));
+            new SQLParam("@id", id));
                 dr.Read();
 
                 pp = new PackageData();
@@ -168,12 +168,12 @@ namespace FoxSDC_Server
             lock (ni.sqllock)
             {
                 Filename = Convert.ToString(sql.ExecSQLScalar("SELECT Filename FROM Packages WHERE ID=@id",
-                new SQLParam("@id", id)));
+                    new SQLParam("@id", id)));
             }
             lock (ni.sqllock)
             {
                 MetaFilename = Convert.ToString(sql.ExecSQLScalar("SELECT MetaFilename FROM Packages WHERE ID=@id",
-                new SQLParam("@id", id)));
+                    new SQLParam("@id", id)));
             }
 
             CommonUtilities.SpecialDeleteFile(Settings.Default.DataPath + Filename);
@@ -229,7 +229,7 @@ namespace FoxSDC_Server
             lock (ni.sqllock)
             {
                 Filename = Convert.ToString(sql.ExecSQLScalar("SELECT Filename FROM Packages WHERE ID=@id",
-                    new SQLParam("@id", id)));
+                new SQLParam("@id", id)));
             }
 
             if (File.Exists(Settings.Default.DataPath + Filename) == false)

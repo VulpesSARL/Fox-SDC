@@ -55,9 +55,9 @@ namespace FoxSDC_Server.Modules
                 lock (ni.sqllock)
                 {
                     sql.InsertMultiData("UsersList",
-                            new SQLData("MachineID", users.MachineID),
-                            new SQLData("SID", kvp.Key),
-                            new SQLData("Username", kvp.Value));
+                        new SQLData("MachineID", users.MachineID),
+                        new SQLData("SID", kvp.Key),
+                        new SQLData("Username", kvp.Value));
                 }
             }
 

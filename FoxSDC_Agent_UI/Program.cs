@@ -14,7 +14,9 @@ namespace FoxSDC_Agent_UI
     {
         public static string AppTitle = VulpesBranding.AgentUITitle;
         public static MainDLG MainDLG = null;
+#if ENABLECHAT
         public static frmChat Chat = null;
+#endif
         public static frmNT3Icon NT3 = null;
 
         [STAThread]

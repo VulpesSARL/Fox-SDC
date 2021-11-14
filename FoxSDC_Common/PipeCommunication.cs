@@ -70,6 +70,7 @@ namespace FoxSDC_Common
         [OperationContract]
         string Ping();
 
+#if ENABLECHAT
         [OperationContract]
         PushChatMessage PopChatMessage();
 
@@ -78,6 +79,7 @@ namespace FoxSDC_Common
 
         [OperationContract]
         bool ConfirmChatMessage(Int64 ID);
+#endif
     }
 
     public class PipeCommunication : ClientBase<IPipeCommunication>
@@ -149,6 +151,7 @@ namespace FoxSDC_Common
             return (Channel.Ping());
         }
 
+#if ENABLECHAT
         public PushChatMessage PopChatMessage()
         {
             return (Channel.PopChatMessage());
@@ -163,5 +166,6 @@ namespace FoxSDC_Common
         {
             return (Channel.ConfirmChatMessage(ID));
         }
+#endif
     }
 }

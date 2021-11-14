@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+#if ENABLECHAT
+
 namespace FoxSDC_Server.Pushes
 {
     class Chat
@@ -38,12 +40,12 @@ namespace FoxSDC_Server.Pushes
             lock (ni.sqllock)
             {
                 Int64? ID = sql.InsertMultiDataID("Chats",
-                    new SQLData("MachineID", MachineID),
-                    new SQLData("DT", DateTime.UtcNow),
-                    new SQLData("Read", 0),
-                    new SQLData("ToClient", 0),
-                    new SQLData("Name", ni.Name),
-                    new SQLData("Text", ChatMessage.Text));
+                new SQLData("MachineID", MachineID),
+                new SQLData("DT", DateTime.UtcNow),
+                new SQLData("Read", 0),
+                new SQLData("ToClient", 0),
+                new SQLData("Name", ni.Name),
+                new SQLData("Text", ChatMessage.Text));
             }
             return (RESTStatus.Success);
         }
@@ -66,7 +68,7 @@ namespace FoxSDC_Server.Pushes
             lock (ni.sqllock)
             {
                 SqlDataReader dr = sql.ExecSQLReader("select * from Chats where [Read]=0 AND MachineID=@m AND ToClient=1 ORDER BY DT ASC",
-                    new SQLParam("@m", MachineID));
+                new SQLParam("@m", MachineID));
                 while (dr.Read())
                 {
                     PushChatMessage pch = new PushChatMessage();
@@ -96,8 +98,8 @@ namespace FoxSDC_Server.Pushes
             lock (ni.sqllock)
             {
                 sql.ExecSQL("UPDATE Chats SET [Read]=1 WHERE MachineID=@m AND ID=@id",
-                    new SQLParam("@m", MachineID),
-                    new SQLParam("@id", ID));
+                new SQLParam("@m", MachineID),
+                new SQLParam("@id", ID));
             }
             return (RESTStatus.Success);
         }
@@ -148,7 +150,7 @@ namespace FoxSDC_Server.Pushes
             lock (ni.sqllock)
             {
                 SqlDataReader dr = sql.ExecSQLReader("select * from Chats where [Read]=0 AND MachineID=@m AND ToClient=0 ORDER BY DT ASC",
-                new SQLParam("@m", MachineID));
+            new SQLParam("@m", MachineID));
                 while (dr.Read())
                 {
                     IDs.Add(Convert.ToInt64(dr["ID"]));
@@ -162,12 +164,12 @@ namespace FoxSDC_Server.Pushes
                 dr.Close();
             }
 
-            foreach(Int64 id in IDs)
-            {
+            foreach (Int64 id in IDs)
+                    {
                 lock (ni.sqllock)
                 {
                     sql.ExecSQL("UPDATE Chats SET [Read]=1 WHERE ID=@id",
-                        new SQLParam("@id", id));
+                    new SQLParam("@id", id));
                 }
             }
 
@@ -191,12 +193,12 @@ namespace FoxSDC_Server.Pushes
             lock (ni.sqllock)
             {
                 ID = sql.InsertMultiDataID("Chats",
-                    new SQLData("MachineID", MachineID),
-                    new SQLData("DT", DateTime.UtcNow),
-                    new SQLData("Read", 0),
-                    new SQLData("ToClient", 1),
-                    new SQLData("Name", ni.Name),
-                    new SQLData("Text", ChatMessage.Text));
+                new SQLData("MachineID", MachineID),
+                new SQLData("DT", DateTime.UtcNow),
+                new SQLData("Read", 0),
+                new SQLData("ToClient", 1),
+                new SQLData("Name", ni.Name),
+                new SQLData("Text", ChatMessage.Text));
             }
             if (ID != null)
                 ChatMessage.ID = ID.Value;
@@ -234,3 +236,5 @@ namespace FoxSDC_Server.Pushes
         }
     }
 }
+
+#endif

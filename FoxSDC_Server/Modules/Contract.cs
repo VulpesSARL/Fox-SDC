@@ -48,7 +48,7 @@ namespace FoxSDC_Server.Modules
                 lock (ni.sqllock)
                 {
                     SqlDataReader dr = sql.ExecSQLReader("select MachineID from ComputerAccounts where ContractID=@c",
-                    new SQLParam("@c", i.ContractID));
+                        new SQLParam("@c", i.ContractID));
                     while (dr.Read())
                     {
                         Machines.Add(Convert.ToString(dr["MachineID"]));

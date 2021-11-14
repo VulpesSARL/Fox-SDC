@@ -45,7 +45,9 @@ namespace FoxSDC_MGMT
             treeAction.Nodes.Add("alldiskdata", "All disk status", 7, 7);
             treeAction.Nodes.Add("alleventlogs", "All Event logs", 11, 11);
             treeAction.Nodes.Add("allstartup", "Startup Elements", 22, 22);
+#if ENABLECHAT
             treeAction.Nodes.Add("pendingchats", "Pending chats", 16, 16);
+#endif
             treeAction.Nodes.Add("uploaddownload", "Uploads / Downloads", 21, 21);
             treeAction.Nodes.Add("simpletasks", "Simple Tasks", 23, 23);
             GroupFolders.CreateRootFolder(treeAction);
@@ -125,6 +127,7 @@ namespace FoxSDC_MGMT
                         Splitty.Panel2.Controls.Add(ctl);
                         break;
                     }
+#if ENABLECHAT
                 case "pendingchats":
                     {
                         ctlPendingChats ctl = new ctlPendingChats();
@@ -132,6 +135,7 @@ namespace FoxSDC_MGMT
                         Splitty.Panel2.Controls.Add(ctl);
                         break;
                     }
+#endif
                 case "uploaddownload":
                     {
                         ctlUploadDownloadStatus ctl = new ctlUploadDownloadStatus();

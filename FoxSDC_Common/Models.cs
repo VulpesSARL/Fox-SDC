@@ -116,7 +116,6 @@ namespace FoxSDC_Common
     public class ServerInfo
     {
         public string Name;
-        public bool InitSuccess;
         public int ProtocolVersion;
         public Int64 Permissions;
         public string ServerVersion;

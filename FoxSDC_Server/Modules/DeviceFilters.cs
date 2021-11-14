@@ -32,7 +32,7 @@ namespace FoxSDC_Server
             lock (ni.sqllock)
             {
                 if (Convert.ToInt32(sql.ExecSQLScalar("SELECT COUNT(*) FROM ComputerAccounts WHERE MachineID=@m",
-              new SQLParam("@m", devices.MachineID))) == 0)
+                    new SQLParam("@m", devices.MachineID))) == 0)
                 {
                     ni.Error = "Invalid MachineID";
                     ni.ErrorID = ErrorFlags.InvalidValue;
@@ -55,11 +55,11 @@ namespace FoxSDC_Server
                 lock (ni.sqllock)
                 {
                     sql.InsertMultiData("DevicesFilter",
-                        new SQLData("MachineID", devices.MachineID),
-                        new SQLData("Index", Counter),
-                        new SQLData("ClassGUID", flt.ClassGUID),
-                        new SQLData("ServiceName", flt.ServiceName),
-                        new SQLData("Type", flt.Type));
+                    new SQLData("MachineID", devices.MachineID),
+                    new SQLData("Index", Counter),
+                    new SQLData("ClassGUID", flt.ClassGUID),
+                    new SQLData("ServiceName", flt.ServiceName),
+                    new SQLData("Type", flt.Type));
                 }
                 Counter++;
             }

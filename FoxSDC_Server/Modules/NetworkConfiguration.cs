@@ -46,7 +46,7 @@ namespace FoxSDC_Server.Modules
             lock (ni.sqllock)
             {
                 if (Convert.ToInt32(sql.ExecSQLScalar("SELECT COUNT(*) FROM ComputerAccounts WHERE MachineID=@m",
-                    new SQLParam("@m", netadapters.MachineID))) == 0)
+                new SQLParam("@m", netadapters.MachineID))) == 0)
                 {
                     ni.Error = "Invalid MachineID";
                     ni.ErrorID = ErrorFlags.InvalidValue;
@@ -74,25 +74,25 @@ namespace FoxSDC_Server.Modules
                 lock (ni.sqllock)
                 {
                     sql.InsertMultiData("NetworkConfig",
-                        new SQLData("MachineID", netadapters.MachineID),
-                        new SQLData("InterfaceIndex", ncfg.InterfaceIndex),
-                        new SQLData("IPEnabled", ncfg.IPEnabled),
-                        new SQLData("MACAddress", ncfg.MACAddress == null ? "" : ncfg.MACAddress.Trim()),
-                        new SQLData("ServiceName", ncfg.ServiceName == null ? "" : ncfg.ServiceName.Trim()),
-                        new SQLData("SettingsID", ncfg.SettingsID == null ? "" : ncfg.SettingsID.Trim()),
-                        new SQLData("Description", ncfg.Description == null ? "" : ncfg.Description.Trim()),
-                        new SQLData("DHCPEnabled", ncfg.DHCPEnabled),
-                        new SQLData("DHCPServer", ncfg.DHCPServer == null ? "" : ncfg.DHCPServer.Trim()),
-                        new SQLData("DNSDomain", ncfg.DNSDomain == null ? "" : ncfg.DNSDomain.Trim()),
-                        new SQLData("DNSHostName", ncfg.DNSHostName == null ? "" : ncfg.DNSHostName.Trim()),
-                        new SQLData("Caption", ncfg.Caption == null ? "" : ncfg.Caption.Trim()),
-                        new SQLData("DHCPLeaseExpires", ncfg.DHCPLeaseExpires),
-                        new SQLData("DHCPLeaseObtained", ncfg.DHCPLeaseObtained),
-                        new SQLData("WINSEnableLMHostsLookup", ncfg.WINSEnableLMHostsLookup),
-                        new SQLData("WINSHostLookupFile", ncfg.WINSHostLookupFile == null ? "" : ncfg.WINSHostLookupFile.Trim()),
-                        new SQLData("WINSPrimaryServer", ncfg.WINSPrimaryServer == null ? "" : ncfg.WINSPrimaryServer.Trim()),
-                        new SQLData("WINSSecondaryServer", ncfg.WINSSecondaryServer == null ? "" : ncfg.WINSSecondaryServer.Trim()),
-                        new SQLData("WINSScopeID", ncfg.WINSScopeID == null ? "" : ncfg.WINSScopeID.Trim()));
+                    new SQLData("MachineID", netadapters.MachineID),
+                    new SQLData("InterfaceIndex", ncfg.InterfaceIndex),
+                    new SQLData("IPEnabled", ncfg.IPEnabled),
+                    new SQLData("MACAddress", ncfg.MACAddress == null ? "" : ncfg.MACAddress.Trim()),
+                    new SQLData("ServiceName", ncfg.ServiceName == null ? "" : ncfg.ServiceName.Trim()),
+                    new SQLData("SettingsID", ncfg.SettingsID == null ? "" : ncfg.SettingsID.Trim()),
+                    new SQLData("Description", ncfg.Description == null ? "" : ncfg.Description.Trim()),
+                    new SQLData("DHCPEnabled", ncfg.DHCPEnabled),
+                    new SQLData("DHCPServer", ncfg.DHCPServer == null ? "" : ncfg.DHCPServer.Trim()),
+                    new SQLData("DNSDomain", ncfg.DNSDomain == null ? "" : ncfg.DNSDomain.Trim()),
+                    new SQLData("DNSHostName", ncfg.DNSHostName == null ? "" : ncfg.DNSHostName.Trim()),
+                    new SQLData("Caption", ncfg.Caption == null ? "" : ncfg.Caption.Trim()),
+                    new SQLData("DHCPLeaseExpires", ncfg.DHCPLeaseExpires),
+                    new SQLData("DHCPLeaseObtained", ncfg.DHCPLeaseObtained),
+                    new SQLData("WINSEnableLMHostsLookup", ncfg.WINSEnableLMHostsLookup),
+                    new SQLData("WINSHostLookupFile", ncfg.WINSHostLookupFile == null ? "" : ncfg.WINSHostLookupFile.Trim()),
+                    new SQLData("WINSPrimaryServer", ncfg.WINSPrimaryServer == null ? "" : ncfg.WINSPrimaryServer.Trim()),
+                    new SQLData("WINSSecondaryServer", ncfg.WINSSecondaryServer == null ? "" : ncfg.WINSSecondaryServer.Trim()),
+                    new SQLData("WINSScopeID", ncfg.WINSScopeID == null ? "" : ncfg.WINSScopeID.Trim()));
                 }
 
                 if (ncfg.IPAddress == null)
@@ -181,8 +181,8 @@ namespace FoxSDC_Server.Modules
                 lock (ni.sqllock)
                 {
                     SqlDataReader dr = sql.ExecSQLReader("select * from NetworkConfigSuppl WHERE MachineID=@mid AND InterfaceIndex=@i order by Type,[Order]",
-                    new SQLParam("@mid", id),
-                    new SQLParam("@i", n.InterfaceIndex));
+                new SQLParam("@mid", id),
+                new SQLParam("@i", n.InterfaceIndex));
                     while (dr.Read())
                     {
                         switch (Convert.ToInt32(dr["Type"]))

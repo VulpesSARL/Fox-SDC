@@ -31,12 +31,12 @@ namespace FoxSDC_Server
                 ni.EMail = "";
             }
 
-            ni.sql = SQLTest.ConnectSQL("Fox SDC Server for " + ni.ID);
+            SQLLib sql = SQLTest.ConnectSQL("Fox SDC Server for " + ni.ID);
+            ni.sql = sql;
             ni.sql.SEHError = true;
-            ni.ServerInfo.InitSuccess = ni.sql == null ? false : true;
 
             ni.Inited = true;
-            ni.ServerInfo.ServerGUID = Convert.ToString(ni.sql.ExecSQLScalar("SELECT [Value] from Config WHERE [Key]='GUID'"));
+            ni.ServerInfo.ServerGUID = Convert.ToString(sql.ExecSQLScalar("SELECT [Value] from Config WHERE [Key]='GUID'"));
 
             ni.ServerInfo.SQLServer = "N/A";
             ni.ServerInfo.SQLService = "N/A";
@@ -63,13 +63,13 @@ namespace FoxSDC_Server
 
             if (Settings.Default.CensorSQLInformations == false)
             {
-                ni.ServerInfo.SQLServer = Convert.ToString(ni.sql.ExecSQLScalar("select @@SERVERNAME"));
-                ni.ServerInfo.SQLService = Convert.ToString(ni.sql.ExecSQLScalar("select @@SERVICENAME"));
-                ni.ServerInfo.SQLCollation = Convert.ToString(ni.sql.ExecSQLScalar("select SERVERPROPERTY ('Collation')"));
-                ni.ServerInfo.SQLEdition = Convert.ToString(ni.sql.ExecSQLScalar("select SERVERPROPERTY ('edition')"));
-                ni.ServerInfo.SQLProductVersion = Convert.ToString(ni.sql.ExecSQLScalar("SELECT SERVERPROPERTY('productversion')"));
-                ni.ServerInfo.SQLProductLevel = Convert.ToString(ni.sql.ExecSQLScalar("select SERVERPROPERTY ('productlevel')"));
-                ni.ServerInfo.SQLProductName = Convert.ToString(ni.sql.ExecSQLScalar("SELECT LEFT(@@version, CHARINDEX(' - ', @@version))"));
+                ni.ServerInfo.SQLServer = Convert.ToString(sql.ExecSQLScalar("select @@SERVERNAME"));
+                ni.ServerInfo.SQLService = Convert.ToString(sql.ExecSQLScalar("select @@SERVICENAME"));
+                ni.ServerInfo.SQLCollation = Convert.ToString(sql.ExecSQLScalar("select SERVERPROPERTY ('Collation')"));
+                ni.ServerInfo.SQLEdition = Convert.ToString(sql.ExecSQLScalar("select SERVERPROPERTY ('edition')"));
+                ni.ServerInfo.SQLProductVersion = Convert.ToString(sql.ExecSQLScalar("SELECT SERVERPROPERTY('productversion')"));
+                ni.ServerInfo.SQLProductLevel = Convert.ToString(sql.ExecSQLScalar("select SERVERPROPERTY ('productlevel')"));
+                ni.ServerInfo.SQLProductName = Convert.ToString(sql.ExecSQLScalar("SELECT LEFT(@@version, CHARINDEX(' - ', @@version))"));
             }
 
             if (Settings.Default.CensorLicInformations == false)
@@ -114,7 +114,7 @@ namespace FoxSDC_Server
             try
             {
                 if (ni.sql != null)
-                    ni.sql.CloseConnection();
+                    ni.sql.Dispose();
             }
             catch
             {

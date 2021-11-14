@@ -82,7 +82,7 @@ namespace FoxSDC_Server
             lock (ni.sqllock)
             {
                 if (Convert.ToInt32(sql.ExecSQLScalar("SELECT COUNT(*) FROM ComputerAccounts WHERE MachineID=@m",
-                    new SQLParam("@m", SMART.MachineID))) == 0)
+                new SQLParam("@m", SMART.MachineID))) == 0)
                 {
                     ni.Error = "Invalid MachineID";
                     ni.ErrorID = ErrorFlags.InvalidValue;
@@ -157,18 +157,18 @@ namespace FoxSDC_Server
                 lock (ni.sqllock)
                 {
                     sql.InsertMultiData("SMARTData",
-                        new SQLData("MachineID", SMART.MachineID),
-                        new SQLData("PNPDeviceID", SMARTDevice.PNPDeviceID == null ? "" : SMARTDevice.PNPDeviceID),
-                        new SQLData("Caption", SMARTDevice.Caption == null ? "" : SMARTDevice.Caption),
-                        new SQLData("FirmwareRevision", SMARTDevice.FirmwareRevision == null ? "" : SMARTDevice.FirmwareRevision),
-                        new SQLData("InterfaceType", SMARTDevice.InterfaceType == null ? "" : SMARTDevice.InterfaceType),
-                        new SQLData("Model", SMARTDevice.Model == null ? "" : SMARTDevice.Model),
-                        new SQLData("Name", SMARTDevice.Name == null ? "" : SMARTDevice.Name),
-                        new SQLData("PredictFailure", SMARTDevice.PredictFailure),
-                        new SQLData("SerialNumber", SMARTDevice.SerialNumber == null ? "" : SMARTDevice.SerialNumber),
-                        new SQLData("Size", SMARTDevice.Size),
-                        new SQLData("Status", SMARTDevice.Status == null ? "" : SMARTDevice.Status),
-                        new SQLData("DT", DateTime.UtcNow));
+                    new SQLData("MachineID", SMART.MachineID),
+                    new SQLData("PNPDeviceID", SMARTDevice.PNPDeviceID == null ? "" : SMARTDevice.PNPDeviceID),
+                    new SQLData("Caption", SMARTDevice.Caption == null ? "" : SMARTDevice.Caption),
+                    new SQLData("FirmwareRevision", SMARTDevice.FirmwareRevision == null ? "" : SMARTDevice.FirmwareRevision),
+                    new SQLData("InterfaceType", SMARTDevice.InterfaceType == null ? "" : SMARTDevice.InterfaceType),
+                    new SQLData("Model", SMARTDevice.Model == null ? "" : SMARTDevice.Model),
+                    new SQLData("Name", SMARTDevice.Name == null ? "" : SMARTDevice.Name),
+                    new SQLData("PredictFailure", SMARTDevice.PredictFailure),
+                    new SQLData("SerialNumber", SMARTDevice.SerialNumber == null ? "" : SMARTDevice.SerialNumber),
+                    new SQLData("Size", SMARTDevice.Size),
+                    new SQLData("Status", SMARTDevice.Status == null ? "" : SMARTDevice.Status),
+                    new SQLData("DT", DateTime.UtcNow));
 
                     if (SMARTDevice.VendorSpecific != null)
                         sql.ExecSQL("UPDATE SMARTData SET VendorSpecific=@v WHERE MachineID=@id AND PNPDeviceID=@pnp",
@@ -212,8 +212,8 @@ namespace FoxSDC_Server
                 lock (ni.sqllock)
                 {
                     sql.ExecSQL("DELETE FROM SMARTDataAttributes WHERE MachineID=@id AND PNPDeviceID=@pnp",
-                        new SQLParam("@id", SMART.MachineID),
-                        new SQLParam("@pnp", SMARTDevice.PNPDeviceID));
+                    new SQLParam("@id", SMART.MachineID),
+                    new SQLParam("@pnp", SMARTDevice.PNPDeviceID));
                     sql.ExecSQL("DELETE FROM SMARTData WHERE MachineID=@id AND PNPDeviceID=@pnp",
                         new SQLParam("@id", SMART.MachineID),
                         new SQLParam("@pnp", SMARTDevice.PNPDeviceID));
@@ -228,8 +228,8 @@ namespace FoxSDC_Server
                 lock (ni.sqllock)
                 {
                     sql.ExecSQL("DELETE FROM SMARTDataAttributes WHERE MachineID=@id AND PNPDeviceID=@pnp",
-                        new SQLParam("@id", SMART.MachineID),
-                        new SQLParam("@pnp", SMARTDevice.PNPDeviceID));
+                    new SQLParam("@id", SMART.MachineID),
+                    new SQLParam("@pnp", SMARTDevice.PNPDeviceID));
                     sql.ExecSQL("DELETE FROM SMARTData WHERE MachineID=@id AND PNPDeviceID=@pnp",
                         new SQLParam("@id", SMART.MachineID),
                         new SQLParam("@pnp", SMARTDevice.PNPDeviceID));
@@ -237,18 +237,18 @@ namespace FoxSDC_Server
                 lock (ni.sqllock)
                 {
                     sql.InsertMultiData("SMARTData",
-                      new SQLData("MachineID", SMART.MachineID),
-                      new SQLData("PNPDeviceID", SMARTDevice.PNPDeviceID),
-                      new SQLData("Caption", SMARTDevice.Caption == null ? "" : SMARTDevice.Caption),
-                      new SQLData("FirmwareRevision", SMARTDevice.FirmwareRevision == null ? "" : SMARTDevice.FirmwareRevision),
-                      new SQLData("InterfaceType", SMARTDevice.InterfaceType == null ? "" : SMARTDevice.InterfaceType),
-                      new SQLData("Model", SMARTDevice.Model == null ? "" : SMARTDevice.Model),
-                      new SQLData("Name", SMARTDevice.Name == null ? "" : SMARTDevice.Name),
-                      new SQLData("PredictFailure", SMARTDevice.PredictFailure),
-                      new SQLData("SerialNumber", SMARTDevice.SerialNumber == null ? "" : SMARTDevice.SerialNumber),
-                      new SQLData("Size", SMARTDevice.Size),
-                      new SQLData("Status", SMARTDevice.Status == null ? "" : SMARTDevice.Status),
-                      new SQLData("DT", DateTime.UtcNow));
+                  new SQLData("MachineID", SMART.MachineID),
+                  new SQLData("PNPDeviceID", SMARTDevice.PNPDeviceID),
+                  new SQLData("Caption", SMARTDevice.Caption == null ? "" : SMARTDevice.Caption),
+                  new SQLData("FirmwareRevision", SMARTDevice.FirmwareRevision == null ? "" : SMARTDevice.FirmwareRevision),
+                  new SQLData("InterfaceType", SMARTDevice.InterfaceType == null ? "" : SMARTDevice.InterfaceType),
+                  new SQLData("Model", SMARTDevice.Model == null ? "" : SMARTDevice.Model),
+                  new SQLData("Name", SMARTDevice.Name == null ? "" : SMARTDevice.Name),
+                  new SQLData("PredictFailure", SMARTDevice.PredictFailure),
+                  new SQLData("SerialNumber", SMARTDevice.SerialNumber == null ? "" : SMARTDevice.SerialNumber),
+                  new SQLData("Size", SMARTDevice.Size),
+                  new SQLData("Status", SMARTDevice.Status == null ? "" : SMARTDevice.Status),
+                  new SQLData("DT", DateTime.UtcNow));
 
                     if (SMARTDevice.VendorSpecific != null)
                         sql.ExecSQL("UPDATE SMARTData SET VendorSpecific=@v WHERE MachineID=@id AND PNPDeviceID=@pnp",
@@ -355,119 +355,121 @@ namespace FoxSDC_Server
 
         void ReportingThread(object SmartDataListO)
         {
-            SQLLib sql = SQLTest.ConnectSQL("Fox SDC Server for SMART Device Data");
-            if (sql == null)
-            {
-                FoxEventLog.WriteEventLog("Cannot connect to SQL Server for SMART Device Reporting!", System.Diagnostics.EventLogEntryType.Error);
-                return;
-            }
             try
             {
-                SmartDataLst SmartDataList = (SmartDataLst)SmartDataListO;
-                ComputerData computerdata = Computers.GetComputerDetail(sql, SmartDataList.MachineID);
-                if (computerdata == null)
+                using (SQLLib sql = SQLTest.ConnectSQL("Fox SDC Server for SMART Device Data"))
                 {
-                    FoxEventLog.WriteEventLog("Cannot get any computer data for SMART Device Reporting!", System.Diagnostics.EventLogEntryType.Error);
-                    return;
-                }
-
-                List<PolicyObject> Pol = Policies.GetPolicyForComputerInternal(sql, SmartDataList.MachineID);
-                Dictionary<string, Int64> AlreadyReported = new Dictionary<string, long>();
-                foreach (PolicyObject PolO in Pol)
-                {
-                    if (PolO.Type != PolicyIDs.ReportingPolicy)
-                        continue;
-                    ReportingPolicyElement RepElementRoot = JsonConvert.DeserializeObject<ReportingPolicyElement>(Policies.GetPolicy(sql, PolO.ID).Data);
-                    if (RepElementRoot.Type != ReportingPolicyType.SMART)
-                        continue;
-                    if (RepElementRoot.ReportToAdmin == null)
-                        RepElementRoot.ReportToAdmin = false;
-                    if (RepElementRoot.ReportToClient == null)
-                        RepElementRoot.ReportToClient = false;
-                    if (RepElementRoot.UrgentForAdmin == null)
-                        RepElementRoot.UrgentForAdmin = false;
-                    if (RepElementRoot.UrgentForClient == null)
-                        RepElementRoot.UrgentForClient = false;
-                    if (RepElementRoot.ReportToAdmin == false && RepElementRoot.ReportToClient == false && RepElementRoot.UrgentForAdmin == false &&
-                        RepElementRoot.UrgentForClient == false)
-                        continue;
-
-                    foreach (string Element in RepElementRoot.ReportingElements)
+                    if (sql == null)
                     {
-                        ReportingPolicyElementSMART arprep = JsonConvert.DeserializeObject<ReportingPolicyElementSMART>(Element);
-                        if (arprep.NotifyOnAdd == false && arprep.NotifyOnRemove == false && arprep.NotifyOnUpdate == false &&
-                            arprep.NotifyOnError == false)
+                        FoxEventLog.WriteEventLog("Cannot connect to SQL Server for SMART Device Reporting!", System.Diagnostics.EventLogEntryType.Error);
+                        return;
+                    }
+                    SmartDataLst SmartDataList = (SmartDataLst)SmartDataListO;
+                    ComputerData computerdata = Computers.GetComputerDetail(sql, SmartDataList.MachineID);
+                    if (computerdata == null)
+                    {
+                        FoxEventLog.WriteEventLog("Cannot get any computer data for SMART Device Reporting!", System.Diagnostics.EventLogEntryType.Error);
+                        return;
+                    }
+
+                    List<PolicyObject> Pol = Policies.GetPolicyForComputerInternal(sql, SmartDataList.MachineID);
+                    Dictionary<string, Int64> AlreadyReported = new Dictionary<string, long>();
+                    foreach (PolicyObject PolO in Pol)
+                    {
+                        if (PolO.Type != PolicyIDs.ReportingPolicy)
+                            continue;
+                        ReportingPolicyElement RepElementRoot = JsonConvert.DeserializeObject<ReportingPolicyElement>(Policies.GetPolicy(sql, PolO.ID).Data);
+                        if (RepElementRoot.Type != ReportingPolicyType.SMART)
+                            continue;
+                        if (RepElementRoot.ReportToAdmin == null)
+                            RepElementRoot.ReportToAdmin = false;
+                        if (RepElementRoot.ReportToClient == null)
+                            RepElementRoot.ReportToClient = false;
+                        if (RepElementRoot.UrgentForAdmin == null)
+                            RepElementRoot.UrgentForAdmin = false;
+                        if (RepElementRoot.UrgentForClient == null)
+                            RepElementRoot.UrgentForClient = false;
+                        if (RepElementRoot.ReportToAdmin == false && RepElementRoot.ReportToClient == false && RepElementRoot.UrgentForAdmin == false &&
+                            RepElementRoot.UrgentForClient == false)
                             continue;
 
-                        if (arprep.NotifyOnAdd == true)
+                        foreach (string Element in RepElementRoot.ReportingElements)
                         {
-                            foreach (VulpesSMARTInfo ar in SmartDataList.Added)
-                                ReportThings(sql, SmartDataList.MachineID, "Add", ar, ref AlreadyReported, RepElementRoot);
-                        }
+                            ReportingPolicyElementSMART arprep = JsonConvert.DeserializeObject<ReportingPolicyElementSMART>(Element);
+                            if (arprep.NotifyOnAdd == false && arprep.NotifyOnRemove == false && arprep.NotifyOnUpdate == false &&
+                                arprep.NotifyOnError == false)
+                                continue;
 
-                        if (arprep.NotifyOnUpdate == true)
-                        {
-                            foreach (VulpesSMARTInfo ar in SmartDataList.Updated)
+                            if (arprep.NotifyOnAdd == true)
                             {
-                                foreach (VulpesSMARTInfo indbvsm in SmartDataList.InDB)
-                                {
-                                    if (indbvsm.PNPDeviceID == ar.PNPDeviceID)
-                                    {
-                                        if (SMARTDescription.CompareFull(ar, indbvsm, arprep.SkipAttribUpdateReport) == false)
-                                        {
-                                            if (indbvsm.Attributes != null)
-                                            {
-                                                List<int> UpdatedAttribs = new List<int>();
-                                                if (ar.Attributes == null)
-                                                    ar.Attributes = new Dictionary<int, VulpesSMARTAttribute>();
-                                                foreach (KeyValuePair<int, VulpesSMARTAttribute> indb in indbvsm.Attributes)
-                                                {
-                                                    if (ar.Attributes.ContainsKey(indb.Key) == true)
-                                                    {
-                                                        if (ar.Attributes[indb.Key].FailureImminent != indb.Value.FailureImminent ||
-                                                            ar.Attributes[indb.Key].Flags != indb.Value.Flags ||
-                                                            ar.Attributes[indb.Key].ID != indb.Value.ID ||
-                                                            ar.Attributes[indb.Key].Threshold != indb.Value.Threshold ||
-                                                            ar.Attributes[indb.Key].Value != indb.Value.Value ||
-                                                            ar.Attributes[indb.Key].Vendordata != indb.Value.Vendordata ||
-                                                            ar.Attributes[indb.Key].Worst != indb.Value.Worst)
-                                                            UpdatedAttribs.Add(indb.Key);
-                                                    }
-                                                }
-                                                ReportThings(sql, SmartDataList.MachineID, "Update", ar, ref AlreadyReported, RepElementRoot, UpdatedAttribs);
-                                            }
-                                        }
-                                    }
-                                }
+                                foreach (VulpesSMARTInfo ar in SmartDataList.Added)
+                                    ReportThings(sql, SmartDataList.MachineID, "Add", ar, ref AlreadyReported, RepElementRoot);
                             }
-                        }
 
-                        if (arprep.NotifyOnRemove == true)
-                        {
-                            foreach (VulpesSMARTInfo ar in SmartDataList.Removed)
-                                ReportThings(sql, SmartDataList.MachineID, "Remove", ar, ref AlreadyReported, RepElementRoot);
-                        }
-
-                        if (arprep.NotifyOnError == true)
-                        {
-                            foreach (VulpesSMARTInfo ar in SmartDataList.Added)
+                            if (arprep.NotifyOnUpdate == true)
                             {
-                                if (SMARTDescription.IsInError(ar) == true)
-                                    ReportThings(sql, SmartDataList.MachineID, "Error", ar, ref AlreadyReported, RepElementRoot);
-                            }
-                            foreach (VulpesSMARTInfo ar in SmartDataList.Updated)
-                            {
-                                if (SMARTDescription.IsInError(ar) == true)
+                                foreach (VulpesSMARTInfo ar in SmartDataList.Updated)
                                 {
                                     foreach (VulpesSMARTInfo indbvsm in SmartDataList.InDB)
                                     {
                                         if (indbvsm.PNPDeviceID == ar.PNPDeviceID)
                                         {
-                                            if (SMARTDescription.CompareFullCriticalOnly(indbvsm, ar) == false)
+                                            if (SMARTDescription.CompareFull(ar, indbvsm, arprep.SkipAttribUpdateReport) == false)
                                             {
-                                                ReportThings(sql, SmartDataList.MachineID, "Error", ar, ref AlreadyReported, RepElementRoot);
+                                                if (indbvsm.Attributes != null)
+                                                {
+                                                    List<int> UpdatedAttribs = new List<int>();
+                                                    if (ar.Attributes == null)
+                                                        ar.Attributes = new Dictionary<int, VulpesSMARTAttribute>();
+                                                    foreach (KeyValuePair<int, VulpesSMARTAttribute> indb in indbvsm.Attributes)
+                                                    {
+                                                        if (ar.Attributes.ContainsKey(indb.Key) == true)
+                                                        {
+                                                            if (ar.Attributes[indb.Key].FailureImminent != indb.Value.FailureImminent ||
+                                                                ar.Attributes[indb.Key].Flags != indb.Value.Flags ||
+                                                                ar.Attributes[indb.Key].ID != indb.Value.ID ||
+                                                                ar.Attributes[indb.Key].Threshold != indb.Value.Threshold ||
+                                                                ar.Attributes[indb.Key].Value != indb.Value.Value ||
+                                                                ar.Attributes[indb.Key].Vendordata != indb.Value.Vendordata ||
+                                                                ar.Attributes[indb.Key].Worst != indb.Value.Worst)
+                                                                UpdatedAttribs.Add(indb.Key);
+                                                        }
+                                                    }
+                                                    ReportThings(sql, SmartDataList.MachineID, "Update", ar, ref AlreadyReported, RepElementRoot, UpdatedAttribs);
+                                                }
                                             }
-                                            break;
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (arprep.NotifyOnRemove == true)
+                            {
+                                foreach (VulpesSMARTInfo ar in SmartDataList.Removed)
+                                    ReportThings(sql, SmartDataList.MachineID, "Remove", ar, ref AlreadyReported, RepElementRoot);
+                            }
+
+                            if (arprep.NotifyOnError == true)
+                            {
+                                foreach (VulpesSMARTInfo ar in SmartDataList.Added)
+                                {
+                                    if (SMARTDescription.IsInError(ar) == true)
+                                        ReportThings(sql, SmartDataList.MachineID, "Error", ar, ref AlreadyReported, RepElementRoot);
+                                }
+                                foreach (VulpesSMARTInfo ar in SmartDataList.Updated)
+                                {
+                                    if (SMARTDescription.IsInError(ar) == true)
+                                    {
+                                        foreach (VulpesSMARTInfo indbvsm in SmartDataList.InDB)
+                                        {
+                                            if (indbvsm.PNPDeviceID == ar.PNPDeviceID)
+                                            {
+                                                if (SMARTDescription.CompareFullCriticalOnly(indbvsm, ar) == false)
+                                                {
+                                                    ReportThings(sql, SmartDataList.MachineID, "Error", ar, ref AlreadyReported, RepElementRoot);
+                                                }
+                                                break;
+                                            }
                                         }
                                     }
                                 }
@@ -479,17 +481,6 @@ namespace FoxSDC_Server
             catch (Exception ee)
             {
                 FoxEventLog.WriteEventLog("SEH in SMART Data Reporting " + ee.ToString(), System.Diagnostics.EventLogEntryType.Error);
-            }
-            finally
-            {
-                try
-                {
-                    sql.CloseConnection();
-                }
-                catch
-                {
-
-                }
             }
         }
 
@@ -626,7 +617,7 @@ namespace FoxSDC_Server
             lock (ni.sqllock)
             {
                 if (Convert.ToInt32(sql.ExecSQLScalar("SELECT COUNT(*) FROM ComputerAccounts WHERE MachineID=@m",
-                    new SQLParam("@m", id))) == 0)
+                new SQLParam("@m", id))) == 0)
                 {
                     ni.Error = "Invalid MachineID";
                     ni.ErrorID = ErrorFlags.InvalidValue;

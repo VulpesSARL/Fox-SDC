@@ -70,7 +70,7 @@ namespace FoxSDC_Server.Modules
             lock (ni.sqllock)
             {
                 object o = sql.ExecSQLScalar("SELECT [data] from ReportPapers WHERE ID=@id",
-                new SQLParam("@id", Paper));
+            new SQLParam("@id", Paper));
                 if (o is DBNull || o is null)
                 {
                     switch (Paper)
@@ -178,7 +178,7 @@ namespace FoxSDC_Server.Modules
                 lock (ni.sqllock)
                 {
                     sql.ExecSQL("DELETE from ReportPapers WHERE ID=@id",
-                        new SQLParam("@id", req.Name));
+                    new SQLParam("@id", req.Name));
                 }
                 return (RESTStatus.Success);
             }
@@ -194,8 +194,8 @@ namespace FoxSDC_Server.Modules
                 lock (ni.sqllock)
                 {
                     if (sql.ExecSQL("if exists(select * from ReportPapers where [ID]=@ID) update ReportPapers set [Data]=@data,DT=getutcdate() where [ID]=@ID else insert into ReportPapers ([ID],[Data]) values(@ID,@data)",
-                        new SQLParam("@ID", req.Name),
-                        new SQLParam("@data", req.data)) == false)
+                    new SQLParam("@ID", req.Name),
+                    new SQLParam("@data", req.data)) == false)
                     {
                         ni.Error = "SQL Error";
                         ni.ErrorID = ErrorFlags.SQLError;
