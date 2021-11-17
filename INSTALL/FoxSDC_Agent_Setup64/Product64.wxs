@@ -11,6 +11,10 @@
 
 
 
+    <!-- <Condition Message="Fox SDC Agent is only supported on Windows 8.1, 2012R2 or higher.">
+      <![CDATA[Installed OR (VersionNT >= 603)]]>
+    </Condition> -->
+
     <Condition Message="Fox SDC Agent is only supported on Windows 7, 2008R2 or higher.">
       <![CDATA[Installed OR (VersionNT >= 601)]]>
     </Condition>
@@ -40,6 +44,12 @@
       <ComponentRef Id="FoxSDC_SAS32.dll" />
       <ComponentRef Id="FoxSDC_SAS64.dll" />
       <ComponentRef Id="ApplicationShortcut" />
+      <!--
+        Uncomment this and at the bottom, if you want to insert your own contract information
+      -->
+      <!--
+      <ComponentRef Id="ContractData" />
+      -->
     </Feature>
 
     <Feature Id="VCRedist" Title="Visual C++ Runtime" AllowAdvertise="no" Display="hidden" Level="1">
@@ -57,6 +67,11 @@
       <Merge Id="VCRedist4" SourceFile="$(var.ProjectDir)Microsoft_VC141_MFCLOC_x64.msm" Language="0" DiskId="1"/>
       <Merge Id="VCRedist5" SourceFile="$(var.ProjectDir)Microsoft_VC141_OpenMP_x64.msm" Language="0" DiskId="1"/>
     </DirectoryRef>
+
+    <InstallExecuteSequence>
+      <Custom Action="AutoConfigDNS" After="InstallFiles">(NOT Installed) AND (NOT REMOVE)</Custom>
+    </InstallExecuteSequence>
+    <CustomAction Id="AutoConfigDNS" Execute="deferred" Impersonate="no" Return="asyncWait" FileKey="FoxSDC_Agent.exe" ExeCommand="-autodnsconfig" />
   </Product>
 
   <Fragment>
@@ -125,6 +140,18 @@
       <Component Id="MyUCID.exe" Guid="*">
         <File Id="MyUCID.exe" Source="$(var.ProjectDir)\..\..\Release\MyUCID.exe" KeyPath="yes" />
       </Component>
+
+      <!--
+        Adjust both Value to your like
+      -->
+      <!--
+      <Component Id="ContractData" Guid="*">
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Fox\SDC" Action="createAndRemoveOnUninstall">
+          <RegistryValue Type="string" Name="ContractID" Value="ContractIDBlahblah" KeyPath="yes"/>
+          <RegistryValue Type="string" Name="ContractPassword" Value="ContractPasswordBlahblah"/>
+        </RegistryKey>
+      </Component>
+      -->
 
     </ComponentGroup>
   </Fragment>
