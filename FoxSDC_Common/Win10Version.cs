@@ -36,6 +36,9 @@ namespace FoxSDC_Common
                                 case 19041: OSWin10Edition = "2004"; break;
                                 case 19042: OSWin10Edition = "20H2"; break;
                                 case 19043: OSWin10Edition = "21H1"; break;
+                                case 19044: OSWin10Edition = "21H2"; break;
+
+                                case 22000: OSWin10Edition = "W11 / 21H2"; break;
                                 default: OSWin10Edition = "??? " + OSVersionMinor.ToString(); break;
                             }
                         }
