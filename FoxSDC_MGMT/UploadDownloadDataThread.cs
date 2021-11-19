@@ -175,6 +175,7 @@ namespace FoxSDC_MGMT
                     if (Data.Count == 0)
                     {
                         d = null;
+                        Thread.Sleep(500);
                         continue;
                     }
                     foreach (UploadDownloadData dd in Data)
