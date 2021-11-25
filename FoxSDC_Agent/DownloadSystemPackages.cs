@@ -332,7 +332,7 @@ namespace FoxSDC_Agent
                             continue;
                         }
                     }
-                    catch(Exception ee)
+                    catch (Exception ee)
                     {
                         FoxEventLog.WriteEventLog("The Metapackage " + pkg.MetaFilename + " cannot be read: " + ee.Message, EventLogEntryType.Error);
                         FilesystemData.RemovePackage(pkg);
@@ -569,7 +569,7 @@ namespace FoxSDC_Agent
                                 FilesystemData.WritePackageDataList();
                                 break;
                             case PKGStatus.Success:
-                                FoxEventLog.WriteEventLog("The Package (" + Install.ToString() + ") " + pkg.Filename + " was installed successfull.\n" +
+                                FoxEventLog.WriteEventLog("The Package (" + Install.ToString() + ") " + pkg.Filename + " was installed successfully.\n" +
                                 "Package: " + inst.PackageInfoData.Title + " " + inst.PackageInfoData.PackageID + " V" + inst.PackageInfoData.PackageID, System.Diagnostics.EventLogEntryType.Information);
                                 FilesystemData.WritePackageDataList();
                                 break;
@@ -772,9 +772,33 @@ namespace FoxSDC_Agent
                         {
                             lock (PackagesToInst)
                             {
-                                List<PackagesToInstall> PackagesToRemove = new List<PackagesToInstall>();
                                 if (PackagesToInstCreated == true)
                                 {
+                                    List<Int64> PackagesToInst_Remove = new List<long>();
+                                    foreach (KeyValuePair<Int64, PackagesToInstall> ppkg in PackagesToInst)
+                                    {
+                                        PackagesToInst_Remove.Add(ppkg.Key);
+                                    }
+
+                                    foreach (PackagePolicy pp in PackagesPolicy.ActivePackages)
+                                    {
+                                        foreach (KeyValuePair<Int64, PackagesToInstall> ppkg in PackagesToInst)
+                                        {
+                                            if (ppkg.Value.PackageID == ppkg.Value.PackageID && ppkg.Value.Version == ppkg.Value.Version)
+                                            {
+                                                //Found - DON'T Remove it later!
+                                                PackagesToInst_Remove.Remove(ppkg.Key);
+                                                break;
+                                            }
+                                        }
+                                    }
+
+                                    foreach (Int64 Key in PackagesToInst_Remove)
+                                    {
+                                        PackagesToInst.Remove(Key);
+                                    }
+
+                                    List<PackagesToInstall> PackagesToRemove = new List<PackagesToInstall>();
                                     foreach (PackagesToInstall pkg in FilesystemData.LocalPackages)
                                     {
                                         bool PackageFound = false;

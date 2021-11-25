@@ -13,6 +13,12 @@ namespace FoxSDC_Agent.PolicyObjects
     {
         static List<PackagePolicy> ToAdd;
         static List<PackagePolicy> ToRemove;
+        /*
+        after the 2nd (value: 1) cycle (after program start) - set UpdatePackages once to TRUE to really update the packages state
+        Mainly needed because of a lot of risk in thread-drifting (depends on the power of the machine)
+         */
+        static int Cycle = 0;
+
         public static List<PackagePolicy> ActivePackages;
         public static bool UpdatePackages = false;
         public static object ActivePackagesLock = new object();
@@ -67,6 +73,13 @@ namespace FoxSDC_Agent.PolicyObjects
 
             if (UpdatePackages == false && NeedUpdates == true)
                 UpdatePackages = true;
+
+            if (Cycle < 2)
+            {
+                Cycle++;
+                if (Cycle > 1)
+                    UpdatePackages = true;
+            }
 
             ToAdd = null;
             ToRemove = null;

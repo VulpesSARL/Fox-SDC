@@ -504,7 +504,7 @@ namespace FoxSDC_Server
             lock (ni.sqllock)
             {
                 SqlDataReader dr = sql.ExecSQLReader("SELECT * FROM Policies WHERE MachineID=@m AND Enabled=1 AND Type not in (" + PolicyIDs.HiddenPoliciesSQLINClause + ")",
-                new SQLParam("@m", MachineID));
+                    new SQLParam("@m", MachineID));
                 while (dr.Read())
                 {
                     PolicyObject obj = LoadPolicyDB(dr, false, true);
@@ -534,8 +534,8 @@ namespace FoxSDC_Server
             {
                 lock (ni.sqllock)
                 {
-                    SqlDataReader dr = sql.ExecSQLReader("SELECT * FROM Policies WHERE " + (GroupID == null ? "Grouping is NULL" : "Grouping=@g") + " AND Enabled=1 AND Type NOT IN (" + PolicyIDs.HiddenPoliciesSQLINClause + ")",
-                new SQLParam("@g", GroupID));
+                    SqlDataReader dr = sql.ExecSQLReader("SELECT * FROM Policies WHERE " + (GroupID == null ? "Grouping is NULL" : "Grouping=@g") + " AND Enabled=1 AND Type NOT IN (" + PolicyIDs.HiddenPoliciesSQLINClause + ") AND MachineID is NULL",
+                        new SQLParam("@g", GroupID));
                     while (dr.Read())
                     {
                         PolicyObject obj = LoadPolicyDB(dr, false, true);
