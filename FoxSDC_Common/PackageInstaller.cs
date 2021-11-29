@@ -403,6 +403,7 @@ namespace FoxSDC_Common
                     RunningPKG.RecieptData = null;
                     RunningPKG.Filename = Filename;
                     RunningPKG.NoReciept = Package.NoReceipt;
+                    RunningPKG.VersionID = Package.VersionID;
                 }
             }
             return (true);

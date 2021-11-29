@@ -41,6 +41,7 @@ namespace FoxSDC_Common
         public string Filename;
         public bool NoReciept;
         public string ApplicationPath;
+        public long VersionID;
 
         public void SetInstallPath(string path)
         {

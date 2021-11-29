@@ -12,6 +12,7 @@ namespace FoxSDC_Agent
     {
         public static bool Shutup = false;
         const string Title = "Fox SDC Agent";
+        const int EVTMaxLength = 32700;
         public static void WriteEventLog(string Message, EventLogEntryType type)
         {
             if (Shutup == true)
@@ -26,8 +27,8 @@ namespace FoxSDC_Agent
 
                 EventLog ev = new EventLog();
                 ev.Source = Title;
-                if (Message.Length > 32766)
-                    Message = Message.Substring(0, 32766 - 6) + "<snip>";
+                if (Message.Length > EVTMaxLength)
+                    Message = Message.Substring(0, EVTMaxLength - 6) + "<snip>";
                 ev.WriteEntry(Message, type);
                 Debug.WriteLine("EVT: " + Message);
             }
@@ -67,8 +68,8 @@ namespace FoxSDC_Agent
 
                 EventLog ev = new EventLog();
                 ev.Source = Title;
-                if (Message.Length > 32000)
-                    Message = Message.Substring(0, 32000) + "<snip>";
+                if (Message.Length > EVTMaxLength)
+                    Message = Message.Substring(0, EVTMaxLength) + "<snip>";
                 ev.WriteEntry(Message, type, 32767);
                 Debug.WriteLine("EVT: " + Message);
             }
