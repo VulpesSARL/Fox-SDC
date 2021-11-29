@@ -11,6 +11,7 @@ namespace FoxSDC_Package
     {
         PKGInstallState State = PKGInstallState.NotSet;
         const string RegPath = "Software\\Fox\\SDC Scripted Installs\\";
+        const string InstallPath = "%PROGRAMFILES%\\Fox\\My Package";
 
         PKGStatus CheckReq(PKGRunningPackageData Package)
         {
@@ -24,8 +25,8 @@ namespace FoxSDC_Package
                     //install it!
                     return (PKGStatus.Success);
 
-                if (CurrentV <= Package.VersionID)
-                    //nö, not needed
+                if (Package.VersionID <= CurrentV)
+                    //no, not needed
                     return (PKGStatus.NotNeeded);
             }
 
@@ -36,7 +37,7 @@ namespace FoxSDC_Package
         public PKGStatus CheckInstallationStatus(PKGRunningPackageData Package, PKGInstallState state)
         {
             State = state;
-            Package.SetInstallPath("%PROGRAMFILES%\\Fox\\My Package");
+            Package.SetInstallPath(InstallPath);
             Package.ErrorText = "";
 
             PKGStatus p = CheckReq(Package);
