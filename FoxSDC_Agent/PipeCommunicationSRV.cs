@@ -75,7 +75,7 @@ namespace FoxSDC_Agent
 
         public string GetAgentVersion()
         {
-            return (FoxVersion.DTS);
+            return (System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
         }
 
         public string GetContract()

@@ -431,9 +431,9 @@ namespace FoxSDC_Agent
             SysInfo.OSVerType = os.wSuiteMask;
 
 #if DEBUG
-            SysInfo.AgentVersion = VulpesBranding.AgentIdentifier + " [DEBUG] " + FoxVersion.DTS;
+            SysInfo.AgentVersion = VulpesBranding.AgentIdentifier + " [DEBUG] " + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
 #else
-            SysInfo.AgentVersion = VulpesBranding.AgentIdentifier + " " + FoxVersion.DTS;
+            SysInfo.AgentVersion = VulpesBranding.AgentIdentifier + " " + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
 #endif
             SysInfo.AgentVersionID = FoxVersion.Version;
 

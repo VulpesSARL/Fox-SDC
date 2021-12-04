@@ -27,7 +27,7 @@ namespace FoxSDC_MGMT
             txtServerData.Text += "Server: " + Program.net.ConnectedURL + "\r\n";
             txtServerData.Text += "Name: " + Program.net.serverinfo.Name + "\r\n";
             txtServerData.Text += "\r\n";
-            txtServerData.Text += "Management Version: " + FoxVersion.DTS + "\r\n";
+            txtServerData.Text += "Management Version: " + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString() + "\r\n";
             txtServerData.Text += "\r\n";
             txtServerData.Text += "Server Version: " + Program.net.serverinfo.ServerVersion + "\r\n";
             txtServerData.Text += "Server GUID: " + Program.net.serverinfo.ServerGUID + "\r\n";

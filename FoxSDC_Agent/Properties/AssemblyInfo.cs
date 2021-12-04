@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("Main Agent / Service of SDC")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Vulpes SARL")]
-[assembly: AssemblyProduct("Fox Software Deployment and Control Agent")]
+[assembly: AssemblyProduct("Fox Software Deployment and Control Agent / Version:" + FoxSDC_Agent.FoxVersion.VersionS)]
 [assembly: AssemblyCopyright("Copyright ©  2018, Vulpes SARL")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

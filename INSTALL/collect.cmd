@@ -50,6 +50,7 @@ copy "FoxSDC_Agent_Setup64\bin\x64\Release\FoxSDC_Agent_Setup.msi" "CD\FoxSDC_Ag
 copy "FoxSDC_Agent_Setup32\bin\Release\FoxSDC_Agent_Setup.msi" "CD\FoxSDC_Agent_Setup32.msi"
 
 call signtool sign /sha1 %SHACERT% "CD\FoxSDC_Agent_Setup32.msi" "CD\FoxSDC_Agent_Setup64.msi"
+call ..\Release\FoxSDC_AutoVersion.exe -foxps SDCA.foxps "..\Release\FoxSDC_Agent.exe"
 call "CD\SDC Tools\FoxSDC_PackageCreatorC.exe" compile SDCA.foxps %PKG%
 
 copy SDCA.foxpkg "CD"

@@ -21,7 +21,7 @@ namespace FoxSDC_Server
             ni.ServerInfo = new ServerInfo();
             ni.ServerInfo.Name = Environment.MachineName;
             ni.ServerInfo.ProtocolVersion = 1;
-            ni.ServerInfo.ServerVersion = FoxVersion.DTS.ToString();
+            ni.ServerInfo.ServerVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
             if (ni.FromClone == false)
             {
                 ni.LoggedIn = false;
@@ -32,6 +32,8 @@ namespace FoxSDC_Server
             }
 
             SQLLib sql = SQLTest.ConnectSQL("Fox SDC Server for " + ni.ID);
+            if (sql == null)
+                return (false);
             ni.sql = sql;
             ni.sql.SEHError = true;
 

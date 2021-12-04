@@ -87,6 +87,9 @@
     <Compile Include="..\FoxSDC_Common\PackageCompiler.cs">
       <Link>PackageCompiler.cs</Link>
     </Compile>
+    <Compile Include="..\FoxSDC_Common\PackageCompilerModels.cs">
+      <Link>PackageCompilerModels.cs</Link>
+    </Compile>
     <Compile Include="..\FoxSDC_Common\PackageInstaller.cs">
       <Link>PackageInstaller.cs</Link>
     </Compile>

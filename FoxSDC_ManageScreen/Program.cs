@@ -12,7 +12,7 @@ namespace FoxSDC_ManageScreen
         public static Network Net;
         public static MainDLG maindlg;
 
-        public static string Title = "Fox SDC Remote Screen " + FoxVersion.DTS;
+        public static string Title = "Fox SDC Remote Screen " + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
         [STAThread]
         static void Main(string[] args)

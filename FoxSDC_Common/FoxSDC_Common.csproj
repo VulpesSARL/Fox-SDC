@@ -2005,6 +2005,7 @@
     <Compile Include="NetworkUtilities.cs" />
     <Compile Include="NullTest.cs" />
     <Compile Include="PackageCompiler.cs" />
+    <Compile Include="PackageCompilerModels.cs" />
     <Compile Include="PackageInstaller.cs" />
     <Compile Include="PipeCommunication.cs" />
     <Compile Include="PolicyModels.cs" />
