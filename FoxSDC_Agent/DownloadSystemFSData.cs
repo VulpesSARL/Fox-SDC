@@ -48,6 +48,7 @@ namespace FoxSDC_Agent
             FilesystemData.FileTransferStatus.Size = 0;
             FilesystemData.FileTransferStatus.MD5CheckSum = "";
             FilesystemData.FileTransferStatus.OverrideMeteredConnection = false;
+            FilesystemData.FileTransferStatus.ExecuteWhenDone = false;
             FilesystemData.FileTransferStatus.RequestOnly = false;
             FilesystemData.FileTransferStatus.Direction = -1;
             FilesystemData.FileTransferStatus.LastModfied = new DateTime(1900, 1, 1, 0, 0, 0);
@@ -297,6 +298,7 @@ namespace FoxSDC_Agent
                     Int64 CurrentSZ;
                     Int64 TotalSZ;
                     bool OverrideMetered;
+                    bool ExecuteWhenDone;
                     lock (FileLock)
                     {
                         LocalFilename = FilesystemData.FileTransferStatus.RemoteFileLocation;
@@ -305,6 +307,7 @@ namespace FoxSDC_Agent
                         TotalSZ = FilesystemData.FileTransferStatus.Size;
                         MD5 = FilesystemData.FileTransferStatus.MD5CheckSum;
                         OverrideMetered = FilesystemData.FileTransferStatus.OverrideMeteredConnection;
+                        ExecuteWhenDone = FilesystemData.FileTransferStatus.ExecuteWhenDone;
                     }
 
                     //won't start when in metered connection!
@@ -415,6 +418,25 @@ namespace FoxSDC_Agent
                                         FilesystemData.WriteFileTransferStatus();
                                     }
                                     UnlockTimer = true;
+
+                                    if (ExecuteWhenDone == true)
+                                    {
+                                        if (LocalFilename.ToLower().EndsWith(".exe") == true)
+                                        {
+                                            try
+                                            {
+                                                Process exec = new Process();
+                                                exec.StartInfo.Arguments = "";
+                                                exec.StartInfo.FileName = LocalFilename;
+                                                exec.StartInfo.UseShellExecute = false;
+                                                exec.Start();
+                                            }
+                                            catch(Exception ee)
+                                            {
+                                                FoxEventLog.WriteEventLog("File download success / cannot execute: " + LocalFilename + "\n" + ee.Message, System.Diagnostics.EventLogEntryType.Error);
+                                            }
+                                        }
+                                    }
                                     return;
                                 }
                             }
@@ -636,6 +658,7 @@ namespace FoxSDC_Agent
                         FilesystemData.FileTransferStatus.RemoteFileLocation = fud.Data.RemoteFileLocation;
                         FilesystemData.FileTransferStatus.MD5CheckSum = fud.Data.MD5CheckSum.ToLower();
                         FilesystemData.FileTransferStatus.OverrideMeteredConnection = fud.Data.OverrideMeteredConnection;
+                        FilesystemData.FileTransferStatus.ExecuteWhenDone = fud.Data.ExecuteWhenFinished;
                         FilesystemData.FileTransferStatus.Direction = fud.Data.Direction;
                         FilesystemData.FileTransferStatus.ProgressSize = 0;
                         FilesystemData.FileTransferStatus.ServerID = RunningID;

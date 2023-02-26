@@ -35,6 +35,7 @@ namespace FoxSDC_Server
         public UploadRunner Upload = null;
         public ReaderWriterLockSlim RWLock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
         public bool IsLDAP = false;
+        public Int64 AgentVersionID;
 
         public bool HasAcl(ACLFlags acl)
         {

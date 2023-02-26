@@ -198,7 +198,7 @@ namespace FoxSDC_Server
                 conn["Server"] = server;
                 conn["Database"] = database;
                 conn["Integrated Security"] = "SSPI";
-                conn["Max Pool Size"] = 1024;
+                conn["Max Pool Size"] = 102400;
                 conn["Pooling"] = ConnectionPooling == true ? "true" : "false";
                 Connection = new SqlConnection(conn.ConnectionString);
                 Connection.Open();
@@ -230,7 +230,7 @@ namespace FoxSDC_Server
                 conn["Connection Timeout"] = 180;
                 conn["Server"] = server;
                 conn["Database"] = database;
-                conn["Max Pool Size"] = 1024;
+                conn["Max Pool Size"] = 102400;
                 conn["Pooling"] = ConnectionPooling == true ? "true" : "false";
                 if (Username.Trim() != "")
                     conn["User ID"] = Username;

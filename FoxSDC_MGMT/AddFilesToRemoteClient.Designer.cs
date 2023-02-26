@@ -42,6 +42,7 @@
             this.cmdSelectAll = new System.Windows.Forms.Button();
             this.cmdDelete = new System.Windows.Forms.Button();
             this.chkIgnoreMeteredConnection = new System.Windows.Forms.CheckBox();
+            this.chkExecuteWhenDone = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // cmdAddFile
@@ -99,7 +100,7 @@
             this.cmdCancel.Location = new System.Drawing.Point(319, 314);
             this.cmdCancel.Name = "cmdCancel";
             this.cmdCancel.Size = new System.Drawing.Size(75, 23);
-            this.cmdCancel.TabIndex = 8;
+            this.cmdCancel.TabIndex = 10;
             this.cmdCancel.Text = "Cancel";
             this.cmdCancel.UseVisualStyleBackColor = true;
             this.cmdCancel.Click += new System.EventHandler(this.cmdCancel_Click);
@@ -109,7 +110,7 @@
             this.cmdOK.Location = new System.Drawing.Point(400, 314);
             this.cmdOK.Name = "cmdOK";
             this.cmdOK.Size = new System.Drawing.Size(75, 23);
-            this.cmdOK.TabIndex = 7;
+            this.cmdOK.TabIndex = 9;
             this.cmdOK.Text = "OK";
             this.cmdOK.UseVisualStyleBackColor = true;
             this.cmdOK.Click += new System.EventHandler(this.cmdOK_Click);
@@ -168,9 +169,19 @@
             this.chkIgnoreMeteredConnection.Location = new System.Drawing.Point(12, 271);
             this.chkIgnoreMeteredConnection.Name = "chkIgnoreMeteredConnection";
             this.chkIgnoreMeteredConnection.Size = new System.Drawing.Size(153, 17);
-            this.chkIgnoreMeteredConnection.TabIndex = 6;
+            this.chkIgnoreMeteredConnection.TabIndex = 7;
             this.chkIgnoreMeteredConnection.Text = "&Ignore metered connection";
             this.chkIgnoreMeteredConnection.UseVisualStyleBackColor = true;
+            // 
+            // chkExecuteWhenDone
+            // 
+            this.chkExecuteWhenDone.AutoSize = true;
+            this.chkExecuteWhenDone.Location = new System.Drawing.Point(12, 294);
+            this.chkExecuteWhenDone.Name = "chkExecuteWhenDone";
+            this.chkExecuteWhenDone.Size = new System.Drawing.Size(339, 17);
+            this.chkExecuteWhenDone.TabIndex = 8;
+            this.chkExecuteWhenDone.Text = "&Execute file (successfull download) (only EXE files; DANGEROUS)";
+            this.chkExecuteWhenDone.UseVisualStyleBackColor = true;
             // 
             // frmAddFilesToRemoteClient
             // 
@@ -179,6 +190,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.cmdCancel;
             this.ClientSize = new System.Drawing.Size(487, 349);
+            this.Controls.Add(this.chkExecuteWhenDone);
             this.Controls.Add(this.chkIgnoreMeteredConnection);
             this.Controls.Add(this.cmdDelete);
             this.Controls.Add(this.cmdSelectAll);
@@ -220,5 +232,6 @@
         private System.Windows.Forms.Button cmdSelectAll;
         private System.Windows.Forms.Button cmdDelete;
         private System.Windows.Forms.CheckBox chkIgnoreMeteredConnection;
+        private System.Windows.Forms.CheckBox chkExecuteWhenDone;
     }
 }

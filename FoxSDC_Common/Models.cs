@@ -717,6 +717,7 @@ namespace FoxSDC_Common
         public DateTime LastUpdated;
         public DateTime FileLastModified;
         public bool OverrideMeteredConnection;
+        public bool ExecuteWhenFinished;
         public bool RequestOnly;
         public DateTime TimeStampCheck;
     }

@@ -87,6 +87,7 @@ namespace FoxSDC_Agent
         public string RemoteFileLocation;
         public Int64 ProgressSize;
         public bool OverrideMeteredConnection;
+        public bool ExecuteWhenDone;
         public string MD5CheckSum;
         public int Direction;
         public bool RequestOnly;

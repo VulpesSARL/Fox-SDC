@@ -447,6 +447,7 @@ namespace FoxSDC_Server
 
             ni.Username = logon.Username;
             ni.Name = logon.SysInfo.ComputerName;
+            ni.AgentVersionID = logon.SysInfo.AgentVersionID;
             ni.EMail = "";
             ni.MustChangePassword = false;
             ni.LoggedIn = false;

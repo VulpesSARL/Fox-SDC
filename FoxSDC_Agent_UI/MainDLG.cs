@@ -153,7 +153,10 @@ Vulpes stellt demnächst den Support für Windows 7 & Windows 8.0 über das Soft
             if (Admin == "")
                 Admin = "Administrator";
             mnwriteAmessageToVulpesToolStripMenuItem.Text = "Write a &message to " + Admin;
+#if ENABLECHAT
             startChatWithVulpesToolStripMenuItem1.Text = "&Start chat with " + Admin;
+#endif
+
 #if !DEBUG
             if (Control.ModifierKeys == Keys.Control || RegistryData.ShowClientEnhancedMenu == 1)
             {
@@ -241,7 +244,9 @@ Vulpes stellt demnächst den Support für Windows 7 & Windows 8.0 über das Soft
             if (Admin == "")
                 Admin = "Administrator";
             writeMessageToVulpesToolStripMenuItem.Text = "Write a &message to " + Admin;
+#if ENABLECHAT
             startChatWithVulpesToolStripMenuItem.Text = "&Start chat with " + Admin;
+#endif
         }
 
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)

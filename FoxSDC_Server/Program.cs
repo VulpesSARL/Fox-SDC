@@ -17,6 +17,7 @@ namespace FoxSDC_Server
         public static bool ServiceRunning = false;
         public static int DBVersion = DBUpdate.DBVersion;
         public static string InstanceID = "";
+        public const Int64 LimitServingIfAgentIsOlder = 23022601;
 #if !DEBUG
         static ServiceBase[] ServicesToRun;
 #endif

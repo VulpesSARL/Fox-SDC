@@ -28,6 +28,7 @@ namespace FoxSDC_MGMT
         public Int64? ProgressSize;
         public string ID = Guid.NewGuid().ToString();
         public bool IgnoreMeteredConnection;
+        public bool ExecuteWhenDone;
         public bool Failed;
         public string ErrorText;
         public FileStream FileStream;
@@ -276,7 +277,7 @@ namespace FoxSDC_MGMT
 
                                     if (d.UploadID == null)
                                     {
-                                        d.UploadID = net.File_MGMT_NewUploadReq(d.LocalFilename, d.RemoteFilename, d.MachineID, d.MD5CheckSum, d.IgnoreMeteredConnection);
+                                        d.UploadID = net.File_MGMT_NewUploadReq(d.LocalFilename, d.RemoteFilename, d.MachineID, d.MD5CheckSum, d.IgnoreMeteredConnection, d.ExecuteWhenDone);
                                         if (d.UploadID == null)
                                         {
                                             d.FileStream.Close();
@@ -495,7 +496,7 @@ namespace FoxSDC_MGMT
             return (true);
         }
 
-        public static bool AddUploadToServer(string ForMachineID, string LocalFile, string RemoteFile, bool IgnoreMeteredConnection, out string Error)
+        public static bool AddUploadToServer(string ForMachineID, string LocalFile, string RemoteFile, bool IgnoreMeteredConnection, bool ExecuteWhenDone, out string Error)
         {
             Error = "";
             if (File.Exists(LocalFile) == false)
@@ -514,6 +515,7 @@ namespace FoxSDC_MGMT
             ud.RemoteFilename = RemoteFile;
             ud.Size = Size;
             ud.IgnoreMeteredConnection = IgnoreMeteredConnection;
+            ud.ExecuteWhenDone = ExecuteWhenDone;
             ud.ProgressSize = null;
             ud.ErrorText = "";
             ud.Failed = false;

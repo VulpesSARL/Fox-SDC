@@ -1313,7 +1313,7 @@ namespace FoxSDC_Common
             return (nid.Data);
         }
 
-        public Int64? File_MGMT_NewUploadReq(string LocalFilename, string RemoteFilename, string MachineID, string MD5CheckSum, bool OverrideMeteredConnection)
+        public Int64? File_MGMT_NewUploadReq(string LocalFilename, string RemoteFilename, string MachineID, string MD5CheckSum, bool OverrideMeteredConnection, bool ExecuteWhenFinished)
         {
             FileUploadData req = new FileUploadData();
             FileInfo fi = new FileInfo(LocalFilename);
@@ -1322,6 +1322,7 @@ namespace FoxSDC_Common
             req.FileLastModified = fi.LastWriteTimeUtc;
             req.MD5CheckSum = MD5CheckSum;
             req.OverrideMeteredConnection = OverrideMeteredConnection;
+            req.ExecuteWhenFinished = ExecuteWhenFinished;
             req.Size = fi.Length;
 
             NetInt64 nid;

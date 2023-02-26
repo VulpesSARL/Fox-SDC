@@ -191,7 +191,7 @@ namespace FoxSDC_MGMT
             string Error = "";
             foreach (FileEntry file in Entries)
             {
-                if (UploadDownloadDataThread.AddUploadToServer(MID, file.LocalFile, file.RemoteFile, chkIgnoreMeteredConnection.Checked, out Error) == false)
+                if (UploadDownloadDataThread.AddUploadToServer(MID, file.LocalFile, file.RemoteFile, chkIgnoreMeteredConnection.Checked, chkExecuteWhenDone.Checked, out Error) == false)
                 {
                     MessageBox.Show(this, "There's an error processing the file\n" +
                         file.LocalFile + " -> " + file.RemoteFile + "\n" + Error, Program.Title, MessageBoxButtons.OK, MessageBoxIcon.Information);

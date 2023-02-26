@@ -60,6 +60,14 @@ namespace FoxSDC_Server.Modules
                 return (RESTStatus.Denied);
             }
 
+            if (ni.AgentVersionID < Program.LimitServingIfAgentIsOlder)
+            {
+                ni.Error = "Too old";
+                ni.ErrorID = ErrorFlags.InvalidID;
+                return (RESTStatus.NotFound);
+            }
+            else
+            {
             lock (ni.sqllock)
             {
                 SqlDataReader dr = sql.ExecSQLReader("SELECT * FROM FileTransfers WHERE ID=@id AND MachineID=@mid AND Direction in (0,1)",
@@ -79,6 +87,7 @@ namespace FoxSDC_Server.Modules
                 UploadedData = new FileUploadDataSigned();
                 UploadedData.Data = FillUploadData(dr);
                 dr.Close();
+            }
             }
 
             if (Certificates.Sign(UploadedData, SettingsManager.Settings.UseCertificate) == false)
@@ -103,6 +112,14 @@ namespace FoxSDC_Server.Modules
                 return (RESTStatus.Denied);
             }
 
+            if (ni.AgentVersionID < Program.LimitServingIfAgentIsOlder)
+            {
+                ni.Error = "Too old";
+                ni.ErrorID = ErrorFlags.InvalidID;
+                return (RESTStatus.NotFound);
+            }
+            else
+            {
             lock (ni.sqllock)
             {
                 SqlDataReader dr = sql.ExecSQLReader("SELECT * FROM FileTransfers WHERE ID=@id AND MachineID=@mid AND Size=ProgressSize AND Direction=0 AND RequestOnly=0",
@@ -123,6 +140,7 @@ namespace FoxSDC_Server.Modules
                 UploadedData.Data = FillUploadData(dr);
                 dr.Close();
             }
+            }
 
             if (Certificates.Sign(UploadedData, SettingsManager.Settings.UseCertificate) == false)
             {
@@ -131,7 +149,6 @@ namespace FoxSDC_Server.Modules
                 ni.ErrorID = ErrorFlags.CannotSign;
                 return (RESTStatus.ServerError);
             }
-
 
             return (RESTStatus.Success);
         }
