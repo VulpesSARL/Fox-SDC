@@ -55,6 +55,8 @@
             this.deleteGroupToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.refreshGroupToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.renameGroupToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem6 = new System.Windows.Forms.ToolStripSeparator();
+            this.createsimpleTasksInThisGroupToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
             this.createpolicyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.policyEnabledToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -62,8 +64,7 @@
             this.lowLevelEditPolicyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.timer_ping = new System.Windows.Forms.Timer(this.components);
-            this.toolStripMenuItem6 = new System.Windows.Forms.ToolStripSeparator();
-            this.createsimpleTasksInThisGroupToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.uploadFilesToComputersInThisGroupToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Splitty)).BeginInit();
             this.Splitty.Panel1.SuspendLayout();
@@ -248,73 +249,86 @@
             this.renameGroupToolStripMenuItem,
             this.toolStripMenuItem6,
             this.createsimpleTasksInThisGroupToolStripMenuItem,
+            this.uploadFilesToComputersInThisGroupToolStripMenuItem,
             this.toolStripMenuItem2,
             this.createpolicyToolStripMenuItem,
             this.policyEnabledToolStripMenuItem,
             this.deletePolicyToolStripMenuItem,
             this.lowLevelEditPolicyToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(307, 254);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(355, 278);
             this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
             // 
             // createGroupToolStripMenuItem
             // 
             this.createGroupToolStripMenuItem.Name = "createGroupToolStripMenuItem";
-            this.createGroupToolStripMenuItem.Size = new System.Drawing.Size(306, 24);
+            this.createGroupToolStripMenuItem.Size = new System.Drawing.Size(354, 24);
             this.createGroupToolStripMenuItem.Text = "&Create group";
             this.createGroupToolStripMenuItem.Click += new System.EventHandler(this.createGroupToolStripMenuItem_Click);
             // 
             // deleteGroupToolStripMenuItem
             // 
             this.deleteGroupToolStripMenuItem.Name = "deleteGroupToolStripMenuItem";
-            this.deleteGroupToolStripMenuItem.Size = new System.Drawing.Size(306, 24);
+            this.deleteGroupToolStripMenuItem.Size = new System.Drawing.Size(354, 24);
             this.deleteGroupToolStripMenuItem.Text = "&Delete group";
             this.deleteGroupToolStripMenuItem.Click += new System.EventHandler(this.deleteGroupToolStripMenuItem_Click);
             // 
             // refreshGroupToolStripMenuItem
             // 
             this.refreshGroupToolStripMenuItem.Name = "refreshGroupToolStripMenuItem";
-            this.refreshGroupToolStripMenuItem.Size = new System.Drawing.Size(306, 24);
+            this.refreshGroupToolStripMenuItem.Size = new System.Drawing.Size(354, 24);
             this.refreshGroupToolStripMenuItem.Text = "R&efresh group";
             this.refreshGroupToolStripMenuItem.Click += new System.EventHandler(this.refreshGroupToolStripMenuItem_Click);
             // 
             // renameGroupToolStripMenuItem
             // 
             this.renameGroupToolStripMenuItem.Name = "renameGroupToolStripMenuItem";
-            this.renameGroupToolStripMenuItem.Size = new System.Drawing.Size(306, 24);
+            this.renameGroupToolStripMenuItem.Size = new System.Drawing.Size(354, 24);
             this.renameGroupToolStripMenuItem.Text = "&Rename group";
             this.renameGroupToolStripMenuItem.Click += new System.EventHandler(this.renameGroupToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem6
+            // 
+            this.toolStripMenuItem6.Name = "toolStripMenuItem6";
+            this.toolStripMenuItem6.Size = new System.Drawing.Size(351, 6);
+            // 
+            // createsimpleTasksInThisGroupToolStripMenuItem
+            // 
+            this.createsimpleTasksInThisGroupToolStripMenuItem.Name = "createsimpleTasksInThisGroupToolStripMenuItem";
+            this.createsimpleTasksInThisGroupToolStripMenuItem.Size = new System.Drawing.Size(354, 24);
+            this.createsimpleTasksInThisGroupToolStripMenuItem.Text = "Create &simple tasks in this group";
+            this.createsimpleTasksInThisGroupToolStripMenuItem.Click += new System.EventHandler(this.createsimpleTasksInThisGroupToolStripMenuItem_Click);
             // 
             // toolStripMenuItem2
             // 
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(303, 6);
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(351, 6);
             // 
             // createpolicyToolStripMenuItem
             // 
             this.createpolicyToolStripMenuItem.Name = "createpolicyToolStripMenuItem";
-            this.createpolicyToolStripMenuItem.Size = new System.Drawing.Size(306, 24);
+            this.createpolicyToolStripMenuItem.Size = new System.Drawing.Size(354, 24);
             this.createpolicyToolStripMenuItem.Text = "Create &policy";
             this.createpolicyToolStripMenuItem.Click += new System.EventHandler(this.createpolicyToolStripMenuItem_Click);
             // 
             // policyEnabledToolStripMenuItem
             // 
             this.policyEnabledToolStripMenuItem.Name = "policyEnabledToolStripMenuItem";
-            this.policyEnabledToolStripMenuItem.Size = new System.Drawing.Size(306, 24);
-            this.policyEnabledToolStripMenuItem.Text = "Enable/Disable policy";
+            this.policyEnabledToolStripMenuItem.Size = new System.Drawing.Size(354, 24);
+            this.policyEnabledToolStripMenuItem.Text = "Enable/D&isable policy";
             this.policyEnabledToolStripMenuItem.Click += new System.EventHandler(this.policyEnabledToolStripMenuItem_Click);
             // 
             // deletePolicyToolStripMenuItem
             // 
             this.deletePolicyToolStripMenuItem.Name = "deletePolicyToolStripMenuItem";
-            this.deletePolicyToolStripMenuItem.Size = new System.Drawing.Size(306, 24);
+            this.deletePolicyToolStripMenuItem.Size = new System.Drawing.Size(354, 24);
             this.deletePolicyToolStripMenuItem.Text = "Delete poli&cy";
             this.deletePolicyToolStripMenuItem.Click += new System.EventHandler(this.deletePolicyToolStripMenuItem_Click);
             // 
             // lowLevelEditPolicyToolStripMenuItem
             // 
             this.lowLevelEditPolicyToolStripMenuItem.Name = "lowLevelEditPolicyToolStripMenuItem";
-            this.lowLevelEditPolicyToolStripMenuItem.Size = new System.Drawing.Size(306, 24);
+            this.lowLevelEditPolicyToolStripMenuItem.Size = new System.Drawing.Size(354, 24);
             this.lowLevelEditPolicyToolStripMenuItem.Text = "Lo&w level edit policy";
             this.lowLevelEditPolicyToolStripMenuItem.Click += new System.EventHandler(this.lowLevelEditPolicyToolStripMenuItem_Click);
             // 
@@ -329,17 +343,12 @@
             this.timer_ping.Interval = 60000;
             this.timer_ping.Tick += new System.EventHandler(this.timer_ping_Tick);
             // 
-            // toolStripMenuItem6
+            // uploadFilesToComputersInThisGroupToolStripMenuItem
             // 
-            this.toolStripMenuItem6.Name = "toolStripMenuItem6";
-            this.toolStripMenuItem6.Size = new System.Drawing.Size(303, 6);
-            // 
-            // createsimpleTasksInThisGroupToolStripMenuItem
-            // 
-            this.createsimpleTasksInThisGroupToolStripMenuItem.Name = "createsimpleTasksInThisGroupToolStripMenuItem";
-            this.createsimpleTasksInThisGroupToolStripMenuItem.Size = new System.Drawing.Size(306, 24);
-            this.createsimpleTasksInThisGroupToolStripMenuItem.Text = "Create &simple tasks in this group";
-            this.createsimpleTasksInThisGroupToolStripMenuItem.Click += new System.EventHandler(this.createsimpleTasksInThisGroupToolStripMenuItem_Click);
+            this.uploadFilesToComputersInThisGroupToolStripMenuItem.Name = "uploadFilesToComputersInThisGroupToolStripMenuItem";
+            this.uploadFilesToComputersInThisGroupToolStripMenuItem.Size = new System.Drawing.Size(354, 24);
+            this.uploadFilesToComputersInThisGroupToolStripMenuItem.Text = "&Upload files to Computers in this group";
+            this.uploadFilesToComputersInThisGroupToolStripMenuItem.Click += new System.EventHandler(this.uploadFilesToComputersInThisGroupToolStripMenuItem_Click);
             // 
             // MainDLG
             // 
@@ -402,6 +411,7 @@
         private System.Windows.Forms.ToolStripMenuItem showactiveUsersOnComputerInfoToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem6;
         private System.Windows.Forms.ToolStripMenuItem createsimpleTasksInThisGroupToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem uploadFilesToComputersInThisGroupToolStripMenuItem;
     }
 }
 

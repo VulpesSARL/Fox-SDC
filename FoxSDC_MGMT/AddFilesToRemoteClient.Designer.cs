@@ -178,9 +178,9 @@
             this.chkExecuteWhenDone.AutoSize = true;
             this.chkExecuteWhenDone.Location = new System.Drawing.Point(12, 294);
             this.chkExecuteWhenDone.Name = "chkExecuteWhenDone";
-            this.chkExecuteWhenDone.Size = new System.Drawing.Size(339, 17);
+            this.chkExecuteWhenDone.Size = new System.Drawing.Size(363, 17);
             this.chkExecuteWhenDone.TabIndex = 8;
-            this.chkExecuteWhenDone.Text = "&Execute file (successfull download) (only EXE files; DANGEROUS)";
+            this.chkExecuteWhenDone.Text = "&Execute file (after successfull download) (only EXE files; DANGEROUS)";
             this.chkExecuteWhenDone.UseVisualStyleBackColor = true;
             // 
             // frmAddFilesToRemoteClient

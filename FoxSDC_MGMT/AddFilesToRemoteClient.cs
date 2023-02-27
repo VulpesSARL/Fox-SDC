@@ -24,6 +24,10 @@ namespace FoxSDC_MGMT
 
         List<FileEntry> Entries = new List<FileEntry>();
 
+        bool UseMassUpload = false;
+        Int64 GroupID;
+        string GroupFullPath;
+
         string MID;
         string ComputerName;
         public frmAddFilesToRemoteClient(string MID)
@@ -39,9 +43,24 @@ namespace FoxSDC_MGMT
             InitializeComponent();
         }
 
+        public frmAddFilesToRemoteClient(Int64 GroupID, string GroupFullPath)
+        {
+            this.GroupFullPath = GroupFullPath;
+            this.GroupID = GroupID;
+            UseMassUpload = true;
+            InitializeComponent();
+        }
+
         private void frmAddFilesToRemoteClient_Load(object sender, EventArgs e)
         {
+            if (UseMassUpload == false)
+            {
             this.Text = "Copy files to " + ComputerName;
+            }
+            else
+            {
+                this.Text = "Copy files to group " + GroupFullPath;
+            }
             LoadList();
         }
 
@@ -124,7 +143,7 @@ namespace FoxSDC_MGMT
                 return;
             }
 
-            frmChangePaths frm = new frmChangePaths("Change paths", Same, MID, frmChangePaths.BrowseWhere.Remote);
+            frmChangePaths frm = new frmChangePaths("Change paths", Same, MID, UseMassUpload == false ? frmChangePaths.BrowseWhere.Remote : frmChangePaths.BrowseWhere.None);
             if (frm.ShowDialog(this) != DialogResult.OK)
                 return;
 
@@ -186,8 +205,9 @@ namespace FoxSDC_MGMT
                 return;
             }
 
+            if (UseMassUpload == false)
+            {
             List<FileEntry> pf = new List<FileEntry>();
-
             string Error = "";
             foreach (FileEntry file in Entries)
             {
@@ -201,9 +221,56 @@ namespace FoxSDC_MGMT
                     return;
                 }
             }
+            }
+            else
+            {
+                foreach(string CurrentMID in GetComputersMID(GroupID))
+                {
+                    List<FileEntry> pf = new List<FileEntry>();
+                    string Error = "";
+                    foreach (FileEntry file in Entries)
+                    {
+                        if (UploadDownloadDataThread.AddUploadToServer(CurrentMID, file.LocalFile, file.RemoteFile, chkIgnoreMeteredConnection.Checked, chkExecuteWhenDone.Checked, out Error) == false)
+                        {
+                            MessageBox.Show(this, "There's an error processing the file for MID " + CurrentMID + "\n" +
+                                file.LocalFile + " -> " + file.RemoteFile + "\n" + Error, Program.Title, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            foreach (FileEntry file2 in pf)
+                                Entries.Remove(file2);
+                            LoadList();
+                            return;
+                        }
+                    }
+                }
+            }
 
             this.DialogResult = DialogResult.OK;
             this.Close();
         }
+
+        private List<string> GetComputersMID(Int64 GroupID)
+        {
+            List<string> MIDs = new List<string>();
+
+            List<GroupElement> gel = Program.net.GetGroups(GroupID);
+            if (gel != null)
+            {
+                foreach (GroupElement g in gel)
+                {
+                    MIDs.AddRange(GetComputersMID(g.ID));
+                }
+            }
+
+            List<ComputerData> cdlst = Program.net.GetComputerList(true, GroupID);
+            if (cdlst != null)
+            {
+                foreach (ComputerData pc in cdlst)
+                {
+                    MIDs.Add(pc.MachineID);
+                }
+            }
+
+            return (MIDs);
+        }
+
     }
 }

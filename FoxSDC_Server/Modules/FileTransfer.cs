@@ -38,6 +38,7 @@ namespace FoxSDC_Server.Modules
             d.MachineID = Convert.ToString(dr["MachineID"]);
             d.MD5CheckSum = Convert.ToString(dr["MD5Sum"]);
             d.OverrideMeteredConnection = Convert.ToInt32(dr["OverrideMeteredConnection"]) == 1 ? true : false;
+            d.ExecuteWhenFinished = Convert.ToInt32(dr["ExecuteWhenFinished"]) == 1 ? true : false;
             d.ProgressSize = Convert.ToInt64(dr["ProgressSize"]);
             d.RemoteFileLocation = Convert.ToString(dr["RemoteFileLocation"]);
             d.Size = Convert.ToInt64(dr["Size"]);
@@ -554,6 +555,7 @@ namespace FoxSDC_Server.Modules
                 new SQLData("DTUpdated", DateTime.UtcNow),
                 new SQLData("RequestOnly", 0),
                 new SQLData("OverrideMeteredConnection", uploadreq.OverrideMeteredConnection),
+                    new SQLData("ExecuteWhenFinished", uploadreq.ExecuteWhenFinished),
                 new SQLData("FileLastModified", uploadreq.FileLastModified));
             }
 

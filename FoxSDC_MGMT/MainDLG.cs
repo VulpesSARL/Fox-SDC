@@ -244,16 +244,19 @@ namespace FoxSDC_MGMT
                     deleteGroupToolStripMenuItem.Enabled = true;
                     renameGroupToolStripMenuItem.Enabled = true;
                     createsimpleTasksInThisGroupToolStripMenuItem.Enabled = true;
+                    uploadFilesToComputersInThisGroupToolStripMenuItem.Enabled = true;
                 }
                 else
                 {
                     deleteGroupToolStripMenuItem.Enabled = false;
                     renameGroupToolStripMenuItem.Enabled = false;
                     createsimpleTasksInThisGroupToolStripMenuItem.Enabled = false;
+                    uploadFilesToComputersInThisGroupToolStripMenuItem.Enabled = false;
                 }
             }
             else
             {
+                uploadFilesToComputersInThisGroupToolStripMenuItem.Enabled = false;
                 createsimpleTasksInThisGroupToolStripMenuItem.Enabled = false;
                 createGroupToolStripMenuItem.Enabled = false;
                 deleteGroupToolStripMenuItem.Enabled = false;
@@ -491,6 +494,14 @@ namespace FoxSDC_MGMT
                 return;
             frmSimpleTasks ST = new frmSimpleTasks(SelectedGroup.Value, GroupFolders.GetFullPath(treeAction));
             ST.ShowDialog(this);
+        }
+
+        private void uploadFilesToComputersInThisGroupToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (SelectedGroup == null)
+                return;
+            frmAddFilesToRemoteClient UPD = new frmAddFilesToRemoteClient(SelectedGroup.Value, GroupFolders.GetFullPath(treeAction));
+            UPD.ShowDialog(this);
         }
     }
 }
